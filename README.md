@@ -1,26 +1,28 @@
-# v57: Extended Header Leakage Test - Batch 2
+# v58: Extended Header Leakage Test - Batch 3
 
-## More Endpoints for Proxy Diversity
+## Maximum Proxy Diversity Test
 
-### Timing Tests
-![t1](http://164.90.187.218.nip.io:8888/timing?delay=1&v57t1)
-![t2](http://164.90.187.218.nip.io:8888/timing?delay=1&v57t2)
-![t3](http://164.90.187.218.nip.io:8888/timing?delay=1&v57t3)
-
-### Cache Tests
-![c1](http://164.90.187.218.nip.io:8888/cache?id=v57c1)
-![c2](http://164.90.187.218.nip.io:8888/cache?id=v57c2)
-![c3](http://164.90.187.218.nip.io:8888/cache?id=v57c3)
-
-### Size Tests
-![s1](http://164.90.187.218.nip.io:8888/size?bytes=500&v57s1)
-![s2](http://164.90.187.218.nip.io:8888/size?bytes=1000&v57s2)
-![s3](http://164.90.187.218.nip.io:8888/size?bytes=2000&v57s3)
-
-### Confusion Tests
-![f1](http://164.90.187.218.nip.io:8888/confusion?type=gif&v57f1)
-![f2](http://164.90.187.218.nip.io:8888/confusion?type=png&v57f2)
-![f3](http://164.90.187.218.nip.io:8888/confusion?type=jpg&v57f3)
+### Rapid-fire header captures
+![h1](http://164.90.187.218.nip.io:8888/headers?batch3h1)
+![h2](http://164.90.187.218.nip.io:8888/headers?batch3h2)
+![h3](http://164.90.187.218.nip.io:8888/headers?batch3h3)
+![h4](http://164.90.187.218.nip.io:8888/headers?batch3h4)
+![h5](http://164.90.187.218.nip.io:8888/headers?batch3h5)
+![h6](http://164.90.187.218.nip.io:8888/headers?batch3h6)
+![h7](http://164.90.187.218.nip.io:8888/headers?batch3h7)
+![h8](http://164.90.187.218.nip.io:8888/headers?batch3h8)
+![h9](http://164.90.187.218.nip.io:8888/headers?batch3h9)
+![h10](http://164.90.187.218.nip.io:8888/headers?batch3h10)
+![h11](http://164.90.187.218.nip.io:8888/headers?batch3h11)
+![h12](http://164.90.187.218.nip.io:8888/headers?batch3h12)
+![h13](http://164.90.187.218.nip.io:8888/headers?batch3h13)
+![h14](http://164.90.187.218.nip.io:8888/headers?batch3h14)
+![h15](http://164.90.187.218.nip.io:8888/headers?batch3h15)
+![h16](http://164.90.187.218.nip.io:8888/headers?batch3h16)
+![h17](http://164.90.187.218.nip.io:8888/headers?batch3h17)
+![h18](http://164.90.187.218.nip.io:8888/headers?batch3h18)
+![h19](http://164.90.187.218.nip.io:8888/headers?batch3h19)
+![h20](http://164.90.187.218.nip.io:8888/headers?batch3h20)
 
 ---
-**v57** - 12 test endpoints
+**v58** - 20 rapid-fire test endpoints
