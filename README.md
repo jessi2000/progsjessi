@@ -1,27 +1,26 @@
-# v56: Extended Header Leakage Test - Batch 1
+# v57: Extended Header Leakage Test - Batch 2
 
-## Multi-Image Test for Diverse Proxy Hits
+## More Endpoints for Proxy Diversity
 
-### Row 1
-![t1](http://164.90.187.218.nip.io:8888/headers?v56t1)
-![t2](http://164.90.187.218.nip.io:8888/headers?v56t2)
-![t3](http://164.90.187.218.nip.io:8888/headers?v56t3)
-![t4](http://164.90.187.218.nip.io:8888/headers?v56t4)
-![t5](http://164.90.187.218.nip.io:8888/headers?v56t5)
+### Timing Tests
+![t1](http://164.90.187.218.nip.io:8888/timing?delay=1&v57t1)
+![t2](http://164.90.187.218.nip.io:8888/timing?delay=1&v57t2)
+![t3](http://164.90.187.218.nip.io:8888/timing?delay=1&v57t3)
 
-### Row 2
-![t6](http://164.90.187.218.nip.io:8888/headers?v56t6)
-![t7](http://164.90.187.218.nip.io:8888/headers?v56t7)
-![t8](http://164.90.187.218.nip.io:8888/headers?v56t8)
-![t9](http://164.90.187.218.nip.io:8888/headers?v56t9)
-![t10](http://164.90.187.218.nip.io:8888/headers?v56t10)
+### Cache Tests
+![c1](http://164.90.187.218.nip.io:8888/cache?id=v57c1)
+![c2](http://164.90.187.218.nip.io:8888/cache?id=v57c2)
+![c3](http://164.90.187.218.nip.io:8888/cache?id=v57c3)
 
-### Row 3
-![t11](http://164.90.187.218.nip.io:8888/size?v56t11)
-![t12](http://164.90.187.218.nip.io:8888/size?v56t12)
-![t13](http://164.90.187.218.nip.io:8888/size?v56t13)
-![t14](http://164.90.187.218.nip.io:8888/size?v56t14)
-![t15](http://164.90.187.218.nip.io:8888/size?v56t15)
+### Size Tests
+![s1](http://164.90.187.218.nip.io:8888/size?bytes=500&v57s1)
+![s2](http://164.90.187.218.nip.io:8888/size?bytes=1000&v57s2)
+![s3](http://164.90.187.218.nip.io:8888/size?bytes=2000&v57s3)
+
+### Confusion Tests
+![f1](http://164.90.187.218.nip.io:8888/confusion?type=gif&v57f1)
+![f2](http://164.90.187.218.nip.io:8888/confusion?type=png&v57f2)
+![f3](http://164.90.187.218.nip.io:8888/confusion?type=jpg&v57f3)
 
 ---
-**v56** - 15 test endpoints
+**v57** - 12 test endpoints
