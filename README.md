@@ -1,47 +1,32 @@
-# SSRF Bypass v63 - Advanced Techniques
+# Cache Poisoning Tests v64
 
-Testing multiple SSRF bypass methods against GitHub Camo.
+Testing cache poisoning attacks against GitHub Camo.
 
-## 1. URL Encoded IP
-![URLEnc](http://164.90.187.218.nip.io:9999/urlenc?v=63)
+## 1. XSS via SVG
+![XSS SVG](http://164.90.187.218.nip.io:9999/xss?v=64)
 
-## 2. IPv6 Mapped IPv4
-![Mapped](http://164.90.187.218.nip.io:9999/mapped?v=63)
+## 2. XXE via SVG
+![XXE SVG](http://164.90.187.218.nip.io:9999/xxe?v=64)
 
-## 3. DNS Rebinding
-![Rebind](http://164.90.187.218.nip.io:9999/rebind?v=63)
+## 3. Malicious Headers
+![Headers](http://164.90.187.218.nip.io:9999/headers?v=64)
 
-## 4. Double URL Encode
-![Double](http://164.90.187.218.nip.io:9999/double?v=63)
+## 4. HTML as Image
+![HTML](http://164.90.187.218.nip.io:9999/htmlimg?v=64)
 
-## 5. Unicode Bypass
-![Unicode](http://164.90.187.218.nip.io:9999/unicode?v=63)
+## 5. JS as Image
+![JS](http://164.90.187.218.nip.io:9999/jsimg?v=64)
 
-## 6. LocalTest.me (resolves to 127.0.0.1)
-![LocalTest](http://164.90.187.218.nip.io:9999/localtest?v=63)
+## 6. Vary Header Cache Key Test
+![Vary](http://164.90.187.218.nip.io:9999/vary?v=64)
 
-## 7. Dash-style nip.io
-![Spoof](http://164.90.187.218.nip.io:9999/spoof?v=63)
+## 7. Permanent 301 Redirect
+![301](http://164.90.187.218.nip.io:9999/perm301?v=64)
 
-## 8. Basic Auth Bypass
-![AuthBypass](http://164.90.187.218.nip.io:9999/authbypass?v=63)
+## 8. 304 Not Modified
+![304](http://164.90.187.218.nip.io:9999/notmod?v=64)
 
-## 9. Decimal IP
-![Decimal](http://164.90.187.218.nip.io:9999/decimal?v=63)
+## 9. Valid Image (Control)
+![OK](http://164.90.187.218.nip.io:9999/ok?v=64)
 
-## 10. Hex IP
-![Hex](http://164.90.187.218.nip.io:9999/hex?v=63)
-
-## 11. Octal IP
-![Octal](http://164.90.187.218.nip.io:9999/octal?v=63)
-
-## 12. IPv6 Localhost
-![IPv6](http://164.90.187.218.nip.io:9999/ipv6?v=63)
-
-## 13. Log Chain (metadata + callback)
-![LogChain](http://164.90.187.218.nip.io:9999/logchain?v=63)
-
-## 14. Chain Redirect
-![Chain](http://164.90.187.218.nip.io:9999/chain?v=63)
-
-Timestamp: 2026-01-12T15:25:00Z
+Timestamp: 2026-01-12T15:30:00Z
