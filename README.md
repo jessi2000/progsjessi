@@ -1,28 +1,27 @@
-# v58: Extended Header Leakage Test - Batch 3
+# v59: Extended Header Leakage Test - Final Batch
 
-## Maximum Proxy Diversity Test
+## Final Batch for Maximum Data Collection
 
-### Rapid-fire header captures
-![h1](http://164.90.187.218.nip.io:8888/headers?batch3h1)
-![h2](http://164.90.187.218.nip.io:8888/headers?batch3h2)
-![h3](http://164.90.187.218.nip.io:8888/headers?batch3h3)
-![h4](http://164.90.187.218.nip.io:8888/headers?batch3h4)
-![h5](http://164.90.187.218.nip.io:8888/headers?batch3h5)
-![h6](http://164.90.187.218.nip.io:8888/headers?batch3h6)
-![h7](http://164.90.187.218.nip.io:8888/headers?batch3h7)
-![h8](http://164.90.187.218.nip.io:8888/headers?batch3h8)
-![h9](http://164.90.187.218.nip.io:8888/headers?batch3h9)
-![h10](http://164.90.187.218.nip.io:8888/headers?batch3h10)
-![h11](http://164.90.187.218.nip.io:8888/headers?batch3h11)
-![h12](http://164.90.187.218.nip.io:8888/headers?batch3h12)
-![h13](http://164.90.187.218.nip.io:8888/headers?batch3h13)
-![h14](http://164.90.187.218.nip.io:8888/headers?batch3h14)
-![h15](http://164.90.187.218.nip.io:8888/headers?batch3h15)
-![h16](http://164.90.187.218.nip.io:8888/headers?batch3h16)
-![h17](http://164.90.187.218.nip.io:8888/headers?batch3h17)
-![h18](http://164.90.187.218.nip.io:8888/headers?batch3h18)
-![h19](http://164.90.187.218.nip.io:8888/headers?batch3h19)
-![h20](http://164.90.187.218.nip.io:8888/headers?batch3h20)
+### Set A
+![a1](http://164.90.187.218.nip.io:8888/headers?finalA1)
+![a2](http://164.90.187.218.nip.io:8888/headers?finalA2)
+![a3](http://164.90.187.218.nip.io:8888/headers?finalA3)
+![a4](http://164.90.187.218.nip.io:8888/headers?finalA4)
+![a5](http://164.90.187.218.nip.io:8888/headers?finalA5)
+
+### Set B
+![b1](http://164.90.187.218.nip.io:8888/size?finalB1)
+![b2](http://164.90.187.218.nip.io:8888/size?finalB2)
+![b3](http://164.90.187.218.nip.io:8888/size?finalB3)
+![b4](http://164.90.187.218.nip.io:8888/size?finalB4)
+![b5](http://164.90.187.218.nip.io:8888/size?finalB5)
+
+### Set C
+![c1](http://164.90.187.218.nip.io:8888/cache?finalC1)
+![c2](http://164.90.187.218.nip.io:8888/cache?finalC2)
+![c3](http://164.90.187.218.nip.io:8888/cache?finalC3)
+![c4](http://164.90.187.218.nip.io:8888/cache?finalC4)
+![c5](http://164.90.187.218.nip.io:8888/cache?finalC5)
 
 ---
-**v58** - 20 rapid-fire test endpoints
+**v59** - 15 final test endpoints
