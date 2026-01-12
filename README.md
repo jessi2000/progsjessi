@@ -1,39 +1,27 @@
-# v55: Comprehensive Header Leakage Verification Test
+# v56: Extended Header Leakage Test - Batch 1
 
-> Testing multiple endpoints to capture diverse X-Forwarded-For and Via headers
+## Multi-Image Test for Diverse Proxy Hits
 
----
+### Row 1
+![t1](http://164.90.187.218.nip.io:8888/headers?v56t1)
+![t2](http://164.90.187.218.nip.io:8888/headers?v56t2)
+![t3](http://164.90.187.218.nip.io:8888/headers?v56t3)
+![t4](http://164.90.187.218.nip.io:8888/headers?v56t4)
+![t5](http://164.90.187.218.nip.io:8888/headers?v56t5)
 
-## Test 1: Basic Header Capture
-![h1](http://164.90.187.218.nip.io:8888/headers?t=1)
+### Row 2
+![t6](http://164.90.187.218.nip.io:8888/headers?v56t6)
+![t7](http://164.90.187.218.nip.io:8888/headers?v56t7)
+![t8](http://164.90.187.218.nip.io:8888/headers?v56t8)
+![t9](http://164.90.187.218.nip.io:8888/headers?v56t9)
+![t10](http://164.90.187.218.nip.io:8888/headers?v56t10)
 
-## Test 2: Headers with Query
-![h2](http://164.90.187.218.nip.io:8888/headers?t=2)
-
-## Test 3: Size Endpoint
-![h3](http://164.90.187.218.nip.io:8888/size?bytes=1000)
-
-## Test 4: Timing Endpoint  
-![h4](http://164.90.187.218.nip.io:8888/timing?delay=1)
-
-## Test 5: Another Headers Call
-![h5](http://164.90.187.218.nip.io:8888/headers?t=5)
-
-## Test 6: Cache Test
-![h6](http://164.90.187.218.nip.io:8888/cache?id=v55test)
-
-## Test 7: Confusion Test
-![h7](http://164.90.187.218.nip.io:8888/confusion?type=gif)
-
-## Test 8: More Headers
-![h8](http://164.90.187.218.nip.io:8888/headers?t=8)
-
-## Test 9: Slow Response
-![h9](http://164.90.187.218.nip.io:8888/slow?duration=1)
-
-## Test 10: Final Header Check
-![h10](http://164.90.187.218.nip.io:8888/headers?t=10)
+### Row 3
+![t11](http://164.90.187.218.nip.io:8888/size?v56t11)
+![t12](http://164.90.187.218.nip.io:8888/size?v56t12)
+![t13](http://164.90.187.218.nip.io:8888/size?v56t13)
+![t14](http://164.90.187.218.nip.io:8888/size?v56t14)
+![t15](http://164.90.187.218.nip.io:8888/size?v56t15)
 
 ---
-
-**v55** - Comprehensive Header Leakage Verification
+**v56** - 15 test endpoints
