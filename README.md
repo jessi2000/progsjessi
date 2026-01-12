@@ -1,53 +1,23 @@
-# Exotic SSRF Bypass Tests v69
+# OOB Callback Tests v70
 
-Advanced bypass techniques from SSRF skill.
+Blind SSRF detection using interactsh.
 
-## 1. 1u.ms DNS Rebinding Service
+## 1. Direct OOB Redirect
 
-![1ums](http://164.90.187.218.nip.io:9999/1ums?v=69)
+![OOB](http://164.90.187.218.nip.io:9999/oob?v=70)
 
-## 2. r3dir.me 307 Redirect Service
+## 2. OOB via Redirect Chain
 
-![r3dir](http://164.90.187.218.nip.io:9999/r3dir?v=69)
+![OOBChain](http://164.90.187.218.nip.io:9999/oobchain?v=70)
 
-## 3. URL Parser Confusion (#@)
+## 3. SVG with OOB Image Reference
 
-![URLConf1](http://164.90.187.218.nip.io:9999/urlconfuse1?v=69)
+![SVGOOB](http://164.90.187.218.nip.io:9999/svgoob?v=70)
 
-## 4. URL Parser Confusion (\@)
+## 4. Control (Valid GIF)
 
-![URLConf2](http://164.90.187.218.nip.io:9999/urlconfuse2?v=69)
+![OK](http://164.90.187.218.nip.io:9999/ok?v=70)
 
-## 5. URL Parser Confusion (port\@)
+Timestamp: 2026-01-12T16:15:00Z
 
-![URLConf3](http://164.90.187.218.nip.io:9999/urlconfuse3?v=69)
-
-## 6. Space Injection
-
-![SpaceInj](http://164.90.187.218.nip.io:9999/spaceinj?v=69)
-
-## 7. Alternate Localhost (127.127.127.127)
-
-![AltLocal](http://164.90.187.218.nip.io:9999/localhost127?v=69)
-
-## 8. Zero IP (0.0.0.0)
-
-![ZeroIP](http://164.90.187.218.nip.io:9999/zeroip?v=69)
-
-## 9. Bare Zero (0)
-
-![BareZero](http://164.90.187.218.nip.io:9999/bareip?v=69)
-
-## 10. Short Localhost (127.1)
-
-![ShortLocal](http://164.90.187.218.nip.io:9999/shortlocalhost?v=69)
-
-## 11. Alibaba Metadata IP (100.100.100.200)
-
-![Alibaba](http://164.90.187.218.nip.io:9999/alibaba?v=69)
-
-## 12. Control (Valid GIF)
-
-![OK](http://164.90.187.218.nip.io:9999/ok?v=69)
-
-Timestamp: 2026-01-12T16:10:00Z
+Interactsh domain: d5ihlhvgbe7jvj97i5hgop1c7gs46c5t8.oast.online
