@@ -1,23 +1,26 @@
-# OOB Callback Tests v70
+# Camo SSRF Testing v71 - Exotic Protocol and Cache Tests
 
-Blind SSRF detection using interactsh.
+## NEW: Advanced Protocol Scheme Tests
+| Test | Endpoint | Purpose |
+|------|----------|--------|
+| gopher:// | ![](http://164.90.187.218:9999/gophertest) | Test gopher protocol for Redis SSRF |
+| dict:// | ![](http://164.90.187.218:9999/dicttest) | Test dict protocol to Memcached |
+| PHP filter | ![](http://164.90.187.218:9999/phpfilter) | Test PHP stream wrappers |
+| data: URI | ![](http://164.90.187.218:9999/datauri) | Test redirect to data: URI |
+| HTTP/0.9 | ![](http://164.90.187.218:9999/http09) | Test HTTP/0.9 style response |
+| Long chain | ![](http://164.90.187.218:9999/longchain?count=0) | Test 10-hop redirect chain to IMDS |
+| Unicode host | ![](http://164.90.187.218:9999/unicodehost) | Test IDN homograph attack |
 
-## 1. Direct OOB Redirect
+## Cache Key Manipulation Tests
+| Test | Endpoint | Purpose |
+|------|----------|--------|
+| Cache key normal | ![](http://164.90.187.218:9999/cachekey) | Normal cache key |
+| Cache key admin | ![](http://164.90.187.218:9999/cachekey?admin=true) | Cache key with query param |
 
-![OOB](http://164.90.187.218.nip.io:9999/oob?v=70)
-
-## 2. OOB via Redirect Chain
-
-![OOBChain](http://164.90.187.218.nip.io:9999/oobchain?v=70)
-
-## 3. SVG with OOB Image Reference
-
-![SVGOOB](http://164.90.187.218.nip.io:9999/svgoob?v=70)
-
-## 4. Control (Valid GIF)
-
-![OK](http://164.90.187.218.nip.io:9999/ok?v=70)
-
-Timestamp: 2026-01-12T16:15:00Z
-
-Interactsh domain: d5ihlhvgbe7jvj97i5hgop1c7gs46c5t8.oast.online
+## Previous Tests Still Active:
+![SSRF AWS](http://164.90.187.218:9999/aws)
+![OOB](http://164.90.187.218:9999/oob)
+![SVG OOB](http://164.90.187.218:9999/svgoob)
+![TrueDNS](http://164.90.187.218:9999/truedns)
+![1ums](http://164.90.187.218:9999/1ums)
+![r3dir](http://164.90.187.218:9999/r3dir)
