@@ -1,32 +1,29 @@
-# Advanced Attack Tests v65
+# CSS/Font Exfiltration Tests v66
 
-Deep dive into Camo vulnerabilities.
+Testing if CSS-based resources bypass CSP.
 
-## 1. True DNS Rebinding (rbndr.us)
-![TrueDNS](http://164.90.187.218.nip.io:9999/truedns?v=65)
+## 1. SVG with CSS url() exfil
 
-## 2. HTTP Request Smuggling
-![Smuggle](http://164.90.187.218.nip.io:9999/smuggle?v=65)
+![SVGCSS](http://164.90.187.218.nip.io:9999/svgcss?v=66)
 
-## 3. Response Splitting
-![Split](http://164.90.187.218.nip.io:9999/split?v=65)
+## 2. SVG with use element (external SVG)
 
-## 4. SVG External Image (Data Exfil)
-![SVGExt](http://164.90.187.218.nip.io:9999/svgext?v=65)
+![SVGUse](http://164.90.187.218.nip.io:9999/svguse?v=66)
 
-## 5. SVG ForeignObject HTML Injection
-![SVGHTML](http://164.90.187.218.nip.io:9999/svghtml?v=65)
+## 3. SVG with @font-face external font
 
-## 6. Double Host Header
-![DoubleHost](http://164.90.187.218.nip.io:9999/doublehost?v=65)
+![SVGFont](http://164.90.187.218.nip.io:9999/svgfont?v=66)
 
-## 7. Unicode Normalization
-![UnicodeNorm](http://164.90.187.218.nip.io:9999/unicodenorm?v=65)
+## 4. SVG with data: URI in image
 
-## 8. EC2 Identity Document
-![Identity](http://164.90.187.218.nip.io:9999/identity?v=65)
+![SVGData](http://164.90.187.218.nip.io:9999/svgdata?v=66)
 
-## 9. Control (Valid GIF)
-![OK](http://164.90.187.218.nip.io:9999/ok?v=65)
+## 5. GIF/JS Polyglot
 
-Timestamp: 2026-01-12T15:30:00Z
+![Polyglot](http://164.90.187.218.nip.io:9999/polyglot?v=66)
+
+## 6. Control (Valid GIF)
+
+![OK](http://164.90.187.218.nip.io:9999/ok?v=66)
+
+Timestamp: 2026-01-12T15:45:00Z
